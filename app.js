@@ -55,6 +55,6 @@ const ctx = CMS({ dev });
 
 main(ctx);
 pages(ctx);
-data(ctx);
+await data(ctx);
 
 ctx.startServer(process.env.PORT ?? 3043);
