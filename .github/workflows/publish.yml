@@ -19,12 +19,10 @@ jobs:
         with:
           node-version: '18'
 
-      - name: 🔨 Build Project
-        run: |
-          npm install && cd api && npm install && cd ..
-          npm run build
-          mv build public_html
-
+      # - name: 🔨 Build Project
+      #   run: |
+      #     npm install
+          
       - name: 📂 Upload Site
         uses: appleboy/scp-action@master
         with:
@@ -32,8 +30,8 @@ jobs:
           username: ${{secrets.FTP_USER}}
           password: ${{secrets.FTP_PASSWORD}}
           port: 22
-          source: "public_html"
-          target: "/home/minicms"
+          source: "/"
+          target: "/home/app"
 
       - name: Restart App
         uses: appleboy/ssh-action@v0.1.6
