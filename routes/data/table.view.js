@@ -24,7 +24,7 @@ export function TableEditor({
       action: `$post('?${$props.action}', $value)\
         .then(async res => {\
           await $routing.goto('/data/' +$value.slug); \
-            $alert.success('${successMessage})\
+            $alert.success('${successMessage}')\
           })`,
     },
     [
