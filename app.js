@@ -19,7 +19,7 @@ export function CMS({dev = false, filename = ':memory:', client = 'sqlite3'} = {
         getModel, 
         removeTable, 
         createTable,
-        updateColumn, 
+        updateColumn,
         addColumn, 
         removeColumn, 
         renameTable
