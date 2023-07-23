@@ -1,6 +1,7 @@
 import {
   Button,
   Avatar,
+  Alert,
   Table,
   TableBody,
   TableCell,
@@ -11,6 +12,7 @@ import {
   Card,
   CardBody,
   View,
+  AlertContainer,
   Container,
   Icon,
   ButtonGroup,
@@ -18,6 +20,7 @@ import {
   Tooltip,
 } from "@ulibs/ui";
 import { Sidebar, SidebarItem } from "../components/sidebar.js";
+import { Logo } from "../components/Logo.js";
 
 export function Header($props, $slots) {
   return View(
@@ -57,12 +60,12 @@ export function AdminLayout($props, $slots) {
         View({
           tag: "link",
           rel: "stylesheet",
-          href: "https://unpkg.com/@ulibs/ui@next/dist/styles.css",
+          href: "/dist/styles.css",
         }),
 
         View({
           tag: "script",
-          src: "https://unpkg.com/@ulibs/ui@next/dist/ulibs.js",
+          src: "/dist/ulibs.js",
           // defer: true,
           // async: true,
         }),
@@ -136,29 +139,7 @@ export function AdminLayout($props, $slots) {
     },
     [
       Sidebar({ mode }, ({ mode }) => [
-        View(
-          {
-            py: "md",
-            px: "sm",
-            textColor: "primary",
-            borderColor: "primary",
-            style:
-              "font-size: 20px; line-height: 34px; font-weight: bold; background-color: #0160ef1a;",
-          },
-          [
-            "U",
-            View(
-              {
-                tag: "span",
-                textColor: "success",
-                style:
-                  "font-size: 28px; height: 32px; font-weight: bold; margin-left: -4px; padding-bottom: 4px; margin-right: -4px",
-              },
-              "B"
-            ),
-            View({ tag: "span", style: "font-size: 16px" }, "UILDER"),
-          ]
-        ),
+        Logo({mode}),
         SidebarItem({ mode, title: "Home", icon: "dashboard", href: "/" }),
         SidebarItem({ mode, title: "Pages", icon: "file", href: "/pages" }),
         SidebarItem({ mode, title: "Data", icon: "database", href: "/data" }),
@@ -221,6 +202,18 @@ export function AdminLayout($props, $slots) {
             : Col([Button({ href: "/login" }, "Login")]),
         ]),
         Body($props, $slots),
+        AlertContainer(
+          { placement: "bottom-end", name: "alerts" },
+          $props.messages?.map(
+            ({
+              content,
+              dismissible = true,
+              type = "success",
+              autoClose = true,
+              ...props
+            }) => Alert({ type, autoClose, dismissible, ...props }, content)
+          )
+        ),
       ]),
     ]
   );

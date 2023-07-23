@@ -13,7 +13,7 @@ export function CMS({
   filename = ":memory:",
   client = "sqlite3",
 } = {}) {
-  const { startServer, addPage, addLayout } = Router({
+  const { startServer, addPage, addLayout, addStatic } = Router({
     dev,
     reloadTimeout: 1000,
   });
@@ -46,6 +46,7 @@ export function CMS({
     startServer,
     addPage,
     addLayout,
+    addStatic,
     getModel,
     removeTable,
     createTable,

@@ -1,4 +1,4 @@
-import { Badge, Button, Container, Icon, View } from "@ulibs/ui";
+import { Badge, Button, Container, Divider, Icon, View } from "@ulibs/ui";
 import { Sidebar, SidebarItem } from "../../components/sidebar.js";
 import { Tooltip } from "@ulibs/ui";
 
@@ -33,11 +33,11 @@ export let tables = [
 
 export function dataLayout(ctx) {
   ctx.addLayout("/data", {
-    load: () => {
-      return {
-        title: "Table & Data",
-        tables,
-      };
+    async load(props) {
+      props.locals.tables = (await ctx.Tables.query({ perPage: 100 })).data;
+      props.locals.title = "Table & Data";
+
+      return props.locals;
     },
     component(props, $slots) {
       const mode = "default";
@@ -48,37 +48,51 @@ export function dataLayout(ctx) {
         [
           Sidebar({ mode, d: "none", dMd: "block" }, ({ mode }) => {
             return [
-              ...props.tables.map((table) =>
-                SidebarItem({
-                  mode,
-                  href: "/data/" + table.slug,
-                  title: table.name,
-                  icon: table.icon,
-                })
-              ),
-              Button(
-                {
-                  dSm: "none",
-                  d: "flex",
-                  color: "primary",
-                  justify: "center",
-                  icon: "plus",
-                  href: "/data/create",
-                },
-                [Icon("plus"), Tooltip({ placement: "right" }, "Create Table")]
-              ),
-              View(
-                {
-                  d: "none",
-                  dSm: "block",
-                  py: "xxs",
-                  px: "xs",
-                },
-                Button({ color: "primary", href: "/data/create", w: 100 }, [
-                  Icon("plus"),
-                  View({ tag: "span" }, "Create table"),
-                ])
-              ),
+              View({ style: "overflow-y: auto; height: 100%;" }, [
+                Button(
+                  {
+                    dSm: "none",
+                    d: "flex",
+                    color: "primary",
+                    justify: "center",
+                    icon: "plus",
+                    href: "/data/create",
+                    style: "position: sticky; top: 0",
+                  },
+                  [
+                    Icon("plus"),
+                    Tooltip({ placement: "right" }, "Create Table"),
+                  ]
+                ),
+                View(
+                  {
+                    d: "none",
+                    dSm: "block",
+
+                    style:
+                      "position: sticky; top: 0; background-color: var(--color-base-200)",
+                  },
+                  [
+                    View({ p: "xs" }, [
+                      Button(
+                        { color: "primary", href: "/data/create", w: 100 },
+                        [Icon("plus"), View({ tag: "span" }, "Create table")]
+                      ),
+                    ]),
+                    View({
+                      style: "border-bottom: 1px solid var(--color-base-400)",
+                    }),
+                  ]
+                ),
+                ...props.tables.map((table) =>
+                  SidebarItem({
+                    mode,
+                    href: "/data/" + table.slug,
+                    title: table.name,
+                    icon: table.icon,
+                  })
+                ),
+              ]),
             ];
           }),
           View(

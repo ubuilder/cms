@@ -21,23 +21,37 @@ export function createTablePage(ctx) {
       };
     },
     actions: {
-      create({ body }) {
-        tables = [
-          ...tables,
-          {
-            ...body,
-            columns: [
-              { key: "id", text: "#" },
-              { key: "name", text: "Name" },
-              { key: "username", text: "Username" },
-              { key: "email", text: "Email" },
-            ],
-          },
-        ];
-        console.log(body);
+      async create({ body }) {
+        const newTable = {
+          name: body.name,
+          icon: body.icon,
+          slug: body.slug          
+        }
+
+        const result = await ctx.Tables.insert(newTable)
+        //   ...tables,
+      //   {
+        //     ...body,
+        //     columns: [
+        //       { key: "id", text: "#" },
+        //       { key: "name", text: "Name" },
+        //       { key: "username", text: "Username" },
+        //       { key: "email", text: "Email" },
+        //     ],
+        //   },
+        // ];
+        
         return {
-          reload: true,
-        };
+          status: 201,
+          body: {
+            message: {
+              type: 'success',
+              content: 'Table Successfully created!'
+            },
+            result,
+          }
+        }
+      
       },
     },
     page: (props) => {

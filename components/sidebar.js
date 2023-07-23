@@ -8,7 +8,7 @@ const styles = `
     left: 0;
     bottom: 0;
     border-right: 1px solid var(--color-base-400);
-    background-color: var(--color-base-100);
+    background-color: var(--color-base-200);
 }
 
 [u-view-theme="dark"] [u-sidebar] {
@@ -129,7 +129,6 @@ const styles = `
 export function SidebarItem({ mode = 'compact', href, title, icon, ...restProps } = {}, $slots) {
     return View(
       {
-        htmlHead: `<style>${styles}</style>`,
         ...restProps,
         tag: "li",
         style: "list-style-type: none",
@@ -158,6 +157,8 @@ export function SidebarItem({ mode = 'compact', href, title, icon, ...restProps 
   export function Sidebar($props, $slots) {
     return View(
       {
+
+        htmlHead: `<style>${styles}</style>`,
         "u-sidebar": true,
         tag: "ul",
         d: "flex",

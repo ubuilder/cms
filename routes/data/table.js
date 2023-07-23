@@ -4,19 +4,14 @@ import { DataTable } from "../../components/DataTable.js";
 
 export function tableListPage(ctx) {
   ctx.addPage("/data/:table", {
-    load(props) {
-      const table = props.tables.find(
-        (table) => table.slug === props.params.table
+    load(props, { redirect }) {
+      console.log(props.locals.tables.find(x => x.slug === 'iojij'))
+      const table = props.locals.tables.find(
+        (x) => x.slug === props.params.table
       );
-    //   if (!table) {
-    //     return {
-    //       status: 303,
-    //       headers: {
-    //         location: "/data",
-    //       },
-    //     };
-    //   }
-    if(!table) return {table: {}}
+      if (!table) redirect({ path: "/data" });
+
+          
       return {
         title: table.name,
         table: table ?? {},
@@ -26,14 +21,12 @@ export function tableListPage(ctx) {
     page: ({ table, rows, params, title }) => {
       if (!table) return "";
       return [
-        View({ pt: "md" }, [
-          PageHeader({ title }, [
-            Button({ href: `/data/${table.slug}/edit` }, [
-              Icon("settings"),
-              Tooltip({ placement: "left" }, "Table Settings"),
-            ]),
-            Button({ color: "primary" }, [Icon("plus"), "Insert"]),
+        PageHeader({ title }, [
+          Button({ href: `/data/${table.slug}/edit` }, [
+            Icon("settings"),
+            Tooltip({ placement: "left" }, "Table Settings"),
           ]),
+          Button({ color: "primary" }, [Icon("plus"), "Insert"]),
         ]),
         Card(
           { border: true, style: "--view-border-color: var(--color-base-400)" },

@@ -2,6 +2,7 @@ import { View } from "@ulibs/ui";
 import { dataLayout } from "./layout.js";
 import { tableListPage } from "./table.js";
 import { createTablePage } from "./create.js";
+import { editTablePage } from "./editTable.js";
 
 async function initializeDataTables(ctx) {
   // await ctx.createTable('tables', {
@@ -25,6 +26,18 @@ export default async function data(ctx) {
 
   await initializeDataTables(ctx)
   
+  ctx.addLayout('/data/:table', {
+    async load({params, locals}) {
+      const table = await ctx.Tables.get({where: {slug: params.table}})
+
+      console.log('load: ', table)
+
+      console.log(locals)
+      locals.table = table
+    }
+  })
+  
+
   dataLayout(ctx);
   tableListPage(ctx);
   createTablePage(ctx);
@@ -42,9 +55,7 @@ export default async function data(ctx) {
     page: () => View("List of tables!"),
   });
 
-  ctx.addPage("/data/:table/edit", {
-    page: () => View("Edit table info and fields"),
-  });
+  editTablePage(ctx)
 
   ctx.addPage("/data/:table/insert", {
     page: () => View("insert new item to table"),
