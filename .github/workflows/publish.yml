@@ -40,4 +40,4 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 22
-          script: passenger-config restart-app /
+          script: npm install && passenger-config restart-app /
