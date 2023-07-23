@@ -37,4 +37,4 @@ main(ctx)
 pages(ctx)
 data(ctx)
 
-ctx.startServer(3032);
+ctx.startServer(process.env.PORT ?? 3043);
