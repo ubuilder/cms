@@ -3,11 +3,40 @@ import { dataLayout } from "./layout.js";
 import { tableListPage } from "./table.js";
 import { createTablePage } from "./create.js";
 
-export default function data(ctx) {
+async function initializeDataTables(ctx) {
+  await ctx.createTable('tables', {
+    name: 'string',
+    slug: 'string|required|unique',
+    icon: 'string|default=database',
+  })
+
+  await ctx.createTable('fields', {
+    key: 'string|required',
+    label: 'string',
+    description: 'string',
+    options: 'string'
+  })
+
+  ctx.Tables = getModel('tables')
+  ctx.Fields = getModel('fields') 
+}
+
+export default async function data(ctx) {
+
+  await initializeDataTables(ctx)
+  
   dataLayout(ctx);
   tableListPage(ctx);
   createTablePage(ctx);
   
+  ctx.addPage('/data/test-data', {
+    async load() {
+      return {
+        tables: await ctx.Tables.query({}),
+        fields: await ctx.Fields.query({})
+      }
+    }
+  })
 
   ctx.addPage("/data", {
     page: () => View("List of tables!"),
