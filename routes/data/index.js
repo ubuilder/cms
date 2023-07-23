@@ -4,18 +4,18 @@ import { tableListPage } from "./table.js";
 import { createTablePage } from "./create.js";
 
 async function initializeDataTables(ctx) {
-  await ctx.createTable('tables', {
-    name: 'string',
-    slug: 'string|required|unique',
-    icon: 'string|default=database',
-  })
+  // await ctx.createTable('tables', {
+  //   name: 'string',
+  //   slug: 'string|required|unique',
+  //   icon: 'string|default=database',
+  // })
 
-  await ctx.createTable('fields', {
-    key: 'string|required',
-    label: 'string',
-    description: 'string',
-    options: 'string'
-  })
+  // await ctx.createTable('fields', {
+  //   key: 'string|required',
+  //   label: 'string',
+  //   description: 'string',
+  //   options: 'string'
+  // })
 
   ctx.Tables = ctx.getModel('tables')
   ctx.Fields = ctx.getModel('fields') 
