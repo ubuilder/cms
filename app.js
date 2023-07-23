@@ -9,6 +9,7 @@ import 'dotenv/config'
 
 export function CMS({
   dev = false,
+  
   filename = ":memory:",
   client = "sqlite3",
 } = {}) {
@@ -16,6 +17,21 @@ export function CMS({
     dev,
     reloadTimeout: 1000,
   });
+  
+  const configs = {
+    production: {
+        client: 'mysql',
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        database: process.env.DB_DATABASE,
+        password: process.env.DB_PASSWORD,
+    },
+    dev: {
+      client: 'sqlite3',
+      filename: './app.db'
+    }
+  }
+  
   const {
     createTable,
     removeTable,
@@ -24,13 +40,7 @@ export function CMS({
     addColumn,
     removeColumn,
     renameTable,
-  } = connect({
-    client: 'mysql',
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    database: process.env.DB_DATABASE,
-    password: process.env.DB_PASSWORD,
-  });
+  } = connect(configs[dev ? 'dev': 'production']);
 
   const ctx = {
     startServer,

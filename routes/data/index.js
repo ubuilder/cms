@@ -17,8 +17,8 @@ async function initializeDataTables(ctx) {
     options: 'string'
   })
 
-  ctx.Tables = getModel('tables')
-  ctx.Fields = getModel('fields') 
+  ctx.Tables = ctx.getModel('tables')
+  ctx.Fields = ctx.getModel('fields') 
 }
 
 export default async function data(ctx) {
@@ -36,7 +36,7 @@ export default async function data(ctx) {
         fields: await ctx.Fields.query({})
       }
     }
-  })
+  })  
 
   ctx.addPage("/data", {
     page: () => View("List of tables!"),
