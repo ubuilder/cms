@@ -1,0 +1,45 @@
+name: Deploy site
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  deploy-ftp:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get latest code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: 🔨 Build Project
+        run: |
+          npm install && cd api && npm install && cd ..
+          npm run build
+          mv build public_html
+
+      - name: 📂 Upload Site
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{secrets.FTP_HOST}}
+          username: ${{secrets.FTP_USER}}
+          password: ${{secrets.FTP_PASSWORD}}
+          port: 22
+          source: "public_html"
+          target: "/home/minicms"
+
+      - name: Restart App
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.FTP_HOST}}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 22
+          script: passenger-config restart-app /

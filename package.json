@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@ulibs/db": "^1.0.1-next.16",
-    "@ulibs/router": "^0.0.18",
+    "@ulibs/db": "^1.0.1-next.18",
+    "@ulibs/router": "^0.0.20",
     "@ulibs/ui": "^0.0.2-next.31"
   }
 }
