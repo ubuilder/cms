@@ -162,7 +162,7 @@ export function AdminLayout($props, $slots) {
         Header($props, [
           // check if is logged in from props
 
-          Col({ dSm: "none", col: 0 }, Icon("menu-2")),
+          Col({ dSm: "none", col: 0 }, Icon({name: "menu-2"})),
           Input({
             col: 0,
             d: "none",
@@ -174,19 +174,21 @@ export function AdminLayout($props, $slots) {
           Col({ class: "hide-light" }, [
             Icon(
               {
+                name: "sun",
                 onClick:
                   "el => document.body.setAttribute('u-view-theme', 'light')",
               },
-              "sun"
+              
             ),
           ]),
           Col({ class: "hide-dark" }, [
             Icon(
               {
+                name: 'moon',
                 onClick:
                   "el => document.body.setAttribute('u-view-theme', 'dark')",
               },
-              "moon"
+              
             ),
           ]),
           $props.user

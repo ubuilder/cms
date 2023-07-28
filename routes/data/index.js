@@ -3,6 +3,7 @@ import { dataLayout } from "./layout.js";
 import { tableListPage } from "./table.js";
 import { createTablePage } from "./create.js";
 import { editTablePage } from "./editTable.js";
+import { DataEditor } from "./insertData.js";
 
 async function initializeDataTables(ctx) {
   // await ctx.createTable('tables', {
@@ -12,10 +13,13 @@ async function initializeDataTables(ctx) {
   // })
 
   // await ctx.createTable('fields', {
-  //   key: 'string|required',
-  //   label: 'string',
-  //   description: 'string',
-  //   options: 'string'
+  //   table: 'tables',
+  //   name: 'string',
+  //   slug: 'string|required',
+  //   hint: 'string',
+  //   required: 'boolean',
+  //   default: 'string',
+  //   type: 'string' // enum
   // })
 
   ctx.Tables = ctx.getModel('tables')
@@ -28,7 +32,11 @@ export default async function data(ctx) {
   
   ctx.addLayout('/data/:table', {
     async load({params, locals}) {
-      const table = await ctx.Tables.get({where: {slug: params.table}})
+      console.log('locals: ',locals)
+      const table = await ctx.Tables.query({
+        perPage: 100,
+        with: { fields: { table: "fields", field: "table_id", multiple: true } },
+      }).then(res => res.data[0])
 
       console.log('load: ', table)
 
@@ -58,7 +66,7 @@ export default async function data(ctx) {
   editTablePage(ctx)
 
   ctx.addPage("/data/:table/insert", {
-    page: () => View("insert new item to table"),
+    page: () => DataEditor({}),
   });
 
   ctx.addPage("/data/:table/:row", {

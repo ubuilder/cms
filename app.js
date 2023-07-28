@@ -6,6 +6,7 @@ import pages from "./routes/pages.js";
 import data from "./routes/data/index.js";
 import main from "./routes/main.js";
 import 'dotenv/config'
+import { settings } from "./routes/settings/index.js";
 
 export function CMS({
   dev = false,
@@ -37,8 +38,8 @@ export function CMS({
     removeTable,
     getModel,
     updateColumn,
-    addColumn,
-    removeColumn,
+    addColumns,
+    removeColumns,
     renameTable,
   } = connect(configs[dev ? 'dev': 'production']);
 
@@ -51,8 +52,8 @@ export function CMS({
     removeTable,
     createTable,
     updateColumn,
-    addColumn,
-    removeColumn,
+    addColumns,
+    removeColumns,
     renameTable,
   };
 
@@ -64,8 +65,9 @@ const dev = !!process.env.DEV_MODE;
 
 const ctx = CMS({ dev });
 
-main(ctx);
-pages(ctx);
+await main(ctx);
+await pages(ctx);
+await settings(ctx);
 await data(ctx);
 
 ctx.startServer(process.env.PORT ?? 3043);

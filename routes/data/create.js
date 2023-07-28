@@ -12,6 +12,7 @@ import { PageHeader } from "../../components/PageHeader.js";
 import { tables } from "./layout.js";
 import { Icon } from "@ulibs/ui";
 import { TableEditor } from "./table.view.js";
+import { createTable } from "./actions.js";
 
 export function createTablePage(ctx) {
   ctx.addPage("/data/create", {
@@ -22,36 +23,18 @@ export function createTablePage(ctx) {
     },
     actions: {
       async create({ body }) {
-        const newTable = {
-          name: body.name,
-          icon: body.icon,
-          slug: body.slug          
-        }
-
-        const result = await ctx.Tables.insert(newTable)
-        //   ...tables,
-      //   {
-        //     ...body,
-        //     columns: [
-        //       { key: "id", text: "#" },
-        //       { key: "name", text: "Name" },
-        //       { key: "username", text: "Username" },
-        //       { key: "email", text: "Email" },
-        //     ],
-        //   },
-        // ];
-        
+        const result = await createTable(ctx, body)
+    
         return {
           status: 201,
           body: {
             message: {
-              type: 'success',
-              content: 'Table Successfully created!'
+              type: "success",
+              content: "Table Successfully created!",
             },
             result,
-          }
-        }
-      
+          },
+        };
       },
     },
     page: (props) => {

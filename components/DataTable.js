@@ -22,8 +22,9 @@ export function DataTable($props = {}) {
               {
                 size: "sm",
                 style: "cursor: pointer; color: var(--color-base-700)",
+                name: "arrows-sort"
               },
-              "arrows-sort"
+              
             ),
             // Icon({ style: 'cursor: pointer;', name: 'sort-ascending'}),
             // Icon({ style: 'cursor: pointer;', name: 'sort-descending'}),

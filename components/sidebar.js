@@ -140,7 +140,7 @@ export function SidebarItem({ mode = 'compact', href, title, icon, ...restProps 
           href,
         },
         [
-          Icon({ 'u-sidebar-item-icon': ''}, icon),
+          Icon({ 'u-sidebar-item-icon': '', name: icon}),
           Tooltip({'u-sidebar-item-tooltip': '', placement: 'right'}, title),
           View(
             {
@@ -167,7 +167,7 @@ export function SidebarItem({ mode = 'compact', href, title, icon, ...restProps 
         style: "padding-left: 0",
         'u-sidebar-mode': $props.mode 
       },
-      $slots({mode: $props.mode})
+      typeof $slots === 'function' ? $slots({mode: $props.mode}) : $slots
     );
   }
   

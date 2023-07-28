@@ -12,11 +12,13 @@ import {
   import { tables } from "./layout.js";
   import { Icon } from "@ulibs/ui";
   import { TableEditor } from "./table.view.js";
+import { updateTable } from "./actions.js";
   
   export function editTablePage(ctx) {
     ctx.addPage("/data/:table/edit", {
       async load({params, locals}) {
         const table = locals.table;
+        console.log({locals, table})
         return {
             title: "Edit Table",
             table
@@ -24,26 +26,8 @@ import {
       },
       actions: {
         async update({ body }) {
-            console.log(body)
-            const id = body.id
-          const newTable = {
-            name: body.name,
-            icon: body.icon,
-            slug: body.slug          
-          }
-  
-          const result = await ctx.Tables.update(id, newTable)
-          //   ...tables,
-        //   {
-          //     ...body,
-          //     columns: [
-          //       { key: "id", text: "#" },
-          //       { key: "name", text: "Name" },
-          //       { key: "username", text: "Username" },
-          //       { key: "email", text: "Email" },
-          //     ],
-          //   },
-          // ];
+          const result = await updateTable(ctx, body)
+        
           
           return {
             status: 201,
@@ -61,7 +45,7 @@ import {
       page: (props) => {
         return [
           PageHeader({ title: props.title }),
-          TableEditor({ value: props.table, action: "update", submitText: 'Update' }),
+          TableEditor({ value: {table_name: props.table.name, fields: props.table.fields, slug: props.table.slug, icon: props.table.icon, id: props.table.id}, action: "update", submitText: 'Update' }),
         ];
       },
     });

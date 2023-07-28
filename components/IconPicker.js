@@ -2,18 +2,17 @@ import { Input } from "@ulibs/ui";
 import { Icon } from "@ulibs/ui";
 import { Button } from "@ulibs/ui";
 import { Row } from "@ulibs/ui";
-import { Tooltip } from "@ulibs/ui";
+import { Popover } from "@ulibs/ui";
 
 export function IconPicker({ value, name }) {
-    return [
-      Tooltip([
-        Row({ w: "6xl", mt: "xxs" }, [
-          Input({ bgColor: 'base', col: true, name, w: "5xl", value }),
+  return [
+    Button({ type: "button", id: "icon-input" }, [
+      Icon({ $name: name, name: value }),
+      Popover({trigger: 'hover', p: 'xs'}, [
+        Row({ w: "6xl", m: 0}, [
+          Input({ col: true, name, value }),
         ]),
       ]),
-      Button(
-        { type: "button", size: "lg", id: "icon-input" },
-        Icon({ name }, Icon(value))
-      ),
-    ];
-  }
+    ]),
+  ];
+}
