@@ -6,21 +6,21 @@ import { editTablePage } from "./editTable.js";
 import { DataEditor } from "./insertData.js";
 
 async function initializeDataTables(ctx) {
-  await ctx.createTable('tables', {
-    name: 'string',
-    slug: 'string|required|unique',
-    icon: 'string|default=database',
-  })
+  // await ctx.createTable('tables', {
+  //   name: 'string',
+  //   slug: 'string|required|unique',
+  //   icon: 'string|default=database',
+  // })
 
-  await ctx.createTable('fields', {
-    table: 'tables',
-    name: 'string',
-    slug: 'string|required',
-    hint: 'string',
-    required: 'boolean',
-    default: 'string|default=""',
-    type: 'string' // enum
-  })
+  // await ctx.createTable('fields', {
+  //   table: 'tables',
+  //   name: 'string',
+  //   slug: 'string|required',
+  //   hint: 'string',
+  //   required: 'boolean',
+  //   default: 'string|default=""',
+  //   type: 'string' // enum
+  // })
 
   ctx.Tables = ctx.getModel('tables')
   ctx.Fields = ctx.getModel('fields') 
