@@ -1,13 +1,24 @@
+function success({message = 'Success', data = undefined} = {}) {
+  return {
+    status: 200,
+    body: {
+      message,
+      data
+    }
+  }
+}
+
 export async function updateTable(ctx, body) {
   const id = body.id;
   const payload = {
     name: body.name,
     icon: body.icon,
   };
+  const table = await ctx.Tables.get({where: {id}})
 
   await ctx.Tables.update(id, payload);
 
-  await syncTableFields(ctx, { fields: body.fields, table_id: id, table_name: slugify(body.name) });
+  await syncTableFields(ctx, { fields: body.fields, table_id: id, table_name: table.slug });
 }
 
 export async function createTable(ctx, body) {
@@ -25,7 +36,7 @@ export async function createTable(ctx, body) {
   await syncTableFields(ctx, { fields: body.fields, table_id, table_name: newTable.slug });
 
   //   todo: add fields
-  return result;
+  return success({data: result});
 }
 
 export async function syncTableFields(ctx, { fields, table_id, table_name }) {
@@ -74,14 +85,39 @@ export async function syncTableFields(ctx, { fields, table_id, table_name }) {
   }
 }
 
-function slugify(str) {
+function slugify(str, separator = '_') {
   let result = "";
   for (let i = 0; i < str.length; i++) {
-    if (str[i] === " " || str[i] === "_") {
-      result += "-";
+    if (str[i] === " " || str[i] === "-" || str[i] === "_") {
+      result += separator;
       i++;
     }
     result += str[i].toLowerCase();
   }
   return result;
+} 
+
+export async function insertData(ctx, body) {
+  const {table, data} = body
+
+  const [id] = await ctx.getModel(table).insert(data);
+
+  return success({data: id})
+}
+
+export async function updateData(ctx, body) {
+  const {id, table, data} = body
+
+  const result = await ctx.getModel(table).update(id, data)
+
+  return success({data: result}) 
+}
+
+export async function removeData(ctx, body) {
+  const {table, id} = body
+
+  await ctx.getModel(table).remove(id);
+
+  return success()
+
 }

@@ -4,8 +4,8 @@ import { Row } from "@ulibs/ui";
 import { Col } from "@ulibs/ui";
 
 export function PageHeader({ title }, slots) {
-    return View({py: 'md'}, Row([
-      Col({ col: true }, [title && View({ tag: "h3" }, title)]),
+    return View({py: 'lg'}, Row({align: 'center'}, [
+      Col({ col: true }, [title && View({ tag: "h2" }, title)]),
       slots && Col({ col: 0 }, ButtonGroup([slots])),
     ]));
   }

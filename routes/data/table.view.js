@@ -23,6 +23,7 @@ export function TableEditor({
   successMessage = "Table created successfully",
   ...$props
 }) {
+  console.log({value})
   const addField =
     "fields.push({\
       name: 'new',\

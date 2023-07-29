@@ -57,6 +57,8 @@ export function AdminLayout($props, $slots) {
   return View(
     {
       htmlHead: [
+        `<meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">`,
         View({
           tag: "link",
           rel: "stylesheet",

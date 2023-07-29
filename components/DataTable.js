@@ -13,11 +13,11 @@ export function DataTable($props = {}) {
 
   return Table({ "u-data-table": true }, [
     TableHead([
-      columns.map((column) =>
+      columns.map(({key, text, render, ...rest}) => 
         TableCell(
-          { onClick: `$table.sort('${column.key}')` },
+          { ...rest, onClick: `$table.sort('${key}')` },
           View({ d: "flex", align: "center", gap: "xs" }, [
-            column.text,
+            text,
             Icon(
               {
                 size: "sm",
@@ -37,8 +37,8 @@ export function DataTable($props = {}) {
     TableBody([
       rows.map((row) =>
         TableRow([
-          columns.map((column) =>
-            TableCell([column.render ? column.render(row) : row[column.key]])
+          columns.map(({render, key}) =>
+            TableCell([render ? render(row) : row[key]])
           ),
         ])
       ),
