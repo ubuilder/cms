@@ -1,4 +1,4 @@
-import { Button, Icon } from "@ulibs/ui"
+import { Button, FormField, Icon } from "@ulibs/ui"
 import { MainLayout } from "../../components/MainLayout.js"
 import { PageHeader } from "../../components/PageHeader.js"
 import { SidebarItem } from "../../components/sidebar.js"
@@ -22,7 +22,10 @@ export function settings(ctx) {
     ctx.addPage('/settings', {
         page: () => {
             return [
-                PageHeader({title: "General Settings"})
+                PageHeader({title: "General Settings"}),
+                FormField({label: "Reset Database", description: 'You should restart server to take effect'},[
+                    Button({color: 'error', onClick: `$post('?reset-db')`}, "Reset")
+                ])
             ]
         }
     })
@@ -40,4 +43,21 @@ export function settings(ctx) {
         }
     })
 
+    ctx.addPage('/settings/reset', {
+        actions: {
+            async 'reset-db'() {
+                await ctx.resetDatabase()
+                return {
+                    body: {
+                        message: 'Database successfully resetted!'
+                    }
+                }
+            }
+        },
+        page: () => {
+            return [
+                PageHeader({title: "Reset Database"}),
+            ]
+        }
+    })
 }

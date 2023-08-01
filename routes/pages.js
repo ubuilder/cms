@@ -1,6 +1,7 @@
 export default function pages(ctx) {
     // 
     // manage pages and page editor
+    
 
     ctx.addLayout('/pages', {
         component(props, slots) {

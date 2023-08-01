@@ -6,6 +6,7 @@ import pages from "./routes/pages.js";
 import data from "./routes/data/index.js";
 import main from "./routes/main.js";
 import 'dotenv/config'
+import {rename} from 'fs/promises'
 import { settings } from "./routes/settings/index.js";
 
 export function CMS({
@@ -28,8 +29,8 @@ export function CMS({
         password: process.env.DB_PASSWORD,
     },
     dev: {
-      client: 'sqlite3',
-      filename: './app.db'
+      // client: 'sqlite3',
+      filename: './db.json'
     }
   }
   
@@ -41,9 +42,16 @@ export function CMS({
     addColumns,
     removeColumns,
     renameTable,
-  } = connect(configs[dev ? 'dev': 'production']);
+  } = connect(configs[dev ? 'dev': 'dev']);
+
+  async function resetDatabase () {
+    if(configs['dev']['filename'] === ':memory:') return;
+
+    await rename(configs['dev']['filename'], configs['dev']['filename'] + '.bak');
+  }
 
   const ctx = {
+    resetDatabase,
     startServer,
     addPage,
     addLayout,

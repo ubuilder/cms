@@ -23,7 +23,7 @@ export function createTablePage(ctx) {
     },
     actions: {
       async create({ body }) {
-        const result = await createTable(ctx, body)
+        // const result = await createTable(ctx, body)
     
         return {
           status: 201,
@@ -32,7 +32,7 @@ export function createTablePage(ctx) {
               type: "success",
               content: "Table Successfully created!",
             },
-            result,
+            result: true,
           },
         };
       },

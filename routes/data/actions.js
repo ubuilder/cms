@@ -54,9 +54,9 @@ export async function syncTableFields(ctx, { fields, table_id, table_name }) {
 
       await ctx.Fields.insert(payload);
 
-      await ctx.addColumns(table_name, {
-        [slugify(field.name)]: "string" + (field.required ? "|required" : ""),
-      });
+      // await ctx.addColumns(table_name, {
+      //   [slugify(field.name)]: "string" + (field.required ? "|required" : ""),
+      // });
 
       // create field
     } else if (field.removed) {
@@ -65,7 +65,7 @@ export async function syncTableFields(ctx, { fields, table_id, table_name }) {
 
       //
       console.log('remove columns', table_name, [slugify(field.name)])
-      await ctx.removeColumns(table_name, [slugify(field.name)]);
+      // await ctx.removeColumns(table_name, [slugify(field.name)]);
     } else {
       const id = field.id;
       const payload = {

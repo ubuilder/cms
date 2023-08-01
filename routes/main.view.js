@@ -166,7 +166,7 @@ export function AdminLayout($props, $slots) {
 
           Col({ dSm: "none", col: 0 }, Icon({name: "menu-2"})),
           Input({
-            col: 0,
+            col: 4,
             d: "none",
             dSm: "block",
             style: "margin-bottom: 0;",

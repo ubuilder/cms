@@ -41,7 +41,7 @@ export function TableEditor({
     id, name: table_name, icon, fields\
   })\
   .then(async res => {\
-    await $routing.goto('/data/' +$data.slug); \
+    window.location.href = '/data/' +$data.slug; \
       $alert.success('${successMessage}')\
     })\
 `;
