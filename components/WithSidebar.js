@@ -1,7 +1,7 @@
 import { Container, View } from "@ulibs/ui";
 import { Sidebar } from "./sidebar.js";
 
-export function MainLayout({ mode, sidebarItems }, $slots) {
+export function WithSidebar({ mode, sidebarItems }, $slots) {
   if(!mode) {
     return Container({size: 'xl', mx: 'auto'}, $slots)
   }
@@ -20,7 +20,7 @@ export function MainLayout({ mode, sidebarItems }, $slots) {
             "u-content-sidebar-mode": mode,
             style: "height: calc(100vh - 64px); overflow-y: auto",
           },
-          Container({ size: "xl", mx: "auto" }, [$slots])
+          $slots
         ),
       ]
     );
