@@ -9,7 +9,7 @@ export async function add({ ctx, body }) {
     published: false,
     version: 1,
   };
-  await ctx.table("page").insert(page);
+  await ctx.table("pages").insert(page);
 
   return {
     body: {
@@ -19,11 +19,14 @@ export async function add({ ctx, body }) {
 }
 
 export async function load({ ctx }) {
+  const pages =await ctx
+  .table("pages")
+  .query({ perPage: 100 })
+  .then((res) => res.data)
+
+  console.log(({pages}))
   return {
-    pages: await ctx
-      .table("pages")
-      .query({ perPage: 100 })
-      .then((res) => res.data),
+    pages,
   };
 }
 
