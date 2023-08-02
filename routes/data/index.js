@@ -30,7 +30,7 @@ export default async function data(ctx) {
 
   await initializeDataTables(ctx)
   
-  ctx.addLayout('/data/:table', {
+  ctx.addLayout('/admin/data/:table', {
     async load({params, locals}) {
       console.log('locals: ',locals)
       const table = await ctx.Tables.query({
@@ -50,7 +50,7 @@ export default async function data(ctx) {
   tableListPage(ctx);
   createTablePage(ctx);
   
-  ctx.addPage('/data/test-data', {
+  ctx.addPage('/admin/data/test-data', {
     async load() {
       return {
         tables: await ctx.Tables.query({}),
@@ -59,17 +59,17 @@ export default async function data(ctx) {
     }
   })  
 
-  ctx.addPage("/data", {
+  ctx.addPage("/admin/data", {
     page: () => View("List of tables!"),
   });
 
   editTablePage(ctx)
 
-  ctx.addPage("/data/:table/insert", {
+  ctx.addPage("/admin/data/:table/insert", {
     page: () => DataEditor({}),
   });
 
-  ctx.addPage("/data/:table/:row", {
+  ctx.addPage("/admin/data/:table/:row", {
     page: () => View("Edit single data item"),
   });
 }

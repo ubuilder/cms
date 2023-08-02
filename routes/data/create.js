@@ -15,7 +15,7 @@ import { TableEditor } from "./table.view.js";
 import { createTable } from "./actions.js";
 
 export function createTablePage(ctx) {
-  ctx.addPage("/data/create", {
+  ctx.addPage("/admin/data/create", {
     load() {
       return {
         title: "Create Table",

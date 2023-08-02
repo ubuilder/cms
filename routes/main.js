@@ -25,7 +25,7 @@ export default function main(ctx) {
     prefix: "/dist",
   });
 
-  ctx.addLayout("/", {
+  ctx.addLayout("/admin", {
     load() {
       return {
         user: {
@@ -38,7 +38,7 @@ export default function main(ctx) {
     component: AdminLayout,
   });
 
-  ctx.addPage("/", {
+  ctx.addPage("/admin/", {
     load() {
       return {
         messages: [
@@ -59,7 +59,7 @@ export default function main(ctx) {
   }
 
 
-  ctx.addPage("/data/field-ui", {
+  ctx.addPage("/admin/data/field-ui", {
     page() {
       return View({py: 'md'}, [
         FormField({ $data: {fields: []}, label: "Columns" }, [

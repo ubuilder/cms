@@ -67,7 +67,7 @@ const styles = `
       --icon-size: var(--size-md);
     }
     [u-sidebar-mode="default"] [u-sidebar-item] {
-      padding: var(--size-xs) var(--size-sm);
+      padding: var(--size-sm) var(--size-sm);
 
       flex-direction: row;
       align-items: center;              
@@ -100,9 +100,8 @@ const styles = `
     gap: var(--size-xs);
     text-decoration: none;
     color: var(--color-base-800);
-    padding: var(--size-xs) var(--size-xxs);
-
-    padding: var(--size-xs) var(--size-xxs);
+    
+    padding: var(--size-sm) var(--size-xxs);
 
     align-items: center;
     justify-content: center;
@@ -113,7 +112,7 @@ const styles = `
 
   [u-sidebar-item-icon] {
 
-    --icon-size: var(--size-sm);            
+    --icon-size: var(--size-lg);            
   }
    
   [u-sidebar-mode="icon-only"] [u-sidebar-item-text] {

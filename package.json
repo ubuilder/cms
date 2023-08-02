@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node app.js",
-    "dev": "DEV_MODE=true nodemon app.js"
+    "dev": "DEV_MODE=true nodemon --ignore './db.json' app.js"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +15,7 @@
     "@ulibs/db": "^1.0.1-next.19",
     "@ulibs/router": "^0.0.25",
     "@ulibs/ui": "^0.0.2-next.54",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "handlebars": "^4.7.7"
   }
 }

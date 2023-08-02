@@ -5,7 +5,7 @@ import { SidebarItem } from "../../components/sidebar.js"
 
 export function settings(ctx) {
 
-    ctx.addLayout('/settings', {
+    ctx.addLayout('/admin/settings', {
         component: (props, slots) => {
             const mode = 'default'
 
@@ -19,7 +19,7 @@ export function settings(ctx) {
     }   )
     
 
-    ctx.addPage('/settings', {
+    ctx.addPage('/admin/settings', {
         page: () => {
             return [
                 PageHeader({title: "General Settings"}),
@@ -30,7 +30,7 @@ export function settings(ctx) {
         }
     })
 
-    ctx.addPage('/settings/translations', {
+    ctx.addPage('/admin/settings/translations', {
         page: () => {
             return [
                 PageHeader({title: "Translations"}, [
@@ -43,7 +43,7 @@ export function settings(ctx) {
         }
     })
 
-    ctx.addPage('/settings/reset', {
+    ctx.addPage('/admin/settings/reset', {
         actions: {
             async 'reset-db'() {
                 await ctx.resetDatabase()

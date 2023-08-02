@@ -45,12 +45,12 @@ function GetFormInputs({ fields, value }) {
 }
 
 export function tableListPage(ctx) {
-  ctx.addPage("/data/:table", {
+  ctx.addPage("/admin/data/:table", {
     async load(props, { redirect }) {
       const table = props.locals.tables.find(
         (x) => x.slug === props.params.table
       );
-      if (!table) redirect({ path: "/data" });
+      if (!table) redirect({ path: "/admin/data" });
 
       const rows = await ctx
         .getModel(table.slug)

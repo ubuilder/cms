@@ -19,7 +19,7 @@ import {
 import { updateTable } from "./actions.js";
   
   export function editTablePage(ctx) {
-    ctx.addPage("/data/:table/edit", {
+    ctx.addPage("/admin/data/:table/edit", {
       async load({params, locals}) {
         const table = locals.table;
         console.log({locals, table})

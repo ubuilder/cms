@@ -33,7 +33,7 @@ export let tables = [
 ];
 
 export function dataLayout(ctx) {
-  ctx.addLayout("/data", {
+  ctx.addLayout("/admin/data", {
     async load(props) {
       props.locals.tables = (
         await ctx.Tables.query({
@@ -57,7 +57,7 @@ export function dataLayout(ctx) {
             color: "primary",
             justify: "center",
             icon: "plus",
-            href: "/data/create",
+            href: "/admin/data/create",
             style: "position: sticky; top: 0",
           },
           [
@@ -75,7 +75,7 @@ export function dataLayout(ctx) {
           },
           [
             View({ p: "xs" }, [
-              Button({ color: "primary", href: "/data/create", w: 100 }, [
+              Button({ color: "primary", href: "/admin/data/create", w: 100 }, [
                 Icon({ name: "plus" }),
                 View({ tag: "span" }, "Create table"),
               ]),
@@ -88,7 +88,7 @@ export function dataLayout(ctx) {
         ...props.tables.map((table) =>
           SidebarItem({
             mode,
-            href: "/data/" + table.slug,
+            href: "/admin/data/" + table.slug,
             title: table.name,
             icon: table.icon,
           })

@@ -143,21 +143,21 @@ export function AdminLayout($props, $slots) {
       Sidebar({ mode }, ({ mode }) => [
         Logo({mode}),
         SidebarItem({ mode, title: "Home", icon: "dashboard", href: "/" }),
-        SidebarItem({ mode, title: "Pages", icon: "file", href: "/pages" }),
-        SidebarItem({ mode, title: "Data", icon: "database", href: "/data" }),
-        SidebarItem({ mode, title: "Assets", icon: "photo", href: "/assets" }),
+        SidebarItem({ mode, title: "Pages", icon: "file", href: "/admin/pages" }),
+        SidebarItem({ mode, title: "Data", icon: "database", href: "/admin/data" }),
+        SidebarItem({ mode, title: "Assets", icon: "photo", href: "/admin/assets" }),
         SidebarItem({
           mode,
           title: "Market",
           icon: "building-store",
-          href: "/market",
+          href: "/admin/market",
         }),
         SidebarItem({
           mode,
           title: "Settings",
           mt: "auto",
           icon: "settings",
-          href: "/settings",
+          href: "/admin/settings",
         }),
       ]),
       View({ "u-content": true, "u-content-sidebar-mode": mode }, [

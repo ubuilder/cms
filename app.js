@@ -2,7 +2,7 @@
 
 import { Router } from "@ulibs/router";
 import { connect } from "@ulibs/db";
-import pages from "./routes/pages.js";
+import pages from "./routes/pages/index.js";
 import data from "./routes/data/index.js";
 import main from "./routes/main.js";
 import 'dotenv/config'

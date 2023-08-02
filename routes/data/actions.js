@@ -85,7 +85,7 @@ export async function syncTableFields(ctx, { fields, table_id, table_name }) {
   }
 }
 
-function slugify(str, separator = '_') {
+export function slugify(str, separator = '_') {
   let result = "";
   for (let i = 0; i < str.length; i++) {
     if (str[i] === " " || str[i] === "-" || str[i] === "_") {

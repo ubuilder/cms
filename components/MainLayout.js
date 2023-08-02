@@ -2,6 +2,10 @@ import { Container, View } from "@ulibs/ui";
 import { Sidebar } from "./sidebar.js";
 
 export function MainLayout({ mode, sidebarItems }, $slots) {
+  if(!mode) {
+    return Container({size: 'xl', mx: 'auto'}, $slots)
+  }
+
     return View(
       {
         style: "position: relative",
