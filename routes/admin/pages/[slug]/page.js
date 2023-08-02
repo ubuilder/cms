@@ -1,8 +1,26 @@
-import { Badge, Button, Card, CardBody, CardHeader, CardTitle, Input, Modal, Row, Textarea, View } from "@ulibs/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  CardTitle,
+  Input,
+  Modal,
+  Row,
+  Textarea,
+  View,
+} from "@ulibs/ui";
 import { SidebarItem } from "../../../../components/sidebar.js";
 import { WithSidebar } from "../../../../components/WithSidebar.js";
 import { Page } from "../../../../components/Page.js";
-import { closeModal, navigate, openModal, reload, runAction } from "../../../../utils/ui.js";
+import {
+  closeModal,
+  navigate,
+  openModal,
+  reload,
+  runAction,
+} from "../../../../utils/ui.js";
 
 export async function load({ ctx, params, query }) {
   const version = query.version;
@@ -103,9 +121,11 @@ export default ({ page, pages = [] }) => {
     })
   );
 
-  const script = `let data = { initial_content: \`${
-    page.template
-  }\`, content: \`${page.template}\`, head: \`${
+  const script = `let data = { initial_content: \`${(
+    page.template ?? ""
+  ).replace(/script/g, "\\script")}\`, content: \`${(
+    page.template ?? ""
+  ).replace(/script/g, "\\script")}\`, head: \`${
     (page.head ?? "").replace(/script/g, "\\script") ?? ""
   }\`, initial_head: \`${
     (page.head ?? "").replace(/script/g, "\\script") ?? ""
@@ -118,20 +138,26 @@ export default ({ page, pages = [] }) => {
   const notDirty = () =>
     `title === initial_title && content === initial_content && head === initial_head`;
 
-    function PreviewModal() {
-        return Modal({name: 'preview-modal', size: 'lg'}, [
-            Card({ }, [
-                CardHeader([
-                    CardTitle(page.title),
-                    Button({onClick: closeModal()}, "Close")
-                ]),
-                CardBody({style: 'max-height: 80%; overflow: auto', p: 0}, [
-                    View({tag: 'iframe', src: `/preview/${page.id}`, border: true, borderColor: 'base-400', w: 100, h: 100})
-                ])
-            ])
-        ])
-    }
-    
+  function PreviewModal() {
+    return Modal({ name: "preview-modal", size: "lg" }, [
+      Card({}, [
+        CardHeader([
+          CardTitle(page.title),
+          Button({ onClick: closeModal() }, "Close"),
+        ]),
+        CardBody({ style: "max-height: 80%; overflow: auto", p: 0 }, [
+          View({
+            tag: "iframe",
+            src: `/preview/${page.id}`,
+            border: true,
+            borderColor: "base-400",
+            w: 100,
+            h: 100,
+          }),
+        ]),
+      ]),
+    ]);
+  }
 
   return WithSidebar(
     { mode: "default", sidebarItems },
@@ -147,8 +173,8 @@ export default ({ page, pages = [] }) => {
             {
               $if: notDirty(),
               color: "success",
-              onClick: openModal('preview-modal')
-            //   href: "/preview/" + page.id,
+              onClick: openModal("preview-modal"),
+              //   href: "/preview/" + page.id,
             },
             "Preview"
           ),
@@ -200,7 +226,7 @@ export default ({ page, pages = [] }) => {
           }),
         ]),
 
-        PreviewModal()
+        PreviewModal(),
       ]
     )
   );
