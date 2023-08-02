@@ -1,21 +1,3 @@
-import {
-  Accordion,
-  AccordionBody,
-  AccordionHeader,
-  Accordions,
-  Badge,
-  Button,
-  ButtonGroup,
-  Card,
-  Col,
-  Form,
-  FormField,
-  Input,
-  Row,
-  Select,
-  Switch,
-  View,
-} from "@ulibs/ui";
 import { AdminLayout } from "./main.view.js";
 import path from "path";
 
@@ -54,26 +36,4 @@ export default function main(ctx) {
     page: "Dashboard",
   });
 
-  function FieldItemEditor({name}) {
-    return ;
-  }
-
-
-  ctx.addPage("/admin/data/field-ui", {
-    page() {
-      return View({py: 'md'}, [
-        FormField({ $data: {fields: []}, label: "Columns" }, [
-          Card( [
-            Accordions([
-              For({items: 'fields', as: 'field'}, [
-                FieldItemEditor({name: 'field'}),
-              ])
-            ]),
-          ]),
-          View({$text: 'fields'}),
-          Button({onClick: "fields.push({name: 'new'})", mt: 'sm'}, "Add Field")
-        ]),
-      ]);
-    },
-  });
 }

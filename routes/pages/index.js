@@ -424,7 +424,7 @@ export default function pages(ctx) {
               (page.head ?? "").replace(/script/g, "\\script") ?? ""
             }\`, initial_head: \`${
               (page.head ?? "").replace(/script/g, "\\script") ?? ""
-            }\`, published: ${page.published}, title: ${page.title}, initial_title: ${page.title} }`,
+            }\`, published: ${page.published}, title: \`${page.title}\`, initial_title: \`${page.title}\` }`,
             $data: "data",
           },
           [
