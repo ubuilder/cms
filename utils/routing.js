@@ -1,4 +1,4 @@
-import { readdir } from "fs/promises";
+import recursiveReadDir from "recursive-readdir";
 import { resolve } from "path";
 
 export async function fileBasedRouting({
@@ -12,10 +12,12 @@ export async function fileBasedRouting({
   if (!addLayout)
     throw new Error("[fileBasedRouting] addLayout is not defined");
 
-  const files = await readdir(path, { recursive: true });
+    console.log(path)
+  const files = await recursiveReadDir(path);
+  console.log(files)
 
   function getSlug(file) {
-    const slug = "/" + file.replace("page.js", "").replace("layout.js", "");
+    const slug = file.replace('routes', '').replace("page.js", "").replace("layout.js", "");
 
     let sections = slug.split("/");
 
@@ -31,7 +33,7 @@ export async function fileBasedRouting({
     return sections.join('/');
   }
   async function loadModule(file, ctx) {
-    const module = await import("../" + path + "/" + file);
+    const module = await import("../" + file);
 
     const { load, default: page, ...actions } = module;
 
@@ -40,6 +42,7 @@ export async function fileBasedRouting({
       resultActions[action] = (req, ...args) => actions[action]({ ctx, ...req }, ...args);
     }
 
+    console.log(getSlug(file))
     return {
       actions: resultActions,
       load: load ? (req, ...args) => load({ ctx, ...req }, ...args) : undefined,
