@@ -34,21 +34,14 @@ export function CMS({
     }
   }
   
-  const {
-    createTable,
-    removeTable,
-    getModel,
-    updateColumn,
-    addColumns,
-    removeColumns,
-    renameTable,
-  } = connect(configs[dev ? 'dev': 'dev']);
+  const db = connect(configs[dev ? 'dev': 'dev']);
 
   async function resetDatabase () {
     if(configs['dev']['filename'] === ':memory:') return;
 
     await rename(configs['dev']['filename'], configs['dev']['filename'] + '.bak');
     await writeFile(configs['dev']['filename'], '{}')
+    db.invalidate()
   }
 
   const ctx = {
@@ -57,7 +50,13 @@ export function CMS({
     addPage,
     addLayout,
     addStatic,
-    getModel,
+    getModel(name) {
+      console.log(`do not use getModel("${name}"), instead you can use table("${name}")`)
+      return db.getModel(name)
+    },
+    table(name) {
+      return db.getModel(name)
+    },
     removeTable,
     createTable,
     updateColumn,
