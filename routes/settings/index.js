@@ -20,6 +20,16 @@ export function settings(ctx) {
     
 
     ctx.addPage('/admin/settings', {
+        actions: {
+            async 'reset-db'() {
+                await ctx.resetDatabase()
+                return {
+                    body: {
+                        message: 'Database successfully resetted!'
+                    }
+                }
+            }
+        },
         page: () => {
             return [
                 PageHeader({title: "General Settings"}),
@@ -39,24 +49,6 @@ export function settings(ctx) {
                         "Add New Language"
                     ])
                 ])
-            ]
-        }
-    })
-
-    ctx.addPage('/admin/settings/reset', {
-        actions: {
-            async 'reset-db'() {
-                await ctx.resetDatabase()
-                return {
-                    body: {
-                        message: 'Database successfully resetted!'
-                    }
-                }
-            }
-        },
-        page: () => {
-            return [
-                PageHeader({title: "Reset Database"}),
             ]
         }
     })

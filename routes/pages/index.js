@@ -424,7 +424,7 @@ export default function pages(ctx) {
               (page.head ?? "").replace(/script/g, "\\script") ?? ""
             }\`, initial_head: \`${
               (page.head ?? "").replace(/script/g, "\\script") ?? ""
-            }\`, published: ${page.published} }`,
+            }\`, published: ${page.published}, title: ${page.title}, initial_title: ${page.title} }`,
             $data: "data",
           },
           [
@@ -433,7 +433,7 @@ export default function pages(ctx) {
 
               Button(
                 {
-                  $if: "content === initial_content && head === initial_head",
+                  $if: "title !== initial_title || content === initial_content && head === initial_head",
                   color: "success",
                   href: "/preview?id=" + page.id,
                 },
@@ -442,10 +442,10 @@ export default function pages(ctx) {
 
               Button(
                 {
-                  $if: "content !== initial_content || head !== initial_head",
+                  $if: "title !== initial_title || content !== initial_content || head !== initial_head",
                   color: "primary",
                   onClick:
-                    "$post('?save', {content, head}).then(res => window.location.href = res.page)",
+                    "$post('?save', {content, head, title}).then(res => window.location.href = res.page)",
                 },
                 "Save Draft"
               ),
@@ -459,6 +459,10 @@ export default function pages(ctx) {
               ),
             ]),
             Row([
+              Input({
+                label: 'Title', description: 'Title of page',
+                name: 'title'
+              }),
               Textarea({
                 label: "Head Content",
                 description: "You can enter script or css files here",
