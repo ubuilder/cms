@@ -57,12 +57,6 @@ export function CMS({
     table(name) {
       return db.getModel(name)
     },
-    removeTable,
-    createTable,
-    updateColumn,
-    addColumns,
-    removeColumns,
-    renameTable,
   };
 
   return ctx;
