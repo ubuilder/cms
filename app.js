@@ -6,7 +6,7 @@ import pages from "./routes/pages/index.js";
 import data from "./routes/data/index.js";
 import main from "./routes/main.js";
 import 'dotenv/config'
-import {rename} from 'fs/promises'
+import {rename, writeFile} from 'fs/promises'
 import { settings } from "./routes/settings/index.js";
 
 export function CMS({
@@ -48,6 +48,7 @@ export function CMS({
     if(configs['dev']['filename'] === ':memory:') return;
 
     await rename(configs['dev']['filename'], configs['dev']['filename'] + '.bak');
+    await writeFile(configs['dev']['filename'], '{}')
   }
 
   const ctx = {
