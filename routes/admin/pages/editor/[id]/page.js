@@ -5,37 +5,26 @@ import {
   ButtonGroup,
   Card,
   CardBody,
-  CardFooter,
+  CardHeader,
+  CardTitle,
   Col,
-  Divider,
-  TextEditor,
   FormField,
   Icon,
   Input,
   Modal,
   Popover,
   Row,
-  Select,
-  Switch,
-  Tabs,
-  TabsContent,
-  TabsItem,
-  TabsList,
-  TabsPanel,
-  Tooltip,
   View,
 } from "@ulibs/ui";
 import { Page } from "../../../../../components/Page.js";
-import { Sidebar } from "../../../../../components/sidebar.js";
 import { createModal } from "../../../../../components/createModal.js";
 import hbs from "handlebars";
-import page from "../../[id]/page.js";
+import { closeModal } from "../../../../../utils/ui.js";
 
 const style = `
   <style>
   .item {
     width: max-content;
-    display: contents;
     padding: var(--size-sm);
     border: 1px dashed var(--color-base-400);
   }
@@ -74,7 +63,6 @@ const style = `
   
   `;
 
-
 export async function load({ ctx, params }) {
   const id = params.id;
 
@@ -83,28 +71,25 @@ export async function load({ ctx, params }) {
   const components = await ctx.table("components").query({ perPage: 100 });
 
   for (let item of page.content) {
-    console.log(item);
     const component = await ctx
       .table("components")
       .get({ where: { id: item.component_id } });
 
-    const itemProps = {}
+    const itemProps = {};
 
-      for (let propName in item.props) {
-        const prop = item.props[propName];
+    for (let propName in item.props) {
+      const prop = item.props[propName];
 
-        if (typeof prop === "object") {
-          const res = await ctx
-            .table(prop.table)
-            .get({ where: prop.where, select: { [prop.field]: true } });
+      if (typeof prop === "object") {
+        const res = await ctx
+          .table(prop.table)
+          .get({ where: prop.where, select: { [prop.field]: true } });
 
-          itemProps[propName] = res[prop.field]
-
-        } else {
-            itemProps[propName] = prop;
-        }
+        itemProps[propName] = res[prop.field];
+      } else {
+        itemProps[propName] = prop;
       }
-      
+    }
 
     function renderItem() {
       const props = {};
@@ -123,10 +108,8 @@ export async function load({ ctx, params }) {
     // render hbs
     item.content = renderItem();
     item.component = component;
-    console.log(item);
   }
 
-  console.log({ page });
   return {
     page,
     components: components.data,
@@ -170,19 +153,39 @@ function renderComponent(id, content) {
   ]);
 }
 
+function PreviewModal(page) {
+  return Modal({ name: "preview-modal", size: "lg" }, [
+    Card({}, [
+      CardHeader([
+        CardTitle(page.title),
+        ButtonGroup([
+          Button({ href: "/preview/" + page.id, target: "_blank" }, [
+            Icon({ name: "external-link" }),
+            "Open in new tab",
+          ]),
+          Button({ onClick: closeModal() }, "Close"),
+        ]),
+      ]),
+      CardBody({ style: "max-height: 80%; overflow: auto", p: 0 }, [
+        View({
+          tag: "iframe",
+          src: `/preview/${page.id}`,
+          border: true,
+          borderColor: "base-400",
+          w: 100,
+          h: 100,
+        }),
+      ]),
+    ]),
+  ]);
+}
+
 function renderComponentSettings(
   id,
   { props: componentProps, name, template } = {},
   instanceProps = {}
 ) {
   const props = [];
-
-  console.log("renderComponentSettings", id, {
-    componentProps,
-    name,
-    template,
-    instanceProps,
-  });
 
   for (let prop of componentProps) {
     props.push({
@@ -219,77 +222,23 @@ function renderComponentSettings(
           ),
           Row({ $if: "!prop.dynamic" }, [Input({ name: "prop.value" })]),
           Accordions({ $if: "prop.dynamic", style: "border: none" }, [
-            Card(
-              [
-                Accordion({
-                  style: "border-bottom: none",
-                  header: View(
-                    { d: "flex", w: 100, items: "center", justify: "between" },
-                    ["Dynamic"]
-                  ),
-                  body: [
-                    Row([
-                      Input({ label: "Table", name: "prop.value.table" }),
-                      Input({ label: "Field", name: "prop.value.field" }),
+            Card([
+              Accordion({
+                style: "border-bottom: none",
+                header: View(
+                  { d: "flex", w: 100, items: "center", justify: "between" },
+                  ["Dynamic"]
+                ),
+                body: [
+                  Row([
+                    Input({ label: "Table", name: "prop.value.table" }),
+                    Input({ label: "Field", name: "prop.value.field" }),
 
-                      "Where...",
-                    ]),
-                  ],
-                }),
-              ]
-              // Row({ align: "center", style: "position: relative" }, [
-              //   Input({
-              //     label: prop.name,
-              //     col: true,
-              //     style: "--form-field-size: var(--size-sm)",
-              //   }),
-              //   Col(
-              //     {
-              //       col: 0,
-              //       style: "position: absolute; top: 4px; right: 4px",
-              //       size: "sm",
-              //     },
-              //     [
-              //       Button(
-              //         {
-              //           color: "primary",
-              //           size: "sm",
-              //           style: "text-align: unset",
-              //         },
-              //         [
-              //           Icon({ name: "star" }),
-              //           Popover(
-              //             {
-              //               placement: "bottom-end",
-              //               arrow: true,
-              //               trigger: "hover",
-              //               persistant: true,
-              //             },
-              //             [
-              //               Col(
-              //                 {},
-              //                 View(
-              //                   { tag: "h4", my: "xxs" },
-              //                   "Use Dynamic Value"
-              //                 )
-              //               ),
-              //               Input({ label: "Table" }),
-              //               Input({ label: "Field" }),
-              //               FormField({ label: "Where" }, [
-              //                 Select({
-              //                   items: ["field1", "field2", "field3"],
-              //                   placeholder: "field",
-              //                 }),
-              //                 "...",
-              //               ]),
-              //             ]
-              //           ),
-              //         ]
-              //       ),
-              //     ]
-              //   ),
-              // ])
-            ),
+                    "Where...",
+                  ]),
+                ],
+              }),
+            ]),
           ]),
         ]
       ),
@@ -304,36 +253,6 @@ export default ({ page, components }) => {
       container: false,
     },
     Row({ m: 0, align: "stretch" }, [
-      false &&
-        Col(
-          { p: 0, col: 0 },
-          View(
-            {
-              bgColor: "base-200",
-              h: 100,
-              style:
-                "height: calc(100vh - 64px); border-right: 1px solid var(--color-base-400)",
-            },
-            [
-              Tabs(
-                {
-                  style: "border: none; width: calc(var(--size-6xl) * 2)",
-                  d: "flex",
-                  flexDirection: "column",
-                  h: 100,
-                },
-                [
-                  TabsList([TabsItem("Content"), TabsItem("Item 2")]),
-                  TabsContent({ h: 100 }, [
-                    TabsPanel({ bgColor: "base-100", h: 100 }, ["Panel 1"]),
-                    TabsPanel({ bgColor: "base-100", h: 100 }, ["Panel 2"]),
-                  ]),
-                ]
-              ),
-            ]
-          )
-        ),
-
       Col({ p: 0, col: true, d: "flex", flexDirection: "column" }, [
         View(
           { d: "flex", p: "xs", align: "center", justify: "between", pb: "sm" },
@@ -341,6 +260,10 @@ export default ({ page, components }) => {
             View({ tag: "h3" }, "Page Editor"),
             ButtonGroup([
               Button({ href: "/admin/pages/" + page.id }, "Cancel"),
+              Button(
+                { onClick: `$modal.open('preview-modal')`, color: "info" },
+                "Preview"
+              ),
               Button({ color: "primary" }, "Save"),
             ]),
           ]
@@ -366,341 +289,7 @@ export default ({ page, components }) => {
           ]
         ),
       ]),
-      false &&
-        Col(
-          { p: 0, col: 0 },
-          View(
-            {
-              bgColor: "base-200",
-              h: 100,
-              style:
-                "height: calc(100vh - 64px); border-left: 1px solid var(--color-base-400)",
-            },
-            [
-              Tabs(
-                {
-                  style: "border: none; width: calc(var(--size-6xl) * 2)",
-                  d: "flex",
-                  flexDirection: "column",
-                  h: 100,
-                },
-                [
-                  TabsList([TabsItem("Properties"), TabsItem("Data")]),
-                  TabsContent({ h: 100 }, [
-                    TabsPanel({ p: 0, bgColor: "base-100", h: 100 }, [
-                      Accordions([
-                        Accordion({
-                          header: View(
-                            {
-                              d: "flex",
-                              align: "center",
-                              justify: "between",
-                              w: "100",
-                            },
-                            "Props:"
-                          ),
-                          body: Row({ align: "end" }, [
-                            Col(
-                              { col: 12 },
-                              Row(
-                                {
-                                  align: "center",
-                                  style: "position: relative",
-                                },
-                                [
-                                  Col(
-                                    {
-                                      col: 4,
-                                      style:
-                                        "white-space: nowrap;overflow: hidden;text-overflow: ellipsis;",
-                                    },
-                                    "Name"
-                                  ),
-                                  Input({
-                                    col: true,
-                                    style: "--form-field-size: var(--size-sm)",
-                                  }),
-                                  Col(
-                                    {
-                                      col: 0,
-                                      style:
-                                        "position: absolute; top: 4px; right: 4px",
-                                      size: "sm",
-                                    },
-                                    [
-                                      Button(
-                                        {
-                                          color: "primary",
-                                          size: "sm",
-                                          style: "text-align: unset",
-                                        },
-                                        [
-                                          Icon({ name: "star" }),
-                                          Popover(
-                                            {
-                                              placement: "bottom-end",
-                                              arrow: true,
-                                              trigger: "hover",
-                                              persistant: true,
-                                            },
-                                            [
-                                              Col(
-                                                {},
-                                                View(
-                                                  { tag: "h4", my: "xxs" },
-                                                  "Use Dynamic Value"
-                                                )
-                                              ),
-                                              Input({ label: "Table" }),
-                                              Input({ label: "Field" }),
-                                              FormField({ label: "Where" }, [
-                                                Select({
-                                                  items: [
-                                                    "field1",
-                                                    "field2",
-                                                    "field3",
-                                                  ],
-                                                  placeholder: "field",
-                                                }),
-                                                "...",
-                                              ]),
-                                            ]
-                                          ),
-                                        ]
-                                      ),
-                                    ]
-                                  ),
-                                ]
-                              )
-                            ),
-                            Col(
-                              { col: 12 },
-                              Row(
-                                {
-                                  align: "center",
-                                  style: "position: relative",
-                                },
-                                [
-                                  Col(
-                                    {
-                                      col: 4,
-                                      style:
-                                        "white-space: nowrap;overflow: hidden;text-overflow: ellipsis;",
-                                    },
-                                    "Color"
-                                  ),
-                                  Input({
-                                    col: true,
-                                    style: "--form-field-size: var(--size-sm)",
-                                  }),
-                                  Col(
-                                    {
-                                      col: 0,
-                                      style:
-                                        "position: absolute; top: 4px; right: 4px",
-                                      size: "sm",
-                                    },
-                                    [
-                                      Button(
-                                        {
-                                          color: "primary",
-                                          size: "sm",
-                                          style: "text-align: unset",
-                                        },
-                                        [
-                                          Icon({ name: "star" }),
-                                          Popover(
-                                            {
-                                              placement: "bottom-end",
-                                              arrow: true,
-                                              trigger: "hover",
-                                              persistant: true,
-                                            },
-                                            [
-                                              Col(
-                                                {},
-                                                View(
-                                                  { tag: "h4", my: "xxs" },
-                                                  "Use Dynamic Value"
-                                                )
-                                              ),
-                                              Input({ label: "Table" }),
-                                              Input({ label: "Field" }),
-                                              FormField({ label: "Where" }, [
-                                                Select({
-                                                  items: [
-                                                    "field1",
-                                                    "field2",
-                                                    "field3",
-                                                  ],
-                                                  placeholder: "field",
-                                                }),
-                                                "...",
-                                              ]),
-                                            ]
-                                          ),
-                                        ]
-                                      ),
-                                    ]
-                                  ),
-                                ]
-                              )
-                            ),
-                            Col(
-                              { col: 12 },
-                              Row(
-                                {
-                                  align: "center",
-                                  style: "position: relative",
-                                },
-                                [
-                                  Col(
-                                    {
-                                      col: 4,
-                                      style:
-                                        "white-space: nowrap;overflow: hidden;text-overflow: ellipsis;",
-                                    },
-                                    "Sizewwadfweeafawe afawef"
-                                  ),
-                                  Input({
-                                    col: true,
-                                    style: "--form-field-size: var(--size-sm)",
-                                  }),
-                                  Col(
-                                    {
-                                      col: 0,
-                                      style:
-                                        "position: absolute; top: 4px; right: 4px",
-                                      size: "sm",
-                                    },
-                                    [
-                                      Button(
-                                        {
-                                          color: "primary",
-                                          size: "sm",
-                                          style: "text-align: unset",
-                                        },
-                                        [
-                                          Icon({ name: "star" }),
-                                          Popover(
-                                            {
-                                              placement: "bottom-end",
-                                              arrow: true,
-                                              trigger: "hover",
-                                              persistant: true,
-                                            },
-                                            [
-                                              Col(
-                                                {},
-                                                View(
-                                                  { tag: "h4", my: "xxs" },
-                                                  "Use Dynamic Value"
-                                                )
-                                              ),
-                                              Input({ label: "Table" }),
-                                              Input({ label: "Field" }),
-                                              FormField({ label: "Where" }, [
-                                                Select({
-                                                  items: [
-                                                    "field1",
-                                                    "field2",
-                                                    "field3",
-                                                  ],
-                                                  placeholder: "field",
-                                                }),
-                                                "...",
-                                              ]),
-                                            ]
-                                          ),
-                                        ]
-                                      ),
-                                    ]
-                                  ),
-                                ]
-                              )
-                            ),
-                          ]),
-                        }),
-                      ]),
-                    ]),
-                    TabsPanel({ p: 0, bgColor: "base-100", h: 100 }, [
-                      Accordions([
-                        Accordion({
-                          open: true,
-                          header: View(
-                            {
-                              d: "flex",
-                              align: "center",
-                              justify: "between",
-                              w: "100",
-                            },
-                            "General"
-                          ),
-                          body: Row({ align: "end" }, [
-                            Select({
-                              col: 12,
-                              label: "Table",
-                              items: ["Users", "Blogs", "News", "Products"],
-                            }),
-                            Select({
-                              col: 12,
-                              label: "Field",
-                              items: [
-                                "Id",
-                                "Name",
-                                "Username",
-                                "Product Name",
-                                "...",
-                              ],
-                            }),
-                          ]),
-                        }),
-                        Accordion({
-                          $data: { filters: [] },
-                          header: "Filters:",
-                          body: Row([
-                            Col({ col: 12 }, [
-                              Row(
-                                {
-                                  $for: "filter, index in filters",
-                                  align: "end",
-                                },
-                                [
-                                  Select({ col: true, placeholder: "Field" }),
-                                  Select({
-                                    col: 0,
-                                    placeholder: "Op",
-                                    items: ["=", "!=", "<", "<=", ">", ">="],
-                                  }),
-                                  Select({ col: true, placeholder: "Value" }),
-                                  Col({ col: 0 }, [
-                                    Button(
-                                      { onClick: "filters.splice(index, 1)" },
-                                      Icon({ name: "minus" })
-                                    ),
-                                  ]),
-                                ]
-                              ),
-                            ]),
-                            Col({ col: 12 }, [
-                              Button(
-                                {
-                                  onClick:
-                                    "filters.push({field: '', operator: '=', value: ''})",
-                                },
-                                [Icon({ name: "plus" }), "Add Filter"]
-                              ),
-                            ]),
-                          ]),
-                        }),
-                      ]),
-                    ]),
-                  ]),
-                ]
-              ),
-            ]
-          )
-        ),
+
       page.content.map((item) =>
         createModal({
           name: `component-${item.id}-remove`,
@@ -716,6 +305,7 @@ export default ({ page, components }) => {
       page.content.map((item) =>
         renderComponentSettings(item.id, item.component, item.props)
       ),
+      PreviewModal(page),
       createModal({
         $data: { active: "" },
         name: "add-component",
