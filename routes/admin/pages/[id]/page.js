@@ -23,19 +23,13 @@ import {
 } from "../../../../utils/ui.js";
 
 export async function load({ ctx, params, query }) {
-  const version = query.version;
-
-  const pages = await ctx
+  const page = await ctx
     .table("pages")
-    .query({ where: { slug: params.slug } });
+    .get({ where: { id: params.id } });
 
-  let page;
 
-  if (version) {
-    page = pages.data.find((x) => x.version === +version);
-  } else {
-    page = pages.data[pages.data.length - 1];
-  }
+  const pages = await ctx.table('pages').query({where: {slug: page.slug}})
+    
 
   return {
     page,
@@ -44,44 +38,40 @@ export async function load({ ctx, params, query }) {
 }
 
 export async function save({ ctx, params, body }) {
-  const pages = await ctx
+  const page = await ctx
     .table("pages")
-    .query({ where: { slug: params.slug } });
+    .get({ where: { id: params.id } });
 
-  const page = pages.data[pages.data.length - 1];
-  const version = (page.version ?? 1) + 1;
+  delete page['id']
 
+    
   console.log({ page });
-  await ctx.table("pages").insert({
+  const newPage = await ctx.table("pages").insert({
     slug: page.slug,
-
     title: body.title ?? page.title,
     layout: body.layout ?? page.layout,
     template: body.content ?? page.template,
     head: body.head ?? page.head,
-    version,
     published: false,
   });
 
   return {
     body: {
-      page: `/admin/pages/${page.slug}?version=${version}`,
+      page: `/admin/pages/${newPage.id}`,
     },
   };
 }
 export async function publish({ ctx, params, body }) {
-  const version = +body.version;
 
-  const pages = await ctx
+  const page = await ctx
     .table("pages")
-    .query({ where: { slug: params.slug } });
+    .get({ where: { id: params.id } });
+
+  const pages = await ctx.table('pages').query({where: {slug: page.slug}})
 
   for (let page of pages.data) {
     await ctx.table("pages").update(page.id, { published: false });
   }
-  const page = await ctx
-    .table("pages")
-    .get({ where: { slug: params.slug, version } });
 
   await ctx.table("pages").update(page.id, { published: true });
 
@@ -111,10 +101,9 @@ export default ({ page, pages = [] }) => {
   const sidebarItems = pages.map((page) =>
     SidebarItem({
       mode: "default",
-      href: `/admin/pages/${page.slug}?version=${page.version}`,
+      href: `/admin/pages/${page.id}`,
       title: View({ d: "flex", gap: "xs", align: "center" }, [
         page.title,
-        Badge({ color: "primary" }, page.version),
         page.published ? Badge({ color: "success" }, "Published") : "",
       ]),
       icon: "file",
@@ -197,7 +186,7 @@ export default ({ page, pages = [] }) => {
               $disabled: `published`,
               onClick: runAction(
                 "publish",
-                `{version: ${page.version}}`,
+                '{}',
                 reload()
               ),
             },

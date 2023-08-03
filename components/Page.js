@@ -5,7 +5,7 @@ export function Page(
   { title, actions = [], container = true, ...restProps },
   slots
 ) {
-    const header = PageHeader({ title }, actions)
+    const header = title ? PageHeader({ title }, actions) : ''
     
   let content;
   if (container) {

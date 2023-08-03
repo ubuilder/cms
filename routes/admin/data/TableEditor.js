@@ -23,7 +23,6 @@ import { IconPicker } from "../../../components/IconPicker.js";
     successMessage = "Table created successfully",
     ...$props
   }) {
-    console.log({value})
     const addField =
       "fields.push({\
         name: 'new',\

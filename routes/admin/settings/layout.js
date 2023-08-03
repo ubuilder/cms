@@ -1,9 +1,10 @@
 import { SidebarItem } from "../../../components/sidebar.js";
+import { WithSidebar } from "../../../components/WithSidebar.js";
 
 export default (props, slots) => {
   const mode = "default";
 
-  const sidebarItems = [
+  const sidebarItems = [  
     SidebarItem({
       icon: "settings",
       title: "General",

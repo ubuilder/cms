@@ -12,9 +12,7 @@ export async function fileBasedRouting({
   if (!addLayout)
     throw new Error("[fileBasedRouting] addLayout is not defined");
 
-    console.log(path)
   const files = await recursiveReadDir(path);
-  console.log(files)
 
   function getSlug(file) {
     const slug = file.replace('routes', '').replace("page.js", "").replace("layout.js", "");
@@ -42,7 +40,6 @@ export async function fileBasedRouting({
       resultActions[action] = (req, ...args) => actions[action]({ ctx, ...req }, ...args);
     }
 
-    console.log(getSlug(file))
     return {
       actions: resultActions,
       load: load ? (req, ...args) => load({ ctx, ...req }, ...args) : undefined,
@@ -57,11 +54,9 @@ export async function fileBasedRouting({
       const slug = getSlug(file);
 
       if (type === "page") {
-        console.log('add page ', slug)
         addPage(slug, { actions, load, page });
       } else {
 
-        console.log('add layout ', slug)
         addLayout(slug, { actions, load, component: page });
       }
     }

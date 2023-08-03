@@ -13,7 +13,6 @@ export async function load({ctx, locals}) {
       with: { fields: { table: "fields", field: "table_id", multiple: true } },
     })
   ).data;
-  console.log('tables: ', locals.tables);
 
   locals.title = "Table & Data";
 

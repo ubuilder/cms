@@ -10,7 +10,6 @@ export async function load({ctx, params}) {
   let page = await ctx.table("pages").get({ where: { slug, published: true } });
 
 
-  console.log(page)
   return {
     page
   }
@@ -23,8 +22,6 @@ export default ({ page }) => {
 
   try {
     const template = hbs.compile(page.template);
-
-    console.log(template({}))
 
     return `<!DOCTYPE html><html><head>${page.head}</head><body>${template({})}</body></html>`;
   } catch (err) {
