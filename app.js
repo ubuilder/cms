@@ -2,16 +2,13 @@
 
 import { Router } from "@ulibs/router";
 import { connect } from "@ulibs/db";
-import pages from "./routes/pages/index.js";
-import data from "./routes/data/index.js";
-import main from "./routes/main.js";
-import 'dotenv/config'
-import {rename} from 'fs/promises'
-import { settings } from "./routes/settings/index.js";
+import "dotenv/config";
+import { rename, writeFile } from "fs/promises";
+import { fileBasedRouting } from "./utils/routing.js";
 
 export function CMS({
   dev = false,
-  
+
   filename = ":memory:",
   client = "sqlite3",
 } = {}) {
@@ -19,35 +16,32 @@ export function CMS({
     dev,
     reloadTimeout: 1000,
   });
-  
+
   const configs = {
     production: {
-        client: 'mysql',
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        database: process.env.DB_DATABASE,
-        password: process.env.DB_PASSWORD,
+      client: "mysql",
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      database: process.env.DB_DATABASE,
+      password: process.env.DB_PASSWORD,
     },
     dev: {
       // client: 'sqlite3',
-      filename: './db.json'
-    }
-  }
-  
-  const {
-    createTable,
-    removeTable,
-    getModel,
-    updateColumn,
-    addColumns,
-    removeColumns,
-    renameTable,
-  } = connect(configs[dev ? 'dev': 'dev']);
+      filename: "./db.json",
+    },
+  };
 
-  async function resetDatabase () {
-    if(configs['dev']['filename'] === ':memory:') return;
+  const db = connect(configs[dev ? "dev" : "dev"]);
 
-    await rename(configs['dev']['filename'], configs['dev']['filename'] + '.bak');
+  async function resetDatabase() {
+    if (configs["dev"]["filename"] === ":memory:") return;
+
+    await rename(
+      configs["dev"]["filename"],
+      configs["dev"]["filename"] + ".bak"
+    );
+    await writeFile(configs["dev"]["filename"], "{}");
+    db.invalidate();
   }
 
   const ctx = {
@@ -56,13 +50,15 @@ export function CMS({
     addPage,
     addLayout,
     addStatic,
-    getModel,
-    removeTable,
-    createTable,
-    updateColumn,
-    addColumns,
-    removeColumns,
-    renameTable,
+    getModel(name) {
+      console.log(
+        `do not use getModel("${name}"), instead you can use table("${name}")`
+      );
+      return db.getModel(name);
+    },
+    table(name) {
+      return db.getModel(name);
+    },
   };
 
   return ctx;
@@ -73,9 +69,13 @@ const dev = !!process.env.DEV_MODE;
 
 const ctx = CMS({ dev });
 
-await main(ctx);
-await pages(ctx);
-await settings(ctx);
-await data(ctx);
+ctx.addStatic({ path: "./node_modules/@ulibs/ui/dist", prefix: "/dist" });
+
+await fileBasedRouting({
+  path: "./routes",
+  addPage: ctx.addPage,
+  addLayout: ctx.addLayout,
+  ctx,
+});
 
 ctx.startServer(process.env.PORT ?? 3043);
