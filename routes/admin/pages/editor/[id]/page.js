@@ -40,7 +40,7 @@ const style = `
     border: 1px dashed var(--color-primary-400);
   }
   .item.active {
-    padding: var(--size-xxs);
+    padding: var(--size-sm);
     border: 1px solid var(--color-primary-500);
   }
   
@@ -57,9 +57,8 @@ const style = `
   }
 
   .placeholder-md {
-    height: 100%;
-    min-height: 100px;
-    margin: var(--size-xs);
+    height: 100px;
+    margin: var(--size-sm);
   }
 
   .placeholder-sm {
@@ -74,21 +73,21 @@ const style = `
     margin-top: var(--size-sm);
   }
 
-  .item.active .placeholder-sm {
+  .item.active > .placeholder-sm {
     height: calc(var(--size-sm));
     border: 1px solid var(--color-primary-200);
     top: 0;
     bottom: 0;
   }
 
-  .item.active .placeholder-sm.placeholder-before {
+  .item.active > .placeholder-sm.placeholder-before {
     bottom: calc(100% + 1px);
     top: auto;
     left: -1px;
     right: -1px;
   }
 
-  .item.active .placeholder-sm.placeholder-after {
+  .item.active > .placeholder-sm.placeholder-after {
     left: -1px;
     right: -1px;
     bottom: auto;
@@ -96,6 +95,7 @@ const style = `
   }
 
   .placeholder-slot {
+    min-height: var(--size-4xl);
     margin: var(--size-xs);
   }
 
@@ -131,21 +131,38 @@ export async function add_component({ ctx, body, params }) {
   console.log("add_component", body);
 
   let content = [];
-  for (let item of page.content) {
+
+  function check_insert(item, parent) {
+    console.log("check_insert", {item, parent})
     if (item.id == body.position) {
       if (body.placement === "before") {
-        content.push(newItem);
-        content.push(item);
+        parent.push(newItem);
+        parent.push(item);
       } else if (body.placement === "after") {
-        content.push(item);
-        content.push(newItem);
+        parent.push(item);
+        parent.push(newItem);
       } else {
-        content.push(item);
+        item.slot ??= []
+        item.slot.push(newItem)
+        parent.push(item);
       }
       // slot
     } else {
-      content.push(item);
+      if(item.slot) {
+        let slot = []
+        for(let x of item.slot) {
+          check_insert(x, slot)
+        }
+        item.slot = slot
+      }
+      parent.push(item);
+
     }
+
+  }
+  
+  for (let item of page.content) {
+    check_insert(item, content)
   }
 
   if (!body.position && body.placement === "after") {
@@ -175,13 +192,26 @@ export async function set_props({ ctx, body, params }) {
 
   let content = [];
 
-  for (let item of page.content) {
+  function update_props(item, parent) {
     if (item.id == itemId) {
       for (let prop of props) {
         item.props[prop.name] = prop.value;
       }
+    } else {
+      if(item.slot) {
+        let slot = []
+        for(let x of item.slot) {
+          update_props(x, slot)
+        }
+        item.slot = slot
+      }
     }
-    content.push(item);
+    parent.push(item)
+
+  }
+
+  for (let item of page.content) {
+    update_props(item, content);
   }
 
   page.content = content;
@@ -202,9 +232,20 @@ export async function remove_component({ ctx, params, body }) {
 
   let content = [];
 
+  function check_remove(item, parent) {
+    if(item.id === itemId) return;
+    if(item.slot) {
+      const slot = []
+      for(let x of item.slot) {
+        check_remove(x, slot)
+      }
+      item.slot = slot
+    }
+    parent.push(item)
+  }
+  
   for (let item of page.content) {
-    if (item.id == itemId) continue;
-    content.push(item);
+    check_remove(item, content)
   }
 
   page.content = content;
@@ -237,45 +278,56 @@ export async function load({ ctx, params }) {
 
   const components = await ctx.table("components").query({ perPage: 100 });
 
-  for (let item of page.content) {
+  async function renderItem(item) {
     const component = await ctx
-      .table("components")
-      .get({ where: { id: item.component_id } });
+    .table("components")
+    .get({ where: { id: item.component_id } });
 
-    console.log({ component });
-    const itemProps = {};
+  console.log({ component });
+  const itemProps = {};
 
-    for (let propName in item.props) {
-      const prop = item.props[propName];
+  for (let propName in item.props) {
+    const prop = item.props[propName];
 
-      if (prop.type === "load") {
-        const res = await ctx
-          .table(prop.table)
-          .get({ where: prop.where, select: { [prop.field]: true } });
+    if (prop.type === "load") {
+      const res = await ctx
+        .table(prop.table)
+        .get({ where: prop.where, select: { [prop.field]: true } });
 
-        itemProps[propName] = res[prop.field];
-      } else if (prop.type === "static") {
-        itemProps[propName] = prop.value;
-      }
+      itemProps[propName] = res[prop.field];
+    } else if (prop.type === "static") {
+      itemProps[propName] = prop.value;
     }
+  }
 
-    function renderItem() {
-      const props = {};
+    const props = {};
 
-      const template = component.template;
+    const template = component.template;
 
-      component.props.map((prop) => {
-        props[prop.name] = itemProps[prop.name] ?? prop.default_value;
-      });
+    component.props.map((prop) => {
+      props[prop.name] = itemProps[prop.name] ?? prop.default_value;
+    });
 
+
+    if(item.slot) {
+      console.log("xslot: ", item.slot)
+      props.slot = (await Promise.all(item.slot.map(async item => ComponentContent(await renderItem(item))))).join('') + Placeholder({ id: item.id, placement: "slot" })
+    } else {
       props.slot = Placeholder({ id: item.id, placement: "slot" });
-
-      return hbs.compile(template)(props);
     }
 
-    // render hbs
-    item.content = renderItem();
-    item.component = component;
+
+
+  // render hbs
+  item.content = hbs.compile(template)(props);
+  item.component = component;
+
+  console.log("item: ", item)
+  return item;
+  }
+
+  for (let item of page.content) {
+    item = await renderItem(item)
   }
 
   return {
@@ -379,14 +431,15 @@ function ComponentContent(item) {
         class: "item",
         tabindex: 0,
         "onClick.outside": "id = ''",
-        onDblclick: `$modal.open('component-${item.id}-settings')`,
+        onDblclick: `$event.stopPropagation(); $modal.open('component-${item.id}-settings')`,
         $class: `id === '${item.id}' ? 'active' : ''`,
-        onClick: `setTimeout(() => id = '${item.id}')`,
-        onContextmenu: `$event.preventDefault(); contextmenuOpen = true; x = $event.clientX; y = $event.clientY; id = '${item.id}'`,
+        onClick: `$event.stopPropagation(); setTimeout(() => id = '${item.id}')`,
+        onContextmenu: `$event.stopPropagation(); $event.preventDefault(); contextmenuOpen = true; x = $event.clientX; y = $event.clientY; id = '${item.id}'`,
         style: "cursor: default",
       },
       [
         Placeholder({ id: item.id, placement: "before", size: "sm" }),
+        // item.slot && item.slot.map(x => ComponentContent(x)),
         item.content,
         Placeholder({ id: item.id, placement: "after", size: "sm" }),
         
@@ -448,6 +501,7 @@ function ComponentSettingsModal({
 }) {
   const props = [];
 
+  console.log({componentProps})
   for (let prop of componentProps) {
     props.push({
       name: prop.name,
@@ -584,6 +638,7 @@ function EditorPageHeader({ page }) {
 
 function EditorPage({ page, components }) {
   const htmlHead = [style];
+  console.log(page.content.map(content => content.component))
 
   return Page(
     {
@@ -610,8 +665,6 @@ function EditorPage({ page, components }) {
             h: 100,
             border: true,
             borderColor: "base-400",
-            d: "flex",
-            flexDirection: "column",
           },
           [
             page.content.map((x) => ComponentContent(x)),
@@ -619,8 +672,21 @@ function EditorPage({ page, components }) {
           ]
         ),
       ]),
-      page.content.map((x) => ComponentRemoveModal({ id: x.id })),
-      page.content.map((item) => ComponentSettingsModal(item)),
+      page.content.map((x) => {
+        let result = [ComponentRemoveModal({ id: x.id })]
+        if(x.slot) {
+          result += x.slot.map(y => ComponentRemoveModal({id: y.id}))
+        }
+        return result
+      }),
+      page.content.map((x) => {
+        let result = [ComponentSettingsModal(x)]
+        if(x.slot) {
+          result += x.slot.map(y => ComponentSettingsModal(y))
+        }
+        return result
+      }),
+
       PreviewModal(page),
       ComponentAddModal({ components }),
     ]
@@ -635,7 +701,7 @@ function ComponentRemoveModal({ id }) {
       Button({ onClick: closeModal() }, "Cancel"),
       Button(
         {
-          onClick: runAction("remove_component", `{id: ${id}}`, reload()),
+          onClick: runAction("remove_component", `{id: '${id}'}`, reload()),
           color: "error",
         },
         "Remove"

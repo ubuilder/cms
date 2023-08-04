@@ -19,7 +19,7 @@ export async function load({ ctx, params, query }) {
   console.log(page)
 
 
-  for(let item of page.content) {
+  async function normalizeProps(item) {
     for(let propName in item.props) {
       const prop = item.props[propName]
       if(prop.type === 'load') {
@@ -30,6 +30,15 @@ export async function load({ ctx, params, query }) {
         item.props[propName] = prop.value
       }
     }
+    if(item.slot) {
+      for(let item2 of item.slot) {
+        await normalizeProps(item2)
+      }
+    }
+  }
+
+  for(let item2 of page.content) {
+    normalizeProps(item2)
   }
   
 
@@ -63,9 +72,16 @@ export default ({ page, components }) => {
     }
 
     function renderItem(item) {
+      console.log('renderItem', item)
       const id = item.component_id;
       const props = {}
       const component = components.find(x => x.id === id)
+
+      if(item.slot) {
+        const slot = renderBody(item.slot)
+        console.log({slot, itemSlot: item.slot})
+        props['slot'] = slot
+      }
 
       const template = component.template
       
@@ -74,21 +90,28 @@ export default ({ page, components }) => {
       })
 
 
-      return hbs.compile(template)(props)
+      console.log({props})
+
+      console.log({template, props})
+      const result = hbs.compile(template)(props)
+      console.log(result)
+      return result;
     }
 
-    function renderBody() {
+    function renderBody(content) {
       let result = ""
 
-      for(let item of page.content) {
-        result += renderItem(item)
+      for(let item of content) {
+        // handle styles..
+        result += `<div>${renderItem(item)}</div>`
+        console.log(result)
       }
 
       return result
     }
     
     const head = renderHead();
-    const body = renderBody();
+    const body = renderBody(page.content);
 
     const result = template({
       body,
