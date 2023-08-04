@@ -19,14 +19,15 @@ import {
 import { Page } from "../../../../../components/Page.js";
 import { createModal } from "../../../../../components/createModal.js";
 import hbs from "handlebars";
-import { closeModal } from "../../../../../utils/ui.js";
+import { closeModal, reload, openModal, runAction } from "../../../../../utils/ui.js";
 
 const style = `
   <style>
   .item {
-    width: max-content;
-    padding: var(--size-sm);
+    transition: all 0.2s ease;
     border: 1px dashed var(--color-base-400);
+    position: relative;
+    min-height: var(--size-md);
   }
   
   .item:hover {
@@ -34,8 +35,8 @@ const style = `
   }
   
   .placeholder {
-    background-image: repeating-linear-gradient(45deg, var(--color-base-300), var(--color-base-300) 2px,var(--color-base-400) 2px,var(--color-base-400) 4px);
-    height: 100px;
+    transition: all 0.2s ease;
+    background-image: repeating-linear-gradient(45deg, var(--color-base-300), var(--color-base-300) 2px,var(--color-primary-100) 2px,var(--color-primary-100) 4px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -44,6 +45,49 @@ const style = `
     border: 1px dashed var(--color-primary-200);
     opacity: 0.5;
   }
+
+  .placeholder-md {
+    height: 100px;
+  }
+
+  .placeholder-sm {
+    height: 0;
+    position: absolute;
+    border-color: transparent;
+
+  }
+
+  .item:hover {
+    margin-bottom: var(--size-sm);
+    margin-top: var(--size-sm);
+  }
+
+  .item:hover .placeholder-sm {
+    height: calc(var(--size-sm));
+    border: 1px solid var(--color-primary-200);
+    opacity: 1;
+    top: 0;
+    bottom: 0;
+  }
+
+  .item:hover .placeholder-sm.placeholder-before {
+    bottom: calc(100% + 1px);
+    top: auto;
+    left: -1px;
+    right: -1px;
+  }
+
+  .item:hover .placeholder-sm.placeholder-after {
+    left: -1px;
+    right: -1px;
+    bottom: auto;
+    top: calc(100% + 1px);
+  }
+
+  .placeholder-slot {
+    margin: var(--size-xs);
+  }
+
   .placeholder:hover {
     border: 1px solid var(--color-primary-500);
   }
@@ -62,7 +106,113 @@ const style = `
   </style>
   
   `;
+  
 
+  export async function add_component({ctx, body, params}) {
+    const id = params.id
+    const page = await ctx.table("pages").get({ where: { id } });
+
+    const newItem = {
+      id: Math.random(),
+      component_id: body.component_id,
+      props: {}
+    }
+
+    console.log('add_component', body)
+
+    let content = []
+    for(let item of page.content) {
+      
+
+      if(item.id == body.position) {
+        if(body.placement === 'before') {
+          content.push(newItem)
+          content.push(item)
+        } else if(body.placement === 'after') {
+          content.push(item)
+          content.push(newItem)
+        } else {
+          content.push(item)
+        }
+        // slot
+      } else {
+        content.push(item)
+      }      
+    }
+
+    if(!body.position && body.placement === 'after') {
+      console.log('insert at end of page')
+      content.push(newItem)
+    }
+
+    page.content = content;
+    await ctx.table('pages').update(id, page)
+
+    return {
+      body: {
+        success: true
+      }
+    }
+  }
+
+
+  export async function set_props({ctx, body, params}) {
+    console.log('set props', body)
+    
+    const props = body.props
+
+    const pageId = params.id
+    const itemId = body.id
+
+
+    const page = await ctx.table("pages").get({ where: { id: pageId } });
+
+    let content = []
+
+    for(let item of page.content) {
+      if(item.id == itemId) {
+        for(let prop of props) {
+          item.props[prop.name] = prop.value
+        }
+      }
+      content.push(item)
+    }
+
+    page.content = content
+    await ctx.table('pages').update(pageId, page)
+
+    return {
+      body: {
+        success: true
+      }
+    }
+  }
+
+
+export async function remove_component({ctx, params, body}) {
+  const itemId = body.id
+  const pageId = params.id
+
+  const page = await ctx.table('pages').get({where: {id: pageId}})
+
+  let content = []
+
+  for(let item of page.content) {
+
+    if(item.id == itemId) continue;
+    content.push(item)
+  }
+
+  page.content = content
+  await ctx.table('pages').update(pageId, page)
+
+  return {
+    body: {
+      success: true
+    }
+  }
+}
+  
 export async function load({ ctx, params }) {
   const id = params.id;
 
@@ -80,14 +230,14 @@ export async function load({ ctx, params }) {
     for (let propName in item.props) {
       const prop = item.props[propName];
 
-      if (typeof prop === "object") {
+      if (prop.type === "load") {
         const res = await ctx
           .table(prop.table)
           .get({ where: prop.where, select: { [prop.field]: true } });
 
         itemProps[propName] = res[prop.field];
-      } else {
-        itemProps[propName] = prop;
+      } else if(prop.type === 'static') {
+        itemProps[propName] = prop.value;
       }
     }
 
@@ -100,7 +250,7 @@ export async function load({ ctx, params }) {
         props[prop.name] = itemProps[prop.name] ?? prop.default_value;
       });
 
-      props.slot = Placeholder();
+      props.slot = Placeholder({id: item.id, placement: 'slot'});
 
       return hbs.compile(template)(props);
     }
@@ -116,41 +266,44 @@ export async function load({ ctx, params }) {
   };
 }
 
-function Placeholder() {
+function Placeholder({id, size = 'md', placement} = {}) {
   return View(
     {
-      class: "placeholder",
-      onClick: "$event.stopPropagation(); $modal.open('add-component')",
+      class: `placeholder placeholder-${size} placeholder-${placement}`,
+      onClick: `$event.stopPropagation(); position='${id}'; placement='${placement}'; ${openModal('add-component')}`,
     },
-    [[Icon({ size: "lg", name: "plus" }), "Click to add Component"]]
+    false ? [[Icon({ size: "lg", name: "plus" }), "Click to add Component"]] : []
   );
 }
 
-function renderComponent(id, content) {
-  //   props.slot = Placeholder();
+function ComponentContent(item) {
 
-  return View({ class: "item" }, [
-    content,
-    Popover({ placement: "top-end", trigger: "hover", p: 0, gap: 0 }, [
-      ButtonGroup({ compact: true, style: "border-radius: 0" }, [
-        Button(
-          {
-            size: "sm",
-            onClick: `$modal.open('component-${id}-settings')`,
-          },
-          [Icon({ name: "settings" })]
-        ),
-        Button(
-          {
-            size: "sm",
-            color: "error",
-            onClick: `$modal.open('component-${id}-remove')`,
-          },
-          Icon({ name: "x" })
-        ),
+  return [
+    View({ class: "item" }, [
+      Placeholder({id: item.id, placement: 'before', size: 'sm'}),
+      item.content,
+      Placeholder({id: item.id, placement: 'after', size: 'sm'}),
+      Popover({ placement: "top-end", trigger: "hover", p: 0, gap: 0 }, [
+        ButtonGroup({ compact: true, style: "border-radius: 0" }, [
+          Button(
+            {
+              size: "sm",
+              onClick: `$modal.open('component-${item.id}-settings')`,
+            },
+            [Icon({ name: "settings" })]
+          ),
+          Button(
+            {
+              size: "sm",
+              color: "error",
+              onClick: `$modal.open('component-${item.id}-remove')`,
+            },
+            Icon({ name: "x" })
+          ),
+        ]),
       ]),
     ]),
-  ]);
+  ];
 }
 
 function PreviewModal(page) {
@@ -180,18 +333,17 @@ function PreviewModal(page) {
   ]);
 }
 
-function renderComponentSettings(
+function ComponentSettingsModal({
   id,
-  { props: componentProps, name, template } = {},
-  instanceProps = {}
-) {
+  component: { props: componentProps, name, template } = {},
+  props: instanceProps = {},
+}) {
   const props = [];
 
   for (let prop of componentProps) {
     props.push({
       name: prop.name,
-      value: instanceProps[prop.name] ?? prop.default_value,
-      dynamic: typeof instanceProps[prop.name] === "object",
+      value: instanceProps[prop.name] ?? {type: 'static', value: prop.default_value},
     });
   }
 
@@ -201,7 +353,7 @@ function renderComponentSettings(
     title: "Component Settings",
     actions: [
       Button({ onClick: "$modal.close()" }, "Cancel"),
-      Button({ onClick: `$modal.close()`, color: "primary" }, "Save"),
+      Button({ onClick: runAction("set_props", `{id: '${id}', props}`, reload()), color: "primary" }, "Save"),
     ],
     body: Col({ col: 12 }, [
       FormField(
@@ -211,17 +363,27 @@ function renderComponentSettings(
           style: "position: relative",
         },
         [
-          Button(
-            {
-              style: "position: absolute; top: 28px; right: 8px",
-              size: "sm",
-              onClick: "prop.dynamic = !prop.dynamic",
-              $color: "prop.dynamic ? 'primary' : undefined",
-            },
-            Icon({ name: "star" })
-          ),
-          Row({ $if: "!prop.dynamic" }, [Input({ name: "prop.value" })]),
-          Accordions({ $if: "prop.dynamic", style: "border: none" }, [
+          ButtonGroup({style: "position: absolute; top: 28px; right: 8px"}, [
+            Button(
+              {
+                size: "sm",
+                onClick: "prop.value.type = 'load'",
+                $color: "prop.value.type === 'load' ? 'primary' : undefined",
+              },
+              Icon({ name: "database" })
+            ),
+            Button(
+              {
+                d: 'none',
+                size: "sm",
+                onClick: "prop.value.type = 'dynamic'",
+                $color: "prop.value.type === 'dynamic' ? 'primary' : undefined",
+              },
+              Icon({ name: "star" })
+            )
+          ]),
+          Row({ $if: "prop.value.type === 'static'" }, [Input({ name: "prop.value.value" })]),
+          Accordions({ $if: "prop.value.type === 'load'", style: "border: none" }, [
             Card([
               Accordion({
                 style: "border-bottom: none",
@@ -246,96 +408,91 @@ function renderComponentSettings(
   });
 }
 
-export default ({ page, components }) => {
-  return Page(
-    {
-      htmlHead: style,
-      container: false,
-    },
-    Row({ m: 0, align: "stretch" }, [
-      Col({ p: 0, col: true, d: "flex", flexDirection: "column" }, [
-        View(
-          { d: "flex", p: "xs", align: "center", justify: "between", pb: "sm" },
-          [
-            View({ tag: "h3" }, "Page Editor"),
-            ButtonGroup([
-              Button({ href: "/admin/pages/" + page.id }, "Cancel"),
-              Button(
-                { onClick: `$modal.open('preview-modal')`, color: "info" },
-                "Preview"
-              ),
-              Button({ color: "primary" }, "Save"),
-            ]),
-          ]
+function EditorPageHeader({ page }) {
+  return View(
+    { d: "flex", p: "xs", align: "center", justify: "between", pb: "sm" },
+    [
+      View({ tag: "h3" }, "Page Editor"),
+      ButtonGroup([
+        Button({ href: "/admin/pages/" + page.id }, "Cancel"),
+        Button(
+          { onClick: `$modal.open('preview-modal')`, color: "info" },
+          "Preview"
         ),
-        View(
-          {
-            p: "xs",
-          },
-          [
-            View(
-              {
-                style: "height: calc(100vh - 132px); overflow-y: auto",
-                bgColor: "base-200",
-                h: 100,
-                border: true,
-                borderColor: "base-400",
-              },
-              [
-                page.content.map((x) => renderComponent(x.id, x.content)),
-                Placeholder(),
-              ]
-            ),
-          ]
-        ),
+        Button({ color: "primary" }, "Publish"),
       ]),
-
-      page.content.map((item) =>
-        createModal({
-          name: `component-${item.id}-remove`,
-          title: "Remove Component",
-          actions: [
-            Button({ onClick: "$modal.close()" }, "Cancel"),
-            Button({ onClick: `$modal.close()`, color: "error" }, "Remove"),
-          ],
-          body: "Are you sure to remove this component from Page?",
-        })
-      ),
-
-      page.content.map((item) =>
-        renderComponentSettings(item.id, item.component, item.props)
-      ),
-      PreviewModal(page),
-      createModal({
-        $data: { active: "" },
-        name: "add-component",
-        title: "Add Component in Page",
-        actions: [
-          Button({ onClick: "$modal.close()" }, "Cancel"),
-          Button({ onClick: `$modal.close()`, color: "primary" }, "Add"),
-        ],
-        body: [
-          components.map((component) =>
-            Col({ col: 3 }, [
-              View(
-                {
-                  class: "component-item",
-                  $class: `active === '${component.id}' ? 'active' : ''`,
-                  onClick: `active = '${component.id}'`,
-                  border: true,
-                  borderColor: "base-400",
-                  p: "md",
-                  d: "flex",
-                  flexDirection: "column",
-                  align: "center",
-                  justify: "center",
-                },
-                [component.name]
-              ),
-            ])
-          ),
-        ],
-      }),
-    ])
+    ]
   );
-};
+}
+
+function EditorPage({ page, components }) {
+  const htmlHead = [style];
+
+  return Page({ htmlHead, container: false, $data: {placement: '', position: ''} }, [
+    View({ d: "flex", flexDirection: "column" }, [
+      EditorPageHeader({ page }),
+      View(
+        {
+          m: 'xs',
+          style: "height: calc(100vh - 132px); overflow-y: auto",
+          bgColor: "base-200",
+          h: 100,
+          border: true,
+          borderColor: "base-400",
+        },
+        [page.content.map((x) => ComponentContent(x)), Placeholder({placement: 'after', id: ''})]
+      ),
+    ]),
+    page.content.map((x) => ComponentRemoveModal({ id: x.id })),
+    page.content.map((item) => ComponentSettingsModal(item)),
+    PreviewModal(page),
+    ComponentAddModal({ components }),
+  ]);
+}
+
+function ComponentRemoveModal({ id }) {
+  return createModal({
+    name: `component-${id}-remove`,
+    title: "Remove Component",
+    actions: [
+      Button({ onClick: closeModal() }, "Cancel"),
+      Button({ onClick: runAction("remove_component", `{id: ${id}}`, reload()), color: "error" }, "Remove"),
+    ],
+    body: "Are you sure to remove this component from Page?",
+  });
+}
+
+function ComponentAddModal({ components }) {
+  return createModal({
+    $data: { active: "" },
+    name: "add-component",
+    title: "Add Component in Page",
+    actions: [
+      Button({ onClick: "$modal.close()" }, "Cancel"),
+      Button({ onClick: runAction("add_component", '{position, placement, component_id: active}', reload()), color: "primary" }, "Add"),
+    ],
+    body: [
+      components.map((component) =>
+        Col({ col: 3 }, [
+          View(
+            {
+              class: "component-item",
+              $class: `active === '${component.id}' ? 'active' : ''`,
+              onClick: `active = '${component.id}'`,
+              border: true,
+              borderColor: "base-400",
+              p: "md",
+              d: "flex",
+              flexDirection: "column",
+              align: "center",
+              justify: "center",
+            },
+            [component.name]
+          ),
+        ])
+      ),
+    ],
+  });
+}
+
+export default EditorPage;

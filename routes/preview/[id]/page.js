@@ -19,11 +19,13 @@ export async function load({ ctx, params, query }) {
   for(let item of page.content) {
     for(let propName in item.props) {
       const prop = item.props[propName]
-      if(typeof prop === 'object') {
+      if(prop.type === 'load') {
         const res = await ctx.table(prop.table).get({where: prop.where, select: {[prop.field]: true}})
         item.props[propName] = res[prop.field]
         // loads[] = 
-      } 
+      } else if(prop.type === 'static') {
+        item.props[propName] = prop.value
+      }
     }
   }
   

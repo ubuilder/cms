@@ -164,7 +164,7 @@ export default ({ components }) => {
         mode: "edit",
         onEdit: runAction(
           "update",
-          `{id: ${id}, name, props, template}`,
+          `{id: '${id}', name, props, template}`,
           reload()
         ),
         name: `edit-component-${id}`,

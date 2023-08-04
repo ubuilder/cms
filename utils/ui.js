@@ -11,7 +11,7 @@ export function runAction(name, params = {}, after = "{}") {
 }
 
 export function openModal(name) {
-  return `$modal.open('${name}')`;
+  return `$modal.open('${name}')`
 }
 
 export function closeModal() {
