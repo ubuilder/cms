@@ -1,3 +1,4 @@
+import { View } from "@ulibs/ui";
 import hbs from "handlebars";
 
 export async function load({ ctx, params, query }) {
@@ -14,6 +15,8 @@ export async function load({ ctx, params, query }) {
   });
 
   if(!page) return {}
+
+  console.log(page)
 
 
   for(let item of page.content) {
@@ -45,14 +48,17 @@ export default ({ page, components }) => {
   }
 
   try {
-    hbs.registerPartial("head", page.head);
-    // hbs.registerPartial('body', page.template)
     const layoutTemplate = page.layout?.template ?? `{{{head}}}{{{body}}}`;
 
-    const template = hbs.compile(layoutTemplate, {});
+    console.log(page, layoutTemplate)
+
+    
+
+    const template = hbs.compile(layoutTemplate);
 
     function renderHead() {
-      const ctx = { page: { title: page.title } };
+      const ctx = { page: { title: page.title, slug: page.slug } };
+      
       return hbs.compile(page.head)(ctx);
     }
 
@@ -85,9 +91,8 @@ export default ({ page, components }) => {
     const body = renderBody();
 
     const result = template({
-      page: { title: 123 },
       body,
-      head: hbs.compile(page.head)({ page: { title: page.title } }),
+      head,
     });
     return result;
   } catch (err) {
