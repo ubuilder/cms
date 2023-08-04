@@ -5,6 +5,7 @@ export async function add({ ctx, body }) {
     title: body.title,
     slug: body.slug,
     layout: body.layout,
+    head: "",
     content: [],
     published: false,
   };
