@@ -3,15 +3,16 @@ import { Page } from "../../../components/Page.js";
 import { openModal, reload, runAction } from "../../../utils/ui.js";
 import { createModal } from "../../../components/createModal.js";
 
-function PageItem({ title = "", slug = "", layout = "", version = 1 } = {}) {
+function PageItem({ title = "", id = "", layout = "", version = 1 } = {}) {
   return View({}, [
     View({ tag: "h3" }, title),
     Badge({ color: "primary" }, version),
+    
     Button(
       {
         mt: "sm",
         color: "primary",
-        href: "/admin/pages/" + slug + "?version=" + version,
+        href: "/admin/pages/editor/" + id,
       },
       [Icon({ name: "external-link" }), "Edit"]
     ),

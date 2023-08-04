@@ -5,9 +5,8 @@ export async function add({ ctx, body }) {
     title: body.title,
     slug: body.slug,
     layout: body.layout,
-    template: body.template,
+    content: [],
     published: false,
-    version: 1,
   };
   await ctx.table("pages").insert(page);
 

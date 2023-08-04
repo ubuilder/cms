@@ -1,3 +1,5 @@
+import { slugify } from "../../../../utils/slugify.js";
+
 function success({message = 'Success', data = undefined} = {}) {
   return {
     status: 200,
@@ -84,18 +86,6 @@ export async function syncTableFields(ctx, { fields, table_id, table_name }) {
     }
   }
 }
-
-export function slugify(str, separator = '_') {
-  let result = "";
-  for (let i = 0; i < str.length; i++) {
-    if (str[i] === " " || str[i] === "-" || str[i] === "_") {
-      result += separator;
-      i++;
-    }
-    result += str[i].toLowerCase();
-  }
-  return result;
-} 
 
 export async function insertData(ctx, body) {
   const {table, data} = body
