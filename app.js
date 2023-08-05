@@ -64,7 +64,6 @@ export function CMS({
   return ctx;
 }
 
-// if dev mode then create tables
 const dev = !!process.env.DEV_MODE;
 
 const ctx = CMS({ dev });

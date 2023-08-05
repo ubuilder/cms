@@ -46,6 +46,7 @@ const style = `
   
   .placeholder {
     transition: all 0.2s ease;
+    min-width: var(--size-sm);
     background-image: repeating-linear-gradient(45deg, var(--color-base-300), var(--color-base-300) 2px,var(--color-primary-100) 2px,var(--color-primary-100) 4px);
     display: flex;
     align-items: center;
@@ -672,26 +673,37 @@ function EditorPage({ page, components }) {
           ]
         ),
       ]),
-      page.content.map((x) => {
-        let result = [ComponentRemoveModal({ id: x.id })]
-        if(x.slot) {
-          result += x.slot.map(y => ComponentRemoveModal({id: y.id}))
-        }
-        return result
-      }),
-      page.content.map((x) => {
-        let result = [ComponentSettingsModal(x)]
-        if(x.slot) {
-          result += x.slot.map(y => ComponentSettingsModal(y))
-        }
-        return result
-      }),
-
+      ComponentRemoveModals(page),
+      ComponentSettingsModals(page),
       PreviewModal(page),
       ComponentAddModal({ components }),
     ]
   );
 }
+
+function ComponentRemoveModals({content}) {
+  let result = []
+  content.map(item => {
+    result = [...result, ComponentRemoveModal({id: item.id})]
+    if(item.slot) {
+      result = [...result, ...ComponentRemoveModals({content: item.slot})]
+    }
+  })
+  return result
+}
+
+
+function ComponentSettingsModals({content}) {
+  let result = []
+  content.map(item => {
+    result = [...result, ComponentSettingsModal({id: item.id, component: item.component, props: item.props})]
+    if(item.slot) {
+      result = [...result, ...ComponentSettingsModals({content: item.slot})]
+    }
+  })
+  return result
+}
+
 
 function ComponentRemoveModal({ id }) {
   return createModal({

@@ -103,7 +103,7 @@ export default ({ page, components }) => {
 
       for(let item of content) {
         // handle styles..
-        result += `<div>${renderItem(item)}</div>`
+        result += renderItem(item)
         console.log(result)
       }
 
