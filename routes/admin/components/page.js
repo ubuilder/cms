@@ -9,6 +9,7 @@ import {
   Icon,
   Input,
   Row,
+  Select,
   Textarea,
   View,
 } from "@ulibs/ui";
@@ -79,7 +80,20 @@ function ComponentModal({
             body: [
               Row([
                 Input({ colXs: 6, label: "Name", name: "prop.name" }),
-                Input({ colXs: 6, label: "Type", name: "prop.type" }),
+                Select({
+                  colXs: 6,
+                  label: "Type",
+                  name: "prop.type",
+                  key: "key",
+                  text: "text",
+                  items: [
+                    { key: "plain_text", text: "Plain Text" },
+                    { key: "rich_text", text: "Rich Text" },
+                    { key: "number", text: "Number" },
+                    { key: "date", text: "Date" },
+                    { key: "boolean", text: "Boolean" },
+                  ],
+                }),
                 Input({ label: "Default Value", name: "prop.default_value" }),
 
                 Col({ d: "flex", justify: "end", col: 12 }, [

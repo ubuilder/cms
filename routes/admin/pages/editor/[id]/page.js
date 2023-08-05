@@ -8,14 +8,18 @@ import {
   CardHeader,
   CardTitle,
   Col,
+  Datepicker,
   FormField,
   Icon,
   Input,
   Modal,
+  TextEditor,
+  Switch,
   Popover,
   Row,
   Tooltip,
   View,
+  Textarea,
 } from "@ulibs/ui";
 import { Page } from "../../../../../components/Page.js";
 import { createModal } from "../../../../../components/createModal.js";
@@ -29,6 +33,8 @@ import {
 
 const style = `
   <style>
+  [u-cloak] {display: none;}
+
   .item {
     display: contents;
   }
@@ -39,7 +45,7 @@ const style = `
     position: relative;
     min-height: var(--size-md);
     border: 1px dotted var(--color-primary-100);
-    padding: var(--size-xxs);
+    padding: var(--size-x   s);
 
   }
 
@@ -311,7 +317,7 @@ export async function load({ ctx, params }) {
 
     if (hasSlot) {
       //   console.log("xslot: ", item.slot)
-      if (item.slot) {
+      if (item.slot?.length > 0) {
         props.slot = (
           await Promise.all(
             item.slot.map(async (item) =>
@@ -349,7 +355,7 @@ function Placeholder({ id, size = "md", placement, name } = {}) {
   return View(
     {
       class: `placeholder placeholder-${size} placeholder-${placement}`,
-      onClick: `contextmenuOpen = false; if(position === '${id}') {${openModal(
+      onClick: `$event.stopPropagation(); id='${id}'; contextmenuOpen = false; if(position === '${id}') {${openModal(
         "add-component"
       )}} else {position='${id}'; placement='${placement}'; }`,
     },
@@ -362,6 +368,7 @@ function Placeholder({ id, size = "md", placement, name } = {}) {
 function ContextMenu() {
   return View(
     {
+      'u-cloak': true,
       "onClick.outside": "contextmenuOpen = false",
       onClick: "contextmenuOpen = false",
       $style:
@@ -520,7 +527,9 @@ function ComponentSettingsModal({
       value: instanceProps[prop.name] ?? {
         type: "static",
         value: prop.default_value,
+         
       },
+      type: prop.type
     });
   }
 
@@ -565,7 +574,12 @@ function ComponentSettingsModal({
             ),
           ]),
           Row({ $if: "prop.value.type === 'static'" }, [
-            Input({ name: "prop.value.value" }),
+            Input({ $if: "prop.type === 'plain_text'", name: "prop.value.value" }),
+            Textarea({ $if: "prop.type === 'rich_text'", rows:10, name: "prop.value.value" }),
+            Input({ $if: "prop.type === 'number'", type: 'number', name: "prop.value.value" }),
+            Datepicker({ $if: "prop.type === 'date'", name: "prop.value.value" }),
+            Switch({ $if: "prop.type === 'boolean'", name: "prop.value.value" }),
+
           ]),
           Accordions(
             { $if: "prop.value.type === 'load'", style: "border: none" },
@@ -606,6 +620,8 @@ function EditorPageHeader({ page }) {
       $data: { edit_title: false, title: page.title },
     },
     [
+      View([
+
       View({ tag: "h2", $if: "!edit_title" }, [
         View({ $text: "title" }),
         Button(
@@ -636,6 +652,7 @@ function EditorPageHeader({ page }) {
           )
         ),
       ]),
+    ]),
       ButtonGroup([
         Button({ href: "/admin/pages" }, "Back"),
         Button(
