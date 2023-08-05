@@ -30,18 +30,26 @@ import {
 const style = `
   <style>
   .item {
+    display: contents;
+  }
+
+  .item > :not(.placeholder) {
+    
     transition: all 0.2s ease;
     position: relative;
     min-height: var(--size-md);
-    border: 1px solid transparent;
+    border: 1px dotted var(--color-primary-100);
+    padding: var(--size-xxs);
+
   }
 
-  .item:hover {
+  .item > :not(.placeholder):hover {
     border: 1px dashed var(--color-primary-400);
+    
   }
-  .item.active {
-    padding: var(--size-sm);
+  .item.active > :not(.placeholder) {
     border: 1px solid var(--color-primary-500);
+    background-color: var(--color-primary-100);
   }
   
   .placeholder {
@@ -55,33 +63,28 @@ const style = `
     gap: var(--size-xs);
     border: 1px dashed var(--color-primary-200);
     opacity: 1;
+    width: 100%;
+
   }
 
   .placeholder-md {
     height: 100px;
-    margin: var(--size-sm);
   }
 
   .placeholder-sm {
     height: 0;
-    position: absolute;
-    border-color: transparent;
+    display: none;
 
   }
 
-  .item.active {
-    margin-bottom: var(--size-sm);
-    margin-top: var(--size-sm);
-  }
-
-  .item.active > .placeholder-sm {
+  .item.active  > .placeholder-sm {
     height: calc(var(--size-sm));
     border: 1px solid var(--color-primary-200);
     top: 0;
     bottom: 0;
   }
 
-  .item.active > .placeholder-sm.placeholder-before {
+  .item.active  > .placeholder-sm.placeholder-before {
     bottom: calc(100% + 1px);
     top: auto;
     left: -1px;
@@ -97,7 +100,6 @@ const style = `
 
   .placeholder-slot {
     min-height: var(--size-4xl);
-    margin: var(--size-xs);
   }
 
   .placeholder.active {
@@ -134,7 +136,7 @@ export async function add_component({ ctx, body, params }) {
   let content = [];
 
   function check_insert(item, parent) {
-    console.log("check_insert", {item, parent})
+    console.log("check_insert", { item, parent });
     if (item.id == body.position) {
       if (body.placement === "before") {
         parent.push(newItem);
@@ -143,27 +145,25 @@ export async function add_component({ ctx, body, params }) {
         parent.push(item);
         parent.push(newItem);
       } else {
-        item.slot ??= []
-        item.slot.push(newItem)
+        item.slot ??= [];
+        item.slot.push(newItem);
         parent.push(item);
       }
       // slot
     } else {
-      if(item.slot) {
-        let slot = []
-        for(let x of item.slot) {
-          check_insert(x, slot)
+      if (item.slot) {
+        let slot = [];
+        for (let x of item.slot) {
+          check_insert(x, slot);
         }
-        item.slot = slot
+        item.slot = slot;
       }
       parent.push(item);
-
     }
-
   }
-  
+
   for (let item of page.content) {
-    check_insert(item, content)
+    check_insert(item, content);
   }
 
   if (!body.position && body.placement === "after") {
@@ -199,16 +199,15 @@ export async function set_props({ ctx, body, params }) {
         item.props[prop.name] = prop.value;
       }
     } else {
-      if(item.slot) {
-        let slot = []
-        for(let x of item.slot) {
-          update_props(x, slot)
+      if (item.slot) {
+        let slot = [];
+        for (let x of item.slot) {
+          update_props(x, slot);
         }
-        item.slot = slot
+        item.slot = slot;
       }
     }
-    parent.push(item)
-
+    parent.push(item);
   }
 
   for (let item of page.content) {
@@ -234,19 +233,19 @@ export async function remove_component({ ctx, params, body }) {
   let content = [];
 
   function check_remove(item, parent) {
-    if(item.id === itemId) return;
-    if(item.slot) {
-      const slot = []
-      for(let x of item.slot) {
-        check_remove(x, slot)
+    if (item.id === itemId) return;
+    if (item.slot) {
+      const slot = [];
+      for (let x of item.slot) {
+        check_remove(x, slot);
       }
-      item.slot = slot
+      item.slot = slot;
     }
-    parent.push(item)
+    parent.push(item);
   }
-  
+
   for (let item of page.content) {
-    check_remove(item, content)
+    check_remove(item, content);
   }
 
   page.content = content;
@@ -281,54 +280,63 @@ export async function load({ ctx, params }) {
 
   async function renderItem(item) {
     const component = await ctx
-    .table("components")
-    .get({ where: { id: item.component_id } });
+      .table("components")
+      .get({ where: { id: item.component_id } });
 
-  console.log({ component });
-  const itemProps = {};
+    console.log({ component });
+    const itemProps = {};
 
-  for (let propName in item.props) {
-    const prop = item.props[propName];
+    for (let propName in item.props) {
+      const prop = item.props[propName];
 
-    if (prop.type === "load") {
-      const res = await ctx
-        .table(prop.table)
-        .get({ where: prop.where, select: { [prop.field]: true } });
+      if (prop.type === "load") {
+        const res = await ctx
+          .table(prop.table)
+          .get({ where: prop.where, select: { [prop.field]: true } });
 
-      itemProps[propName] = res[prop.field];
-    } else if (prop.type === "static") {
-      itemProps[propName] = prop.value;
+        itemProps[propName] = res[prop.field];
+      } else if (prop.type === "static") {
+        itemProps[propName] = prop.value;
+      }
     }
-  }
 
     const props = {};
 
     const template = component.template;
+    const hasSlot = template.indexOf("{{slot}}" > -1);
 
     component.props.map((prop) => {
       props[prop.name] = itemProps[prop.name] ?? prop.default_value;
     });
 
-
-    if(item.slot) {
-      console.log("xslot: ", item.slot)
-      props.slot = (await Promise.all(item.slot.map(async item => ComponentContent(await renderItem(item))))).join('') + Placeholder({ id: item.id, placement: "slot" })
-    } else {
-      props.slot = Placeholder({ id: item.id, placement: "slot" });
+    if (hasSlot) {
+      //   console.log("xslot: ", item.slot)
+      if (item.slot) {
+        props.slot = (
+          await Promise.all(
+            item.slot.map(async (item) =>
+              ComponentContent(await renderItem(item))
+            )
+          )
+        ).join("");
+        //  Placeholder({ id: item.id, placement: "slot" })]
+      } else {
+        props.slot = [
+          Placeholder({ name: component.name, id: item.id, placement: "slot" }),
+        ];
+      }
     }
 
+    // render hbs
+    item.content = hbs.compile(template)(props);
+    item.component = component;
 
-
-  // render hbs
-  item.content = hbs.compile(template)(props);
-  item.component = component;
-
-  console.log("item: ", item)
-  return item;
+    console.log("item: ", item);
+    return item;
   }
 
   for (let item of page.content) {
-    item = await renderItem(item)
+    item = await renderItem(item);
   }
 
   return {
@@ -337,13 +345,13 @@ export async function load({ ctx, params }) {
   };
 }
 
-function Placeholder({ id, size = "md", placement } = {}) {
+function Placeholder({ id, size = "md", placement, name } = {}) {
   return View(
     {
       class: `placeholder placeholder-${size} placeholder-${placement}`,
-      onClick: `$event.stopPropagation(); position='${id}'; placement='${placement}'; ${openModal(
+      onClick: `contextmenuOpen = false; if(position === '${id}') {${openModal(
         "add-component"
-      )}`,
+      )}} else {position='${id}'; placement='${placement}'; }`,
     },
     false
       ? [[Icon({ size: "lg", name: "plus" }), "Click to add Component"]]
@@ -431,19 +439,22 @@ function ComponentContent(item) {
       {
         class: "item",
         tabindex: 0,
-        "onClick.outside": "id = ''",
-        onDblclick: `$event.stopPropagation(); $modal.open('component-${item.id}-settings')`,
+        "onClick.outside": "id = ''; contextmenuOpen = false",
+        // onDblclick: `$event.stopPropagation(); $modal.open('component-${item.id}-settings')`,
         $class: `id === '${item.id}' ? 'active' : ''`,
-        onClick: `$event.stopPropagation(); setTimeout(() => id = '${item.id}')`,
-        onContextmenu: `$event.stopPropagation(); $event.preventDefault(); contextmenuOpen = true; x = $event.clientX; y = $event.clientY; id = '${item.id}'`,
+        onClick: `$event.stopPropagation(); contextmenuOpen = false; if(id ==='${item.id}') { contextmenuOpen = true; x = $event.clientX; y = $event.clientY;} else {id = '${item.id}'}`,
         style: "cursor: default",
       },
       [
-        Placeholder({ id: item.id, placement: "before", size: "sm" }),
+        Placeholder({
+          id: item.id,
+          placement: "before",
+          size: "sm",
+          name: "insert new component Here",
+        }),
         // item.slot && item.slot.map(x => ComponentContent(x)),
         item.content,
-        Placeholder({ id: item.id, placement: "after", size: "sm" }),
-        
+
         // Popover({ placement: "top-end", trigger: "hover", p: 0, gap: 0 }, [
         //   ButtonGroup({ compact: true, style: "border-radius: 0" }, [
         //     Button(
@@ -465,7 +476,7 @@ function ComponentContent(item) {
         // ]),
       ]
     ),
-  ];
+  ]
 }
 
 function PreviewModal(page) {
@@ -502,7 +513,7 @@ function ComponentSettingsModal({
 }) {
   const props = [];
 
-  console.log({componentProps})
+  console.log({ componentProps });
   for (let prop of componentProps) {
     props.push({
       name: prop.name,
@@ -639,7 +650,7 @@ function EditorPageHeader({ page }) {
 
 function EditorPage({ page, components }) {
   const htmlHead = [style];
-  console.log(page.content.map(content => content.component))
+  console.log(page.content.map((content) => content.component));
 
   return Page(
     {
@@ -653,6 +664,7 @@ function EditorPage({ page, components }) {
         y: 0,
         id: "",
       },
+      onClick: "id = ''",
     },
     [
       View({ d: "flex", flexDirection: "column" }, [
@@ -661,15 +673,19 @@ function EditorPage({ page, components }) {
         View(
           {
             m: "xs",
-            style: "height: calc(100vh - 132px); overflow-y: auto",
+            style: "height: calc(100vh - 132px); overflow-y: auto; outline: none",
             bgColor: "base-200",
+            'onKeydown': `console.log($event); if($event.code === 'Space')  {$modal.open('component-' + id + '-settings')} else if($event.code ===   'Escape') {id = ''}`,
+            
+            tabindex: '0',
             h: 100,
             border: true,
             borderColor: "base-400",
           },
           [
-            page.content.map((x) => ComponentContent(x)),
-            Placeholder({ placement: "after", id: "" }),
+            page.content.map((x) => ComponentContent(x)).join(""),
+            page.content.length == 0 &&
+              Placeholder({ placement: "after", id: "" }),
           ]
         ),
       ]),
@@ -681,29 +697,34 @@ function EditorPage({ page, components }) {
   );
 }
 
-function ComponentRemoveModals({content}) {
-  let result = []
-  content.map(item => {
-    result = [...result, ComponentRemoveModal({id: item.id})]
-    if(item.slot) {
-      result = [...result, ...ComponentRemoveModals({content: item.slot})]
+function ComponentRemoveModals({ content }) {
+  let result = [];
+  content.map((item) => {
+    result = [...result, ComponentRemoveModal({ id: item.id })];
+    if (item.slot) {
+      result = [...result, ...ComponentRemoveModals({ content: item.slot })];
     }
-  })
-  return result
+  });
+  return result;
 }
 
-
-function ComponentSettingsModals({content}) {
-  let result = []
-  content.map(item => {
-    result = [...result, ComponentSettingsModal({id: item.id, component: item.component, props: item.props})]
-    if(item.slot) {
-      result = [...result, ...ComponentSettingsModals({content: item.slot})]
+function ComponentSettingsModals({ content }) {
+  let result = [];
+  content.map((item) => {
+    result = [
+      ...result,
+      ComponentSettingsModal({
+        id: item.id,
+        component: item.component,
+        props: item.props,
+      }),
+    ];
+    if (item.slot) {
+      result = [...result, ...ComponentSettingsModals({ content: item.slot })];
     }
-  })
-  return result
+  });
+  return result;
 }
-
 
 function ComponentRemoveModal({ id }) {
   return createModal({

@@ -16,7 +16,6 @@ export async function load({ ctx, params, query }) {
 
   if(!page) return {}
 
-  console.log(page)
 
 
   async function normalizeProps(item) {
@@ -38,7 +37,8 @@ export async function load({ ctx, params, query }) {
   }
 
   for(let item2 of page.content) {
-    normalizeProps(item2)
+    await normalizeProps(item2)
+
   }
   
 
@@ -59,7 +59,6 @@ export default ({ page, components }) => {
   try {
     const layoutTemplate = page.layout?.template ?? `{{{head}}}{{{body}}}`;
 
-    console.log(page, layoutTemplate)
 
     
 
@@ -72,14 +71,12 @@ export default ({ page, components }) => {
     }
 
     function renderItem(item) {
-      console.log('renderItem', item)
       const id = item.component_id;
       const props = {}
       const component = components.find(x => x.id === id)
 
       if(item.slot) {
         const slot = renderBody(item.slot)
-        console.log({slot, itemSlot: item.slot})
         props['slot'] = slot
       }
 
@@ -90,11 +87,8 @@ export default ({ page, components }) => {
       })
 
 
-      console.log({props})
-
-      console.log({template, props})
+    
       const result = hbs.compile(template)(props)
-      console.log(result)
       return result;
     }
 
@@ -104,9 +98,7 @@ export default ({ page, components }) => {
       for(let item of content) {
         // handle styles..
         result += renderItem(item)
-        console.log(result)
       }
-
       return result
     }
     
