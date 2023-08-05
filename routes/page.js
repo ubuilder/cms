@@ -1,3 +1,5 @@
+import { View } from "@ulibs/ui"
+
 export default () => {
-    return 'Landing Page'
+    return View('Landing Page')
 }
