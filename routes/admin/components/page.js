@@ -9,6 +9,7 @@ import {
   Icon,
   Input,
   Row,
+  Select,
   Textarea,
   View,
 } from "@ulibs/ui";
@@ -79,7 +80,20 @@ function ComponentModal({
             body: [
               Row([
                 Input({ colXs: 6, label: "Name", name: "prop.name" }),
-                Input({ colXs: 6, label: "Type", name: "prop.type" }),
+                Select({
+                  colXs: 6,
+                  label: "Type",
+                  name: "prop.type",
+                  key: "key",
+                  text: "text",
+                  items: [
+                    { key: "plain_text", text: "Plain Text" },
+                    { key: "rich_text", text: "Rich Text" },
+                    { key: "number", text: "Number" },
+                    { key: "date", text: "Date" },
+                    { key: "boolean", text: "Boolean" },
+                  ],
+                }),
                 Input({ label: "Default Value", name: "prop.default_value" }),
 
                 Col({ d: "flex", justify: "end", col: 12 }, [
@@ -97,7 +111,7 @@ function ComponentModal({
           }),
         ]),
       ]),
-      Row({ mt: "sm" }, [
+      Row({ mt: "sm", $data: {new_name: ''} }, [
         Input({
           col: true,
           placeholder: "Enter name of new prop...",
@@ -136,6 +150,7 @@ function ComponentModal({
       Textarea({
         name: "template",
         label: "Template",
+        rows: 12,
         description: "use { and } to access to props",
         placeholder: "Hello {name}!",
       }),
@@ -144,6 +159,9 @@ function ComponentModal({
 }
 
 export default ({ components }) => {
+  let script = `const data = {};`;
+
+  script = script + components.map(x => `data['${x.id}'] = ${JSON.stringify({...x, template: x.template.replace(/<\/script/g, '<\\/script')})}; `).join('\n')
   function Component({ id, name, props, template }) {
     return [
       Card(
@@ -164,11 +182,12 @@ export default ({ components }) => {
         mode: "edit",
         onEdit: runAction(
           "update",
-          `{id: ${id}, name, props, template}`,
+          `{id: '${id}', name, props, template}`,
           reload()
         ),
         name: `edit-component-${id}`,
-        value: { name, props, template, new_name: "" },
+        value: `data['${id}']`,
+        // value: { name, props, new_name: "" },
         size: "xs",
       }),
     ];
@@ -176,6 +195,8 @@ export default ({ components }) => {
   return Page(
     {
       title: "Components",
+
+      script,
       actions: [
         Button({ href: "/admin/pages" }, [
           Icon({ name: "chevron-left" }),
