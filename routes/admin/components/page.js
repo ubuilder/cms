@@ -111,7 +111,7 @@ function ComponentModal({
           }),
         ]),
       ]),
-      Row({ mt: "sm" }, [
+      Row({ mt: "sm", $data: {new_name: ''} }, [
         Input({
           col: true,
           placeholder: "Enter name of new prop...",
@@ -150,6 +150,7 @@ function ComponentModal({
       Textarea({
         name: "template",
         label: "Template",
+        rows: 12,
         description: "use { and } to access to props",
         placeholder: "Hello {name}!",
       }),
@@ -158,6 +159,9 @@ function ComponentModal({
 }
 
 export default ({ components }) => {
+  let script = `const data = {};`;
+
+  script = script + components.map(x => `data['${x.id}'] = ${JSON.stringify({...x, template: x.template.replace(/<\/script/g, '<\\/script')})}; `).join('\n')
   function Component({ id, name, props, template }) {
     return [
       Card(
@@ -182,7 +186,8 @@ export default ({ components }) => {
           reload()
         ),
         name: `edit-component-${id}`,
-        value: { name, props, template, new_name: "" },
+        value: `data['${id}']`,
+        // value: { name, props, new_name: "" },
         size: "xs",
       }),
     ];
@@ -190,6 +195,8 @@ export default ({ components }) => {
   return Page(
     {
       title: "Components",
+
+      script,
       actions: [
         Button({ href: "/admin/pages" }, [
           Icon({ name: "chevron-left" }),

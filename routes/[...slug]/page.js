@@ -1,30 +1,31 @@
-import hbs from 'handlebars'
-
-// render published pages
-
-export async function load({ctx, params}) {
-
-    const slug = params['*']
+import { renderPage } from "../../utils/render.js";
 
 
-  let page = await ctx.table("pages").get({ where: { slug, published: true } });
+export async function load({ ctx, params, query }) {
+  const slug = params['*'];
 
+
+  console.log(slug)
+  let page = await ctx.table("pages").get({
+    where: { slug },
+    with: {
+      layout: {
+        table: "layouts",
+        field: "layout_id",
+      },
+    },
+  });
+
+  if (!page) return {};
 
   return {
-    page
+    content: await renderPage({ctx, page})
   }
 }
 
-export default ({ page }) => {
-  if (!page) {
+export default ({ content }) => {
+  if (!content) {
     return;
   }
-
-  try {
-    const template = hbs.compile(page.template);
-
-    return `<!DOCTYPE html><html><head>${page.head}</head><body>${template({})}</body></html>`;
-  } catch (err) {
-    return `there is an error in template of this page, \n\n${err.message}.\n\n <a href="/admin/page/${page.slug}">Edit Page</a>"`;
-  }
+  return content;
 };

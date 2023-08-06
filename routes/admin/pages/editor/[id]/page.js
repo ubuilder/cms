@@ -45,7 +45,7 @@ const style = `
     position: relative;
     min-height: var(--size-md);
     border: 1px dotted var(--color-primary-100);
-    padding: var(--size-x   s);
+    padding: var(--size-xs);
 
   }
 
@@ -355,9 +355,9 @@ function Placeholder({ id, size = "md", placement, name } = {}) {
   return View(
     {
       class: `placeholder placeholder-${size} placeholder-${placement}`,
-      onClick: `$event.stopPropagation(); id='${id}'; contextmenuOpen = false; if(position === '${id}') {${openModal(
+      onClick: `$event.stopPropagation(); id='${id}'; contextmenuOpen = false; position='${id}'; placement='${placement}'; if(position === '${id}') {${openModal(
         "add-component"
-      )}} else {position='${id}'; placement='${placement}'; }`,
+      )}}`,
     },
     false
       ? [[Icon({ size: "lg", name: "plus" }), "Click to add Component"]]
