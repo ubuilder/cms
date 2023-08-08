@@ -20,6 +20,7 @@ import {
   Tooltip,
   View,
   Textarea,
+  Divider,
 } from "@ulibs/ui";
 import { Page } from "../../../../../components/Page.js";
 import { createModal } from "../../../../../components/createModal.js";
@@ -30,6 +31,7 @@ import {
   openModal,
   runAction,
 } from "../../../../../utils/ui.js";
+import { PageHeader } from "../../../../../components/PageHeader.js";
 
 const style = `
   <style>
@@ -44,9 +46,10 @@ const style = `
     transition: all 0.2s ease;
     position: relative;
     min-height: var(--size-md);
-    border: 1px dotted var(--color-primary-100);
-    padding: var(--size-xs);
-
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+    min-height: var(--size-xl);
   }
 
   .item > :not(.placeholder):hover {
@@ -74,7 +77,7 @@ const style = `
   }
 
   .placeholder-md {
-    height: 100px;
+    height: var(--size-xl);
   }
 
   .placeholder-sm {
@@ -105,7 +108,7 @@ const style = `
   }
 
   .placeholder-slot {
-    min-height: var(--size-4xl);
+    min-height: var(--size-xl);
   }
 
   .placeholder.active {
@@ -289,6 +292,7 @@ export async function load({ ctx, params }) {
       .table("components")
       .get({ where: { id: item.component_id } });
 
+    item.component = component;
     console.log({ component });
     const itemProps = {};
 
@@ -320,9 +324,14 @@ export async function load({ ctx, params }) {
       if (item.slot?.length > 0) {
         props.slot = (
           await Promise.all(
-            item.slot.map(async (item) =>
-              ComponentContent(await renderItem(item))
-            )
+            item.slot.map(async (x) => {
+              x.parent = item
+
+              return ComponentContent({
+                ...(await renderItem(x)),
+                parent: item,
+              });
+            })
           )
         ).join("");
         //  Placeholder({ id: item.id, placement: "slot" })]
@@ -335,9 +344,7 @@ export async function load({ ctx, params }) {
 
     // render hbs
     item.content = hbs.compile(template)(props);
-    item.component = component;
 
-    console.log("item: ", item);
     return item;
   }
 
@@ -365,10 +372,68 @@ function Placeholder({ id, size = "md", placement, name } = {}) {
   );
 }
 
+function ContextMenu2(item) {
+  function Content(item, mode = "static") {
+    console.log('375: ', item);
+    if (!item) return;
+    return Card([
+      CardBody(
+        { p: "xxs" },
+        [
+         mode ==='static' ? View({ py: "xs", px: 'xxs' }, [item.component.name + " Settings"]) : '',
+
+        ButtonGroup({ align: "center" }, [
+          Button({ onClick: ``, size: 'sm'}, Icon({ name: "cut" })),
+          Button({ onClick: ``, size: 'sm'}, Icon({ name: "copy" })),
+          Button({ size: 'sm', onClick: `$modal.open('component-${item.id}-settings')` }, [
+            Icon({ name: "settings" }),
+          ]),
+          Button({ size: 'sm', onClick: `$modal.open('component-${item.id}-remove')` }, [
+            Icon({ name: "trash" }),
+          ]),
+          Button(
+            {
+              size: 'sm',
+              onClick: ` position='${item.id}'; placement='before'; ${openModal(
+                "add-component"
+              )}`,
+            },
+            [Tooltip("Insert Before"), Icon({ name: "column-insert-left" })]
+          ),
+          Button(
+            {
+              size: 'sm',
+              onClick: ` position='${item.id}'; placement='after'; ${openModal(
+                "add-component"
+              )}`,
+            },
+            [Tooltip("Insert After"), Icon({ name: "column-insert-right" })]
+          ),
+        ])
+      ]
+      ),
+      item.parent ? Content(item.parent) : "",
+   
+    ]);
+  }
+
+  return View(
+    {
+      "u-cloak": true,
+      "onClick.outside": "contextmenuOpen = false",
+      onClick: "contextmenuOpen = false",
+      $style: `(contextmenuOpen && id==='${item.id}') ? ('z-index: 2; min-height: auto; position: fixed; display: block; top: ' + y + 'px;' + 'left: ' + x + 'px') : 'display: none'`,
+    },
+    [
+      Content(item, 'dynamic'),
+    ]
+  );
+}
+
 function ContextMenu() {
   return View(
     {
-      'u-cloak': true,
+      "u-cloak": true,
       "onClick.outside": "contextmenuOpen = false",
       onClick: "contextmenuOpen = false",
       $style:
@@ -441,49 +506,29 @@ function ContextMenu() {
 }
 
 function ComponentContent(item) {
-  return [
-    View(
-      {
-        class: "item",
-        tabindex: 0,
-        "onClick.outside": "id = ''; contextmenuOpen = false",
-        // onDblclick: `$event.stopPropagation(); $modal.open('component-${item.id}-settings')`,
-        $class: `id === '${item.id}' ? 'active' : ''`,
-        onClick: `$event.stopPropagation(); contextmenuOpen = false; if(id ==='${item.id}') { contextmenuOpen = true; x = $event.clientX; y = $event.clientY;} else {id = '${item.id}'}`,
-        style: "cursor: default",
-      },
-      [
-        Placeholder({
-          id: item.id,
-          placement: "before",
-          size: "sm",
-          name: "insert new component Here",
-        }),
-        // item.slot && item.slot.map(x => ComponentContent(x)),
-        item.content,
-
-        // Popover({ placement: "top-end", trigger: "hover", p: 0, gap: 0 }, [
-        //   ButtonGroup({ compact: true, style: "border-radius: 0" }, [
-        //     Button(
-        //       {
-        //         size: "sm",
-        //         onClick: `$modal.open('component-${item.id}-settings')`,
-        //       },
-        //       [Icon({ name: "settings" })]
-        //     ),
-        //     Button(
-        //       {
-        //         size: "sm",
-        //         color: "error",
-        //         onClick: `$modal.open('component-${item.id}-remove')`,
-        //       },
-        //       Icon({ name: "x" })
-        //     ),
-        //   ]),
-        // ]),
-      ]
-    ),
-  ]
+  if (!item) return "";
+  return View(
+    {
+      class: "item",
+      // tabindex: 0,
+      "onClick.outside": "id = ''; contextmenuOpen = false",
+      // onDblclick: `$event.stopPropagation(); $modal.open('component-${item.id}-settings')`,
+      $class: `id === '${item.id}' ? 'active' : ''`,
+      onContextmenu: `$event.preventDefault(); $event.stopPropagation(); contextmenuOpen = false; id = '${item.id}'; if(id ==='${item.id}') { contextmenuOpen = true; x = $event.clientX; y = $event.clientY;} else {id = '${item.id}'}`,
+      style: "cursor: default",
+    },
+    [
+      // JSON.stringify({item}),
+      Placeholder({
+        id: item.id,
+        placement: "before",
+        size: "sm",
+        name: "insert new component Here",
+      }),
+      item.content,
+      ContextMenu2(item),
+    ]
+  );
 }
 
 function PreviewModal(page) {
@@ -527,9 +572,8 @@ function ComponentSettingsModal({
       value: instanceProps[prop.name] ?? {
         type: "static",
         value: prop.default_value,
-         
       },
-      type: prop.type
+      type: prop.type,
     });
   }
 
@@ -574,12 +618,28 @@ function ComponentSettingsModal({
             ),
           ]),
           Row({ $if: "prop.value.type === 'static'" }, [
-            Input({ $if: "prop.type === 'plain_text'", name: "prop.value.value" }),
-            Textarea({ $if: "prop.type === 'rich_text'", rows:10, name: "prop.value.value" }),
-            Input({ $if: "prop.type === 'number'", type: 'number', name: "prop.value.value" }),
-            Datepicker({ $if: "prop.type === 'date'", name: "prop.value.value" }),
-            Switch({ $if: "prop.type === 'boolean'", name: "prop.value.value" }),
-
+            Input({
+              $if: "prop.type === 'plain_text'",
+              name: "prop.value.value",
+            }),
+            Textarea({
+              $if: "prop.type === 'rich_text'",
+              rows: 10,
+              name: "prop.value.value",
+            }),
+            Input({
+              $if: "prop.type === 'number'",
+              type: "number",
+              name: "prop.value.value",
+            }),
+            Datepicker({
+              $if: "prop.type === 'date'",
+              name: "prop.value.value",
+            }),
+            Switch({
+              $if: "prop.type === 'boolean'",
+              name: "prop.value.value",
+            }),
           ]),
           Accordions(
             { $if: "prop.value.type === 'load'", style: "border: none" },
@@ -610,107 +670,52 @@ function ComponentSettingsModal({
 }
 
 function EditorPageHeader({ page }) {
-  return View(
+  return PageHeader(
     {
-      d: "flex",
-      p: "xs",
-      align: "center",
-      justify: "between",
-      pb: "sm",
+      px: "xs",
+      py: "xs",
       $data: { edit_title: false, title: page.title },
-    },
-    [
-      View([
-
-      View({ tag: "h2", $if: "!edit_title" }, [
-        View({ $text: "title" }),
-        Button(
-          { link: true },
-          Icon({ size: "lg", onClick: "edit_title = true", name: "pencil" })
-        ),
-      ]),
-      Row({ $if: "edit_title" }, [
-        Input({ col: true, name: "title" }),
-        Col(
-          { col: 0 },
+      title: View({ d: "flex" }, [
+        View({ d: "flex", $if: "!edit_title" }, [
+          View({ style: "text-wrap: nowrap", $text: "title" }),
           Button(
-            {
-              onClick:
-                "edit_title = false; " + runAction("update_title", "{title}"),
-              color: "primary",
-            },
-            "Save"
-          )
-        ),
-        Col(
-          { col: 0 },
-          Button(
-            {
-              onClick: `edit_title = false; title='${page.title}'`,
-            },
-            Icon({ name: "x" })
-          )
-        ),
+            { link: true },
+            Icon({ size: "lg", onClick: "edit_title = true", name: "pencil" })
+          ),
+        ]),
+        Row({ $if: "edit_title" }, [
+          Input({ col: true, name: "title" }),
+          Col(
+            { col: 0 },
+            Button(
+              {
+                onClick:
+                  "edit_title = false; " + runAction("update_title", "{title}"),
+                color: "primary",
+              },
+              "Save"
+            )
+          ),
+          Col(
+            { col: 0 },
+            Button(
+              {
+                onClick: `edit_title = false; title='${page.title}'`,
+              },
+              Icon({ name: "x" })
+            )
+          ),
+        ]),
       ]),
-    ]),
-      ButtonGroup([
-        Button({ href: "/admin/pages" }, "Back"),
-        Button(
-          { onClick: `$modal.open('preview-modal')`, color: "info" },
-          "Preview"
-        ),
-        Button({ color: "primary" }, "Publish"),
-      ]),
-    ]
-  );
-}
-
-function EditorPage({ page, components }) {
-  const htmlHead = [style];
-  console.log(page.content.map((content) => content.component));
-
-  return Page(
-    {
-      htmlHead,
-      container: false,
-      $data: {
-        placement: "",
-        position: "",
-        contextmenuOpen: false,
-        x: 0,
-        y: 0,
-        id: "",
-      },
-      onClick: "id = ''",
     },
-    [
-      View({ d: "flex", flexDirection: "column" }, [
-        ContextMenu(),
-        EditorPageHeader({ page }),
-        View(
-          {
-            m: "xs",
-            style: "height: calc(100vh - 132px); overflow-y: auto; outline: none",
-            bgColor: "base-200",
-            'onKeydown': `console.log($event); if($event.code === 'Space')  {$modal.open('component-' + id + '-settings')} else if($event.code ===   'Escape') {id = ''}`,
-            
-            tabindex: '0',
-            h: 100,
-            border: true,
-            borderColor: "base-400",
-          },
-          [
-            page.content.map((x) => ComponentContent(x)).join(""),
-            page.content.length == 0 &&
-              Placeholder({ placement: "after", id: "" }),
-          ]
-        ),
-      ]),
-      ComponentRemoveModals(page),
-      ComponentSettingsModals(page),
-      PreviewModal(page),
-      ComponentAddModal({ components }),
-    ]
+    ButtonGroup([
+      Button({ href: "/admin/pages" }, "Back"),
+      Button(
+        { onClick: `$modal.open('preview-modal')`, color: "info" },
+        "Preview"
+      ),
+      Button({ color: "primary" }, "Publish"),
+    ])
   );
 }
 
@@ -803,6 +808,61 @@ function ComponentAddModal({ components }) {
       ),
     ],
   });
+}
+
+function EditorPage({ page, components }) {
+  const htmlHead = [style];
+  console.log(page.content.map((content) => content.component));
+
+  return Page(
+    {
+      htmlHead,
+      container: false,
+      $data: {
+        placement: "",
+        position: "",
+        contextmenuOpen: false,
+        x: 0,
+        y: 0,
+        id: "",
+      },
+      onClick: "id = ''",
+    },
+    [
+      View({ d: "flex", flexDirection: "column" }, [
+        // ContextMenu(),
+        EditorPageHeader({ page }),
+        View(
+          {
+            p: "xs",
+          },
+          [
+            View(
+              {
+                style:
+                  "height: calc(100vh - 132px); overflow-y: auto; outline: none; box-shadow: 0 0 4px var(--color-base-700);",
+                onKeydown: `console.log($event); if($event.code === 'Space')  {$modal.open('component-' + id + '-settings')} else if($event.code ===   'Escape') {id = ''}`,
+                bgColor: "base-100",
+                tabindex: "0",
+                h: 100,
+                border: true,
+                borderColor: "base-700",
+              },
+              [
+                page.content.map((x) => ComponentContent(x)).join(""),
+                page.content.length == 0 &&
+                  Placeholder({ placement: "after", id: "" }),
+              ]
+            ),
+          ]
+        ),
+      ]),
+      ComponentRemoveModals(page),
+      ComponentSettingsModals(page),
+      PreviewModal(page),
+      ComponentAddModal({ components }),
+    ]
+  );
 }
 
 export default EditorPage;
