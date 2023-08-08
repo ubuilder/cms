@@ -1,4 +1,4 @@
-import { View,Row, Dropdown,Icon , Button , DropdownPanel, DropdownItem, Col} from "@ulibs/ui"
+import { View,Row, Dropdown,Icon , Button , DropdownPanel, DropdownItem, Col, Image} from "@ulibs/ui"
 import { IconPicker } from "../../../components/IconPicker.js";
 import { runAction } from "../../../utils/ui.js";
 
@@ -45,9 +45,10 @@ export default function({assets}){
   
   return offCanvas({ $data: {assets: []}, }, [
     headSection(),
-    View({$text: 'assets'}),
-    Col({for: 'assete in assets'},[
-      Row({tag: 'img', src:'asset.url', atl: 'asset.name'})
+    Row([
+      Col({col: 6,$for: 'assete in assets'}, [
+        Image({$src:"'/' + assete.url", $alt: 'assete.name', w: '100', h: 'auto'})
+      ])
     ])
   ]);
 }
@@ -74,7 +75,7 @@ function offCanvas(props, slots){
 
 function headSection(){
   return Row({$data : { type: "all"}, $effect: runAction('getAssets', `{type}`, "assets = res.assets")}, [
-    Dropdown([
+    Dropdown([ 
       Button({$text: 'type'}),
       DropdownPanel([
         DropdownItem({onClick:"type = 'all'"},'All'),

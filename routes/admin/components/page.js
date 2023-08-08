@@ -120,7 +120,7 @@ function ComponentModal({
         Col({ col: 0 }, [
           Button(
             {
-              onClick: `${name}.push({name: new_name, type: 'string', default_value: ''}); new_name = ''`,
+              onClick: `${name}.push({name: new_name, type: 'plain_text', default_value: ''}); new_name = ''`,
             },
             [Icon({ name: "plus" }), "Add Prop"]
           ),
