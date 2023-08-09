@@ -65,7 +65,7 @@ function OffCanvas() {
       $data: {assets: [],view: '', type: 'all'},
       $effect: runAction('getAssets', `{type}`,"view = res.view" ),
       style:
-        "width: 350px; height: 100%; background-color: var(--color-base-800)",
+        "width: 350px; height: 100%; background-color: var(--color-base-800); color: var(--color-base-200);text-align:center",
       script: function greating(View){return View('hellow')},
     },
     [View("Assets"), headSection(), assetsSection()]
