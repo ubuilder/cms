@@ -33,7 +33,7 @@ export  async function upload({ctx, body}){
         width: '',
         height: '',
     }
-    await ctx.table('assets').insert(asset)
+    // await ctx.table('assets').insert(asset)
     return {
         body: {success: true},
     }
