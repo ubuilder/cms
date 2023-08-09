@@ -36,6 +36,7 @@ function renderItem({ item, components }) {
     props["slot"] = slot;
   }
 
+  console.log({components, id})
   const template = component.template;
 
   component.props.map((prop) => {
@@ -67,19 +68,35 @@ export async function renderPage({ ctx, page }) {
       .query({ perPage: 100 })
       .then((res) => res.data);
 
-    const layoutTemplate = page.layout?.template ?? `{{{head}}}{{{body}}}`;
+    const layout = `
+    <!DOCTYPE html>
+<html>
+  <head>
+  <title>{{page.title}}</title>
 
-    const template = hbs.compile(layoutTemplate);
+    {{{head}}}
+  </head>
+<body>
+  {{{body}}}
+</body>
+</html>
+    `
+
+    // const layoutTemplate = page.layout?.template ?? `{{{head}}}{{{body}}}`;
+
+    const template = hbs.compile(layout);
 
     const head = renderHead({ page });
     const body = renderBody({ content: page.content, components });
 
+    console.log(template)
     const result = template({
       body,
       head,
     });
     return result;
   } catch (err) {
+    console.log(err)
     return `there is an error in template of this page, \n\n${err.message}.\n\n <a href="/admin/page/${page.slug}">Edit Page</a>"`;
   }
 }

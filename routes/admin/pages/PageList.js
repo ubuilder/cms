@@ -1,21 +1,39 @@
-import { Badge, Button, Icon, Input, Select, Textarea, View } from "@ulibs/ui";
+import {
+  Badge,
+  Button,
+  Icon,
+  Input,
+  Select,
+  Switch,
+  Textarea,
+  View,
+} from "@ulibs/ui";
 import { Page } from "../../../components/Page.js";
-import { openModal, reload, runAction } from "../../../utils/ui.js";
+import { navigate, openModal, reload, runAction } from "../../../utils/ui.js";
 import { createModal } from "../../../components/createModal.js";
 
 function PageItem({
   title = "",
   id = "",
-  layout_id = "",
   slug = "",
   head = "",
-  layouts,
+  content = [],
+  is_template = false,
 } = {}) {
   return View(
-    { border: true, borderColor: "base-400", bgColor: "base-200", p: "sm" },
+    {
+      $data: { is_template },
+      border: true,
+      borderColor: "base-400",
+      bgColor: "base-200",
+      p: "sm",
+    },
     [
-      View({ tag: "h3", d: "flex", justify: "between", align: "center" }, [
-        title,
+      View({ d: "flex", justify: "between", align: "center" }, [
+        View({ d: "flex", gap: "md", align: "center" }, [
+          View({ tag: "h3" }, title),
+          Badge({ $if: "is_template", color: "primary" }, "Template"),
+        ]),
         Button(
           { color: "primary", href: "/preview/" + id },
           Icon({ name: "external-link" })
@@ -33,18 +51,38 @@ function PageItem({
           mt: "sm",
           href: "/admin/pages/editor/" + id,
         },
-        [Icon({ name: "pencil" }), "Edit"]
+        [Icon({ name: "pencil" }), View({$text: "is_template ? 'Edit template' : 'Edit page'"})]
       ),
+      Button(
+        {
+          $if: 'is_template',
+          mt: "sm",
+          color: 'primary',
+          onClick: openModal('add-page-' + id)
+          // href: "/admin/pages/editor/" + id,
+        },
+        [Icon({ name: "plus" }), "Use this template"]
+      ),
+      PageModal({
+        $if: 'is_template',
+        name: "add-page-" + id,
+        mode: "add",
+        onAdd: runAction(
+          "add",
+          `{title, slug, head, is_template: false, content}`,
+          navigate("'/admin/pages/editor/' + res.id")
+        ),
+        value: { title, slug, head, content },
+      }),
 
       PageModal({
         name: "page-" + id,
         mode: "edit",
         onEdit: runAction(
           "update_page",
-          `{id: '${id}',title, slug, layout_id, head}`
+          `{id: '${id}',title, slug, head, content, is_template: false}`
         ),
-        layouts,
-        value: { title, slug, layout_id, head },
+        value: { id, title, slug, content, head },
       }),
     ]
   );
@@ -55,9 +93,9 @@ function PageModal({
   onAdd = "",
   onEdit = "",
   mode = "add",
-  value = { title: "", slug: "", layout_id: "" },
-  layouts = [],
+  value = { title: "", slug: "", is_template: false },
 }) {
+
   return createModal({
     name,
     $data: value,
@@ -72,30 +110,54 @@ function PageModal({
         placeholder: "Enter title of page",
       }),
       Input({
+        if: '!is_template',
         label: "Slug",
         name: "slug",
         placeholder: "Enter url part of page /about-us, /blogs/{slug}, ...",
       }),
-      Select({
-        label: "Layout",
-        items: layouts,
-        key: "id",
-        text: "name",
-        name: "layout_id",
-        placeholder: "Choose a layout",
-      }),
-      mode === "edit" && Textarea({ name: "head", label: "Head" }),
+
+      (mode === "edit" && [
+        Textarea({ name: "head", label: "Head" }),
+
+
+      Button(
+        {
+          my: "md",
+          onClick: runAction("convert_to_template", `{id}`, reload()),
+          $if: "!is_template",
+        },
+        "Convert to template"
+      ),
+      Button(
+        {
+          mt: "sm",
+          onClick: runAction("convert_to_page", `{id}`, reload()),
+          $if: "is_template",
+        },
+        "Convert to page"
+      ),
+      View({w: 100}),
+      Button(
+        {
+          mt: "sm",
+          onClick: runAction("remove_page", `{id}`, reload()),
+          color: 'error'
+        },
+        [View({$if: 'is_template'}, "Remove template"),
+        View({$if: '!is_template'}, "Remove page")]
+      ),
+
+      ] || '')
     ],
   });
 }
 
-export function PageList({ pages, layouts }) {
+export function PageList({ pages }) {
   return Page(
     {
       title: "Pages",
       actions: [
         Button({ href: "/admin/components" }, "Components"),
-        Button({ href: "/admin/layouts" }, "Layouts"),
         Button({ onClick: openModal("add-page"), color: "primary" }, [
           Icon({ name: "plus" }),
           "Add Page",
@@ -105,15 +167,10 @@ export function PageList({ pages, layouts }) {
     [
       View(
         { d: "flex", gap: "sm", flexDirection: "column" },
-        pages.map((page) => PageItem({ ...page, layouts }))
+        pages.map((page) => PageItem(page))
       ),
       PageModal({
-        onAdd: runAction(
-          "add",
-          "{title, slug, layout_id, head: '', content: []}",
-          reload()
-        ),
-        layouts,
+        onAdd: runAction("add", "{title, slug, is_template}", navigate("'/admin/pages/editor/' + res.id")),
       }),
     ]
   );

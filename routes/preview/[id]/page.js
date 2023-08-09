@@ -6,12 +6,12 @@ export async function load({ ctx, params, query }) {
 
   let page = await ctx.table("pages").get({
     where: { id: pageId },
-    with: {
-      layout: {
-        table: "layouts",
-        field: "layout_id",
-      },
-    },
+    // with: {
+    //   layout: {
+    //     table: "layouts",
+    //     field: "layout_id",
+    //   },
+    // },
   });
 
   if (!page) return {};

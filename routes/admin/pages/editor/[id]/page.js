@@ -1,3 +1,4 @@
+import { uuid } from "uuidv4";
 import {
   Accordion,
   Accordions,
@@ -45,11 +46,19 @@ const style = `
     
     transition: all 0.2s ease;
     position: relative;
-    min-height: var(--size-md);
+    min-height: var(--size-lg);
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
-    min-height: var(--size-xl);
+  }
+
+  .item.cut > :not(.content-menu) {
+    opacity: 0.5;
+    border: 1px solid var(--color-base-400);
+  }
+
+  .item.copy > :not(.content-menu) {
+    border: 1px solid var(--color-primary-300);
   }
 
   .item > :not(.placeholder):hover {
@@ -130,22 +139,62 @@ const style = `
   
   `;
 
+export async function convert_to_component({ ctx, body, params }) {
+  const {id} = body
+  const pageId = params.id
+
+  const page = await ctx.table('pages').get({where: {id: pageId}});
+
+  function find_item(content) {
+    let result
+
+    for(let item of content) {
+      if(item.id === id) {
+        result = item
+        break;
+      }
+  
+      if(item.slot && item.slot.length > 0) {
+        find_item(item.slot)
+      }
+    }
+  
+    return result;
+  }
+  
+  const result = find_item(page.content)
+
+  console.log({result})
+
+
+  const component = await ctx.table('components').get({where: {id: result.component_id}})
+
+
+
+  const newComponent = {
+    name: body.name,
+    template: component.template,
+    props: {},
+    // content: result.
+  }
+
+  console.log({result, component, newComponent})
+  
+}
+
 export async function add_component({ ctx, body, params }) {
   const id = params.id;
   const page = await ctx.table("pages").get({ where: { id } });
 
   const newItem = {
-    id: "content_" + Math.random(),
+    id: uuid(),
     component_id: body.component_id,
-    props: {},
+    props: body.props ?? {},
   };
-
-  console.log("add_component", body);
 
   let content = [];
 
   function check_insert(item, parent) {
-    console.log("check_insert", { item, parent });
     if (item.id == body.position) {
       if (body.placement === "before") {
         parent.push(newItem);
@@ -176,13 +225,20 @@ export async function add_component({ ctx, body, params }) {
   }
 
   if (!body.position && body.placement === "after") {
-    console.log("insert at end of page");
     content.push(newItem);
   }
 
   page.content = content;
   await ctx.table("pages").update(id, page);
 
+  await set_props({
+    ctx,
+    body: {
+      props: body.props,
+      id: newItem.id,
+    },
+    params: { id: params.id },
+  });
   return {
     body: {
       success: true,
@@ -191,8 +247,6 @@ export async function add_component({ ctx, body, params }) {
 }
 
 export async function set_props({ ctx, body, params }) {
-  console.log("set props", body);
-
   const props = body.props;
 
   const pageId = params.id;
@@ -203,7 +257,8 @@ export async function set_props({ ctx, body, params }) {
   let content = [];
 
   function update_props(item, parent) {
-    if (item.id == itemId) {
+    if (item.id === itemId) {
+      item.props = {};
       for (let prop of props) {
         item.props[prop.name] = prop.value;
       }
@@ -293,7 +348,6 @@ export async function load({ ctx, params }) {
       .get({ where: { id: item.component_id } });
 
     item.component = component;
-    console.log({ component });
     const itemProps = {};
 
     for (let propName in item.props) {
@@ -320,12 +374,11 @@ export async function load({ ctx, params }) {
     });
 
     if (hasSlot) {
-      //   console.log("xslot: ", item.slot)
       if (item.slot?.length > 0) {
         props.slot = (
           await Promise.all(
             item.slot.map(async (x) => {
-              x.parent = item
+              x.parent = item;
 
               return ComponentContent({
                 ...(await renderItem(x)),
@@ -374,26 +427,77 @@ function Placeholder({ id, size = "md", placement, name } = {}) {
 
 function ContextMenu2(item) {
   function Content(item, mode = "static") {
-    console.log('375: ', item);
     if (!item) return;
+    const props = [];
+
+    for (let prop of item.component.props) {
+      props.push({
+        name: prop.name,
+        value: item.props[prop.name] ?? {
+          type: "static",
+          value: prop.default_value,
+        },
+      });
+      console.log({ props });
+    }
     return Card([
-      CardBody(
-        { p: "xxs" },
-        [
-         mode ==='static' ? View({ py: "xs", px: 'xxs' }, [item.component.name + " Settings"]) : '',
+      CardBody({ p: "xxs" }, [
+        mode === "static"
+          ? View({ py: "xs", px: "xxs" }, [item.component.name + " Settings"])
+          : "",
 
         ButtonGroup({ align: "center" }, [
-          Button({ onClick: ``, size: 'sm'}, Icon({ name: "cut" })),
-          Button({ onClick: ``, size: 'sm'}, Icon({ name: "copy" })),
-          Button({ size: 'sm', onClick: `$modal.open('component-${item.id}-settings')` }, [
-            Icon({ name: "settings" }),
-          ]),
-          Button({ size: 'sm', onClick: `$modal.open('component-${item.id}-remove')` }, [
-            Icon({ name: "trash" }),
-          ]),
           Button(
             {
-              size: 'sm',
+              onClick: `document.querySelector('#item-${
+                item.id
+              }').classList.add('cut'); clipboard = ${JSON.stringify({
+                item_id: item.id,
+                mode: "cut",
+                component_id: item.component.id,
+                props,
+              }).replace(/"/g, "&quot;")}`,
+              size: "sm",
+            },
+            Icon({ name: "cut" })
+          ),
+          Button(
+            {
+              onClick: `document.querySelector('#item-${
+                item.id
+              }').classList.add('copy'); clipboard = ${JSON.stringify({
+                mode: "copy",
+                component_id: item.component.id,
+                props,
+              }).replace(/"/g, "&quot;")}`,
+              size: "sm",
+            },
+            Icon({ name: "copy" })
+          ),
+          Button(
+            {
+              size: "sm",
+              onClick: `$modal.open('component-${item.id}-settings')`,
+            },
+            [Icon({ name: "settings" })]
+          ),
+          Button(
+            {
+              size: "sm",
+              onClick: `$modal.open('component-${item.id}-remove')`,
+            },
+            [Icon({ name: "trash" })]
+          ),
+          Button(
+            {
+              size: "sm",
+              onClick: `$modal.open('convert-component-${item.id}')`,
+            },
+            [Icon({ name: "star" }), Tooltip("Convert to Component")]
+          ),
+          Button(
+            {
+              size: "sm",
               onClick: ` position='${item.id}'; placement='before'; ${openModal(
                 "add-component"
               )}`,
@@ -402,106 +506,28 @@ function ContextMenu2(item) {
           ),
           Button(
             {
-              size: 'sm',
+              size: "sm",
               onClick: ` position='${item.id}'; placement='after'; ${openModal(
                 "add-component"
               )}`,
             },
             [Tooltip("Insert After"), Icon({ name: "column-insert-right" })]
           ),
-        ])
-      ]
-      ),
+        ]),
+      ]),
       item.parent ? Content(item.parent) : "",
-   
     ]);
   }
 
   return View(
     {
+      class: "context-menu",
       "u-cloak": true,
       "onClick.outside": "contextmenuOpen = false",
       onClick: "contextmenuOpen = false",
       $style: `(contextmenuOpen && id==='${item.id}') ? ('z-index: 2; min-height: auto; position: fixed; display: block; top: ' + y + 'px;' + 'left: ' + x + 'px') : 'display: none'`,
     },
-    [
-      Content(item, 'dynamic'),
-    ]
-  );
-}
-
-function ContextMenu() {
-  return View(
-    {
-      "u-cloak": true,
-      "onClick.outside": "contextmenuOpen = false",
-      onClick: "contextmenuOpen = false",
-      $style:
-        "contextmenuOpen ? ('z-index: 2; position: absolute; display: block; top: ' + y + 'px;' + 'left: ' + x + 'px') : 'display: none'",
-    },
-    [
-      Card([
-        CardBody({ p: "xs", d: "flex", flexDirection: "column" }, [
-          View(
-            {
-              onClick: `$modal.open('component-' + id + '-settings')`,
-              d: "flex",
-
-              py: "xs",
-              px: "sm",
-              style: "cursor: pointer",
-              gap: "sm",
-              align: "center",
-              me: "lg",
-            },
-            [Icon({ name: "settings" }), "Settings"]
-          ),
-          View(
-            {
-              onClick: `$modal.open('component-' + id + '-remove')`,
-              d: "flex",
-              py: "xs",
-              px: "sm",
-              style: "cursor: pointer",
-              gap: "sm",
-              align: "center",
-              me: "lg",
-            },
-            [Icon({ name: "x" }), "Remove"]
-          ),
-          View(
-            {
-              onClick: ` position=id; placement='before'; ${openModal(
-                "add-component"
-              )}`,
-              d: "flex",
-              py: "xs",
-              px: "sm",
-              style: "cursor: pointer",
-              gap: "sm",
-              align: "center",
-              me: "lg",
-            },
-            [Icon({ name: "chevron-up" }), "Insert Component Before"]
-          ),
-          View(
-            {
-              onClick: ` position= id; placement='after'; ${openModal(
-                "add-component"
-              )}`,
-              d: "flex",
-              py: "xs",
-              px: "sm",
-              style: "cursor: pointer",
-              gap: "sm",
-              align: "center",
-              me: "lg",
-            },
-            [Icon({ name: "chevron-down" }), "Insert Component After"]
-          ),
-        ]),
-      ]),
-    ]
+    [Content(item, "dynamic")]
   );
 }
 
@@ -510,6 +536,7 @@ function ComponentContent(item) {
   return View(
     {
       class: "item",
+      id: "item-" + item.id,
       // tabindex: 0,
       "onClick.outside": "id = ''; contextmenuOpen = false",
       // onDblclick: `$event.stopPropagation(); $modal.open('component-${item.id}-settings')`,
@@ -559,17 +586,17 @@ function PreviewModal(page) {
 }
 
 function ComponentSettingsModal({
-  id,
-  component: { props: componentProps, name, template } = {},
-  props: instanceProps = {},
+  item = {props: {}},
+  name,
+  component: { props: componentProps, name: componentName } = {},
+  onSubmit,
 }) {
   const props = [];
 
-  console.log({ componentProps });
   for (let prop of componentProps) {
     props.push({
       name: prop.name,
-      value: instanceProps[prop.name] ?? {
+      value: item.props[prop.name] ?? {
         type: "static",
         value: prop.default_value,
       },
@@ -577,96 +604,127 @@ function ComponentSettingsModal({
     });
   }
 
-  return createModal({
-    $data: { props },
-    name: `component-${id}-settings`,
-    title: "Component Settings",
-    actions: [
-      Button({ onClick: "$modal.close()" }, "Cancel"),
-      Button(
-        {
-          onClick: runAction("set_props", `{id: '${id}', props}`, reload()),
-          color: "primary",
-        },
-        "Save"
-      ),
-    ],
-    body: Col({ col: 12 }, [
-      FormField(
-        {
-          $for: "prop in props",
-          label: View({ $text: "prop.name" }),
-          style: "position: relative",
-        },
-        [
-          ButtonGroup({ style: "position: absolute; top: 28px; right: 8px" }, [
-            Button(
-              {
-                size: "sm",
-                onClick: "prop.value.type = 'load'",
-                $color: "prop.value.type === 'load' ? 'primary' : undefined",
-              },
-              Icon({ name: "database" })
-            ),
-            Button(
-              {
-                size: "sm",
-                onClick: "prop.value.type = 'static'",
-                $color: "prop.value.type === 'static' ? 'primary' : undefined",
-              },
-              Icon({ name: "star" })
-            ),
-          ]),
-          Row({ $if: "prop.value.type === 'static'" }, [
-            Input({
-              $if: "prop.type === 'plain_text'",
-              name: "prop.value.value",
-            }),
-            Textarea({
-              $if: "prop.type === 'rich_text'",
-              rows: 10,
-              name: "prop.value.value",
-            }),
-            Input({
-              $if: "prop.type === 'number'",
-              type: "number",
-              name: "prop.value.value",
-            }),
-            Datepicker({
-              $if: "prop.type === 'date'",
-              name: "prop.value.value",
-            }),
-            Switch({
-              $if: "prop.type === 'boolean'",
-              name: "prop.value.value",
-            }),
-          ]),
-          Accordions(
-            { $if: "prop.value.type === 'load'", style: "border: none" },
-            [
-              Card([
-                Accordion({
-                  style: "border-bottom: none",
-                  header: View(
-                    { d: "flex", w: 100, items: "center", justify: "between" },
-                    ["Dynamic"]
-                  ),
-                  body: [
-                    Row([
-                      Input({ label: "Table", name: "prop.value.table" }),
-                      Input({ label: "Field", name: "prop.value.field" }),
+  return View([
+    createModal({
+      $data: { name: componentName, id: item.id },
+      title: 'Convert to Component',
+      name: `convert-component-${item.id}`,
+      body: [Input({ label: "Component Name", name: 'name' })],
+      actions: [
+        Button({ onClick: closeModal() }, "Cancel"),
+        Button({
+          color: 'primary',
+          onClick: runAction("convert_to_component", "{id, name}", reload()),
+        }, "Create"),
+      ],
+    }),
+    createModal({
+      $data: { props },
+      name: name ?? `component-${id}-settings`,
+      title: "Component Settings",
+      actions: [
+        Button({ onClick: "$modal.close()" }, "Cancel"),
+        Button(
+          {
+            onClick: onSubmit,
+            color: "primary",
+          },
+          "Save"
+        ),
+      ],
+      body: Col({ col: 12 }, [
+        View({
+          $if: "props.length === 0",
+          $data: { props: [] },
+          "u-init": onSubmit,
+        }),
 
-                      "Where...",
-                    ]),
-                  ],
-                }),
-              ]),
-            ]
-          ),
-        ]
-      ),
-    ]),
-  });
+        FormField(
+          {
+            $for: "prop in props",
+            label: View({ $text: "prop.name" }),
+            style: "position: relative",
+          },
+          [
+            ButtonGroup(
+              { style: "position: absolute; top: 28px; right: 8px" },
+              [
+                Button(
+                  {
+                    size: "sm",
+                    onClick: "prop.value.type = 'load'",
+                    $color:
+                      "prop.value.type === 'load' ? 'primary' : undefined",
+                  },
+                  Icon({ name: "database" })
+                ),
+                Button(
+                  {
+                    size: "sm",
+                    onClick: "prop.value.type = 'static'",
+                    $color:
+                      "prop.value.type === 'static' ? 'primary' : undefined",
+                  },
+                  Icon({ name: "star" })
+                ),
+              ]
+            ),
+            Row({ $if: "prop.value.type === 'static'" }, [
+              Input({
+                $if: "prop.type === 'plain_text'",
+                name: "prop.value.value",
+              }),
+              Textarea({
+                $if: "prop.type === 'rich_text'",
+                rows: 10,
+                name: "prop.value.value",
+              }),
+              Input({
+                $if: "prop.type === 'number'",
+                type: "number",
+                name: "prop.value.value",
+              }),
+              Datepicker({
+                $if: "prop.type === 'date'",
+                name: "prop.value.value",
+              }),
+              Switch({
+                $if: "prop.type === 'boolean'",
+                name: "prop.value.value",
+              }),
+            ]),
+            Accordions(
+              { $if: "prop.value.type === 'load'", style: "border: none" },
+              [
+                Card([
+                  Accordion({
+                    style: "border-bottom: none",
+                    header: View(
+                      {
+                        d: "flex",
+                        w: 100,
+                        items: "center",
+                        justify: "between",
+                      },
+                      ["Dynamic"]
+                    ),
+                    body: [
+                      Row([
+                        Input({ label: "Table", name: "prop.value.table" }),
+                        Input({ label: "Field", name: "prop.value.field" }),
+
+                        "Where...",
+                      ]),
+                    ],
+                  }),
+                ]),
+              ]
+            ),
+          ]
+        ),
+      ]),
+    }),
+  ]);
 }
 
 function EditorPageHeader({ page }) {
@@ -736,9 +794,10 @@ function ComponentSettingsModals({ content }) {
     result = [
       ...result,
       ComponentSettingsModal({
-        id: item.id,
+        item,
+        name: "component-" + item.id + "-settings",
         component: item.component,
-        props: item.props,
+        onSubmit: runAction("set_props", `{id: '${item.id}', props}`, reload()),
       }),
     ];
     if (item.slot) {
@@ -767,20 +826,47 @@ function ComponentRemoveModal({ id }) {
 }
 
 function ComponentAddModal({ components }) {
+  const openSettings = (id = "active") =>
+    openModal(`add-component-' + ${id} + '-settings`);
+  const addComponent = (id = "active", props = [], then = reload) =>
+    runAction(
+      "add_component",
+      `{position, placement, component_id: ${id}, props: ${props}}`,
+      then()
+    );
+
   return createModal({
     $data: { active: "" },
     name: "add-component",
     title: "Add Component in Page",
     actions: [
       Button({ onClick: "$modal.close()" }, "Cancel"),
+
       Button(
         {
-          onClick: runAction(
-            "add_component",
-            "{position, placement, component_id: active}",
-            // openModal("component-settings")
-            reload()
-          ),
+          $if: "clipboard && clipboard.mode === 'cut'",
+          $disabled: "loading",
+          onClick:
+            "loading = true;" +
+            addComponent("clipboard.component_id", "clipboard.props", () =>
+              runAction("remove_component", `{id: clipboard.item_id}`, reload())
+            ),
+        },
+        "Paste"
+      ),
+
+      Button(
+        {
+          $if: "clipboard && clipboard.mode === 'copy'",
+          onClick: addComponent("clipboard.component_id", "clipboard.props"),
+        },
+        "Paste"
+      ),
+      Button(
+        {
+          $disabled: "!active",
+          onClick: closeModal() + ";" + openSettings("active"),
+
           color: "primary",
         },
         "Add"
@@ -812,13 +898,13 @@ function ComponentAddModal({ components }) {
 
 function EditorPage({ page, components }) {
   const htmlHead = [style];
-  console.log(page.content.map((content) => content.component));
 
   return Page(
     {
       htmlHead,
       container: false,
       $data: {
+        clipboard: {},
         placement: "",
         position: "",
         contextmenuOpen: false,
@@ -841,7 +927,7 @@ function EditorPage({ page, components }) {
               {
                 style:
                   "height: calc(100vh - 132px); overflow-y: auto; outline: none; box-shadow: 0 0 4px var(--color-base-700);",
-                onKeydown: `console.log($event); if($event.code === 'Space')  {$modal.open('component-' + id + '-settings')} else if($event.code ===   'Escape') {id = ''}`,
+                onKeydown: `if($event.code === 'Space')  {$modal.open('component-' + id + '-settings')} else if($event.code ===   'Escape') {id = ''}`,
                 bgColor: "base-100",
                 tabindex: "0",
                 h: 100,
@@ -861,6 +947,18 @@ function EditorPage({ page, components }) {
       ComponentSettingsModals(page),
       PreviewModal(page),
       ComponentAddModal({ components }),
+      components.map((component) => {
+        return ComponentSettingsModal({
+          name: `add-component-${component.id}-settings`,
+          item: {props: {}},
+          component,
+          onSubmit: runAction(
+            "add_component",
+            `{position, placement, component_id: '${component.id}', props}`,
+            reload()
+          ),
+        });
+      }),
     ]
   );
 }

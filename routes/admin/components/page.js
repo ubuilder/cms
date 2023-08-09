@@ -31,7 +31,6 @@ export async function load({ ctx }) {
 export async function update({ ctx, body }) {
   const component = {
     name: body.name,
-    slug: slugify(body.name),
     props: body.props,
     template: body.template,
   };
@@ -48,10 +47,8 @@ export async function update({ ctx, body }) {
 export async function add({ ctx, body }) {
   const component = {
     name: body.name,
-    slug: slugify(body.name),
     props: body.props,
     template: body.template,
-    version: 1,
   };
 
   await ctx.table("components").insert(component);
