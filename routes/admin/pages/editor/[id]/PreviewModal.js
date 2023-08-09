@@ -1,5 +1,9 @@
 import { Button, ButtonGroup, Card, CardBody, CardHeader, CardTitle, Icon, Modal, View } from "@ulibs/ui";
-import { closeModal } from "../../../../../utils/ui.js";
+import { closeModal, openModal } from "../../../../../utils/ui.js";
+
+export function openPreviewModal() {
+    return openModal("preview-modal")
+}
 
 export function PreviewModal(page) {
     return Modal({ name: "preview-modal", size: "lg" }, [

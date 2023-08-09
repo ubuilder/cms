@@ -8,15 +8,52 @@ import {
 } from "../../../../../utils/ui.js";
 import { ComponentEditForm, getPropsArray } from "./ItemModals.js";
 
+const baseComponent = {
+  id: "000",
+  name: "Base",
+  props: [
+    {
+      name: "script",
+      default_value: "",
+      type: "rich_text",
+    },
+    {
+      name: "style",
+      default_value: "",
+      type: "rich_text",
+    },
+    {
+      name: "template",
+      default_value: "",
+      type: "rich_text",
+    },
+  ],
+};
+
+export function openAddComponentModal() {
+  return openModal("add-component");
+}
+
+export function runAddComponentAction(
+  { position = "", placement = "", component_id = "", props = "" },
+  then = reload()
+) {
+  return runAction(
+    "add_component",
+    `{\
+      position${position}, \
+      placement${placement}, \
+      component_id${component_id}, \
+      props${props} \
+    }`,
+    then
+  );
+}
+
 export function ComponentAddModal({ components }) {
+  components = [baseComponent, ...components];
   const openSettings = (id = "active") =>
     openModal(`add-component-' + ${id} + '-settings`);
-  const addComponent = (id = "active", props = [], then = reload) =>
-    runAction(
-      "add_component",
-      `{position, placement, component_id: ${id}, props: ${props}}`,
-      then()
-    );
 
   return [
     components.map((component) => AddComponentSettings({ component })),
@@ -25,7 +62,7 @@ export function ComponentAddModal({ components }) {
       name: "add-component",
       title: "Add Component in Page",
       actions: [
-        Button({ onClick: "$modal.close()" }, "Cancel"),
+        Button({ onClick: closeModal() }, "Cancel"),
 
         Button(
           {
@@ -34,7 +71,7 @@ export function ComponentAddModal({ components }) {
             $disabled: "loading",
             onClick:
               "loading = true;" +
-              addComponent("clipboard.component_id", "clipboard.props", () =>
+              runAddComponentAction({component_id: ": clipboard.component_id", props: ": clipboard.props"}, () =>
                 runAction(
                   "remove_component",
                   `{id: clipboard.item_id}`,
@@ -48,7 +85,10 @@ export function ComponentAddModal({ components }) {
         Button(
           {
             $if: "clipboard && clipboard.mode === 'copy'",
-            onClick: addComponent("clipboard.component_id", "clipboard.props"),
+            onClick: runAddComponentAction({
+              component_id: ": clipboard.component_id",
+              props: ": clipboard.props",
+            }),
           },
           "Paste"
         ),
@@ -100,11 +140,7 @@ export function AddComponentSettings({ component }) {
     name: `add-component-${component.id}-settings`,
     mode: "add",
     title: "Component Settings",
-    onAdd: runAction(
-      "add_component",
-      `{position, placement, component_id: '${component.id}', props}`,
-      reload()
-    ),
+    onAdd: runAddComponentAction({ component_id: `: '${component.id}'` }),
     body: ComponentEditForm({ onSubmit: "" }),
   });
 }

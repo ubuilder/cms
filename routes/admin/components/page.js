@@ -16,7 +16,6 @@ import {
 import { createModal } from "../../../components/createModal.js";
 import { Page } from "../../../components/Page.js";
 import { openModal, reload, runAction } from "../../../utils/ui.js";
-import { slugify } from "../../../utils/slugify.js";
 
 export async function load({ ctx }) {
   const Components = ctx.table("components");

@@ -9,6 +9,7 @@ import {
 } from "@ulibs/ui";
 import { Placeholder } from "./Placeholder.js";
 import { openModal } from "../../../../../utils/ui.js";
+import { openAddComponentModal } from "./ComponentModals.js";
 
 function ContextMenu({ item }) {
   function Content(item, mode = "static") {
@@ -86,7 +87,7 @@ function ContextMenu({ item }) {
               onClick: [
                 `position='${item.id}'`,
                 `placement='before'`,
-                openModal("add-component"),
+                openAddComponentModal(),
               ].join(";"),
             },
             [Tooltip("Insert Before"), Icon({ style: '--icon-size: var(--size-md)', name: "column-insert-left" })]
@@ -94,9 +95,7 @@ function ContextMenu({ item }) {
           Button(
             {
               size: "sm",
-              onClick: ` position='${item.id}'; placement='after'; ${openModal(
-                "add-component"
-              )}`,
+              onClick: ` position='${item.id}'; placement='after'; ${openAddComponentModal()}`,
             },
             [Tooltip("Insert After"), Icon({ style: '--icon-size: var(--size-md)', name: "column-insert-right" })]
           ),
