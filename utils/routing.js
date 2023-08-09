@@ -1,5 +1,5 @@
 import recursiveReadDir from "recursive-readdir";
-import { resolve } from "path";
+import { resolve, sep } from "path";
 
 export async function fileBasedRouting({
   path,
@@ -49,6 +49,7 @@ export async function fileBasedRouting({
   }
 
   for (let file of files) {
+    file = file.split(sep).join('/')
     if (file.endsWith("page.js") || file.endsWith("layout.js")) {
       const { actions, load, page, type } = await loadModule(file, ctx);
       const slug = getSlug(file);
