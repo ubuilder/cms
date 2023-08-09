@@ -10,23 +10,39 @@ import {
 import { runAction } from "../../../utils/ui.js";
 
 
+export default function () {
+  return OffCanvas(); 
+}
+
 export  async function getAssets({ctx, body}){
     const option ={
         perpage: 50,
-        where: body?.type? {type : body.type}: undefined
-    }
-    const assets = await ctx.table('assets').query(option).then(res => res)
-    console.log('assets', assets)
+        where: body?.type !== 'all'? {type : body.type}: undefined
+    }    
+    const assets = await ctx.table('assets').query(option).then(res => res.data)
+
+    const result  = View({d: 'flex'},assets.map(asset=>{
+      return Media({
+        image: View({tag: 'img',src: asset.url, alt: asset.alt, width: '50px'}),
+        audeo: View({tag: 'audeo', width: '50px' }, [View({tag: 'source', src: asset.url}), View('View')]),
+        vidio: View({tag: 'video', width: '50px' }, [View({tag: 'source', src: asset.url}), View('View')]),
+      }[asset.type]
+    )}))
+
     return {
-        body: {success: true},
+      body: {
+        success: true,
         assets,
-    }
+        view: result.toString(),
+      },
+    };
 }
+
 export  async function upload({ctx, body}){
     const asset = {
-        name: '2.jpg',
+        name: '3.jpg',
         type: 'image',
-        url: 'assets/images/2.jpg',
+        url: '../assets/images/3.jpg',
         alt: 'image',
         description: 'this is image',
         cation: '',
@@ -39,25 +55,27 @@ export  async function upload({ctx, body}){
     }
 }
 
-export default function () {
-  return offCanvas(); 
+function Media(slot){
+  return View({m: 'xs', style: 'border: 2px solid var(--color-primary-400); border-radious : var(--size-sm)' },slot)
 }
 
-function offCanvas() {
+function OffCanvas() {
   return Col(
     {
-      $data: {assets: [], type: 'all'},
-      $effect: runAction('getAssets', `{type}`, (res)=>console.log('res', res)),
+      $data: {assets: [],view: '', type: 'all'},
+      $effect: runAction('getAssets', `{type}`,"view = res.view" ),
       style:
         "width: 350px; height: 100%; background-color: var(--color-base-800)",
+      script: function greating(View){return View('hellow')},
     },
-    [View("Assets"), assetsHeadSection(), assetsSection()]
+    [View("Assets"), headSection(), assetsSection()]
   );
 }
-export function assetsHeadSection() {
+
+export function headSection() {
   return Row([
     Col({col: 8},[
-        Dropdown({style: 'flex: 100%'},[
+        Dropdown({style: 'flex-grow: 1'},[
             Button({style: 'width: 100%',$text: 'type'}),
             DropdownPanel([
               DropdownItem({onClick: "type = 'all'", }, "All"),
@@ -70,10 +88,8 @@ export function assetsHeadSection() {
     Col({col: 4},[Button({style: 'width: 100%',onClick: runAction('upload', `{}`, ()=>console.log('upload done'))},"upload"),]),
   ]);
 }
+
 export function assetsSection() {
-  return View([
-    View({ tag: "img", widht: "40px", height: "auto", alt: "photo" }),
-    View({ tag: "img", widht: "40px", height: "auto", alt: "photo" }),
-    View({ tag: "img", widht: "40px", height: "auto", alt: "photo" }),
-  ]);
+  return View({$html: 'view'})
+  
 }
