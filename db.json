@@ -1,1 +1,25 @@
-{"pages":[{"id":"4a6e6494-2323-4549-9c6e-960f1fe4350c","title":"Hello ","slug":"234","head":"","content":[{"id":"9c1a76cf-2bb8-4af2-aac2-511eacbd2277","component_id":"a4ef082c-4203-4eb3-9934-453b3bd8d576","props":{"content":{"type":"static","value":"Helllo"}}}],"published":false,"is_template":true}],"components":[{"id":"a4ef082c-4203-4eb3-9934-453b3bd8d576","name":"HTML","slug":"html","props":[{"name":"content","type":"plain_text","default_value":""}],"template":"<div>{{{content}}}</div>"},{"id":"a3cff14e-b537-4342-8a0d-e3e9ea319598","name":"Container","slug":"container","props":[{"name":"size","type":"plain_text","default_value":""}],"template":"<div u-container u-container-size=\"{{size}}\">\n{{{slot}}}\n</div>"}]}
+{
+    "components": [
+        {
+            "id": "1",
+            "name": "Col",
+            "props": [
+                {
+                    "name": "text", 
+                    "default_value": "Hello",
+                    "type": "plain_text"
+                }
+            ],
+            "partial_id": "1"
+        }
+    ],
+    "partials": [
+        {
+            "id": "1",
+            "component_id": "1",
+            "props": {
+                
+            }
+        }
+    ]
+}
