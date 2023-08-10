@@ -1,14 +1,14 @@
 import { Accordion, Accordions, Button, ButtonGroup, Card, Col, Datepicker, FormField, Icon, Input, Row, Switch, Textarea, View } from "@ulibs/ui";
-import { createModal } from "../../../../../components/createModal.js";
-import { closeModal, reload, runAction } from "../../../../../utils/ui.js";
+import { createModal } from "../../../../components/createModal.js";
+import { closeModal, reload, runAction } from "../../../../utils/ui.js";
 
 export function ComponentEditForm({ onSubmit }) {
   return Col({ col: 12 }, [
-    View({
-      $if: "props.length === 0",
-      $data: { props: [] },
-      "u-init": onSubmit,
-    }),
+    // View({
+    //   $if: "props.length === 0",
+    //   $data: { props: [] },
+    //   "u-init": onSubmit,
+    // }),
 
     FormField(
       {
@@ -94,15 +94,15 @@ export function ComponentEditForm({ onSubmit }) {
 export function ConvertToComponentModal({name, id}) {
   return createModal({
     $data: { name, id },
-    title: "Convert to Component",
-    name: `convert-component-${id}`,
+    title: "Create Component",
+    name: `create-component-${id}`,
     body: [Input({ label: "Component Name", name: "name" })],
     actions: [
       Button({ onClick: closeModal() }, "Cancel"),
       Button(
         {
           color: "primary",
-          onClick: runAction("convert_to_component", "{id, name}", reload()),
+          onClick: runAction("create_component", "{id, name}", reload()),
         },
         "Create"
       ),
@@ -138,7 +138,7 @@ export function ComponentRemoveModal({id}) {
       Button(
         {
           onClick: runAction(
-            "remove_component",
+            "remove_instance",
             `{id: '${id}'}`,
             reload()
           ),
@@ -154,6 +154,7 @@ export function ComponentRemoveModal({id}) {
 export function getPropsArray({component, props}) {
   const result = [];
 
+  console.log(component, props)
   for (let prop of component.props) {
     result.push({
       name: prop.name,
@@ -169,27 +170,24 @@ export function getPropsArray({component, props}) {
 }
 
 export function ItemModal({
-  item = { props: {} },
+  item = { props: {}, component: {} },
 }) {
+  console.log({item})
   const props = getPropsArray({component: item.component, props: item.props});
  
   return [
     ComponentRemoveModal({id: item.id}),
-    ComponentSettingsModal({id: item.id, props, onSubmit: runAction("set_props", `{id: '${item.id}', props}`, reload())}),
+    ComponentSettingsModal({id: item.id, props, onSubmit: runAction("update_instance", `{id: '${item.id}', props}`, reload())}),
     ConvertToComponentModal({name: item.component.name, id: item.id})
   ];                                  
 }
 
 export function ItemModals({content}) {
-    let result = []
-
-    content.map(item => {
-        result = [...result, ItemModal({item})]
+    let result = [ItemModal({item: content})]
     
-        if(item.slot) {
-            result = [...result, ...ItemModals({content: item.slot})]
-        }
-    })
+      if(content.slot) {
+          result = [...result, ...content.slot.map(item => ItemModals({content: item}))]
+      }
 
     return result;
 }

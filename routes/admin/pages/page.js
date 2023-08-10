@@ -65,15 +65,29 @@ export async function add({ ctx, body }) {
     slug: body.slug,
     is_template: body.is_template,
     head: body.head ?? head,
-    content: body.content ?? [],
   };
   const [id] = await ctx.table("pages").insert(page);
+
+  const [instanceId] = await ctx.table('instances').insert({
+    component_id: '000',
+    slot_ids: [],
+    props: {
+      template: {
+        type: 'static',
+        value: '{{{slot}}}'
+      }
+    }
+  })
+
+  await ctx.table('pages').update(id, {
+    slot_id: instanceId
+  })
 
 
   return {
     body: {
       success: true,
-      id
+      id: instanceId
     },
   };
 }

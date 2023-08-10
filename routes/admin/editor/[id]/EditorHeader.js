@@ -1,6 +1,6 @@
 import { Button, Col, Icon, Input, Row, View } from "@ulibs/ui";
-import { runAction } from "../../../../../utils/ui.js";
-import { PageHeader } from "../../../../../components/PageHeader.js";
+import { runAction } from "../../../../utils/ui.js";
+import { PageHeader } from "../../../../components/PageHeader.js";
 import { openPreviewModal } from "./PreviewModal.js";
 
 function EditableTitle({ title }) {
@@ -38,14 +38,14 @@ function EditableTitle({ title }) {
   ]);
 }
 
-export function EditorPageHeader({ page }) {
+export function EditorHeader({ title }) {
   return Col(
     { col: 12 },
     PageHeader(
       {
         px: "xs",
         py: "xs",
-        title: EditableTitle({ title: page.title }),
+        title: EditableTitle({ title }),
       },
       [
         Button({ href: "/admin/pages" }, "Back"),

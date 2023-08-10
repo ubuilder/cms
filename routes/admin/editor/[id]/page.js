@@ -6,6 +6,6 @@ export * from './actions.js'
 export {default as load} from './load.js' 
 
 // page
-export { EditorPage as default } from "./EditorPage.js";
+export { Editor as default } from "./Editor.js";
 
 

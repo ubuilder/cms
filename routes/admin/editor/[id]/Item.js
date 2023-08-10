@@ -8,13 +8,14 @@ import {
   View,
 } from "@ulibs/ui";
 import { Placeholder } from "./Placeholder.js";
-import { openModal } from "../../../../../utils/ui.js";
 import { openAddComponentModal } from "./ComponentModals.js";
 
 function ContextMenu({ item }) {
   function Content(item, mode = "static") {
     if (!item) return;
     const props = [];
+
+    console.log(item)
 
     for (let prop of item.component.props) {
       props.push({
@@ -41,11 +42,14 @@ function ContextMenu({ item }) {
                 item_id: item.id,
                 mode: "cut",
                 component_id: item.component.id,
-                props,
+                // props,
               }).replace(/"/g, "&quot;")}`,
               size: "sm",
             },
-            [Tooltip("Cut"), Icon({ style: '--icon-size: var(--size-md)', name: "cut" })]
+            [
+              Tooltip("Cut"),
+              Icon({ style: "--icon-size: var(--size-md)", name: "cut" }),
+            ]
           ),
           Button(
             {
@@ -54,50 +58,80 @@ function ContextMenu({ item }) {
               }').classList.add('copy'); clipboard = ${JSON.stringify({
                 mode: "copy",
                 component_id: item.component.id,
-                props,
+                // props,
               }).replace(/"/g, "&quot;")}`,
               size: "sm",
             },
-            [Tooltip("Copy"), Icon({ style: '--icon-size: var(--size-md)', name: "copy" })]
+            [
+              Tooltip("Copy"),
+              Icon({ style: "--icon-size: var(--size-md)", name: "copy" }),
+            ]
           ),
           Button(
             {
               size: "sm",
               onClick: `$modal.open('component-${item.id}-settings')`,
             },
-            [Tooltip("Component Settings"), Icon({ style: '--icon-size: var(--size-md)', name: "settings" })]
+            [
+              Tooltip("Component Settings"),
+              Icon({ style: "--icon-size: var(--size-md)", name: "settings" }),
+            ]
           ),
           Button(
             {
               size: "sm",
               onClick: `$modal.open('component-${item.id}-remove')`,
             },
-            [Tooltip("Remove Component"), Icon({ style: '--icon-size: var(--size-md)', name: "trash" })]
+            [
+              Tooltip("Remove Component"),
+              Icon({ style: "--icon-size: var(--size-md)", name: "trash" }),
+            ]
           ),
           Button(
             {
               size: "sm",
-              onClick: `$modal.open('convert-component-${item.id}')`,
+              onClick: `$modal.open('create-component-${item.id}')`,
             },
-            [Icon({ style: '--icon-size: var(--size-md)', name: "star" }), Tooltip("Convert to Component")]
+            [
+              Icon({ style: "--icon-size: var(--size-md)", name: "star" }),
+              Tooltip("Create Component"),
+            ]
           ),
           Button(
             {
               size: "sm",
               onClick: [
+                `parent_id= '${item.parent?.id ?? ''}'`,
                 `position='${item.id}'`,
                 `placement='before'`,
                 openAddComponentModal(),
               ].join(";"),
             },
-            [Tooltip("Insert Before"), Icon({ style: '--icon-size: var(--size-md)', name: "column-insert-left" })]
+            [
+              Tooltip("Insert Before"),
+              Icon({
+                style: "--icon-size: var(--size-md)",
+                name: "column-insert-left",
+              }),
+            ]
           ),
           Button(
             {
               size: "sm",
-              onClick: ` position='${item.id}'; placement='after'; ${openAddComponentModal()}`,
+              onClick: [
+                `parent_id= '${item.parent?.id ?? ''}'`,
+                `position='${item.id}'`,
+                "placement = 'after'",
+                openAddComponentModal(),
+              ].join(";"),
             },
-            [Tooltip("Insert After"), Icon({ style: '--icon-size: var(--size-md)', name: "column-insert-right" })]
+            [
+              Tooltip("Insert After"),
+              Icon({
+                style: "--icon-size: var(--size-md)",
+                name: "column-insert-right",
+              }),
+            ]
           ),
         ]),
       ]),
@@ -141,11 +175,6 @@ export function Item({ item }) {
       style: "cursor: default",
     },
     [
-      Placeholder({
-        id: item.id,
-        placement: "before",
-        size: "sm",
-      }),
       item.content,
       ContextMenu({ item }),
     ]

@@ -1,7 +1,7 @@
 import { Col, View } from "@ulibs/ui";
-import { Page } from "../../../../../components/Page.js";
+import { Page } from "../../../../components/Page.js";
 import { Styles } from "./styles.js";
-import { EditorPageHeader } from "./Header.js";
+import { EditorHeader } from "./EditorHeader.js";
 import { Item } from "./Item.js";
 import { Placeholder } from "./Placeholder.js";
 import { ItemModals } from "./ItemModals.js";
@@ -28,7 +28,7 @@ function PageContainer(props, slot) {
   ]);
 }
 
-export function EditorPage({ page, components }) {
+export function Editor({ title, instance, components }) {
   return Page(
     {
       container: false,
@@ -45,13 +45,13 @@ export function EditorPage({ page, components }) {
     },
     [
       Styles(),
-      EditorPageHeader({ page }),
+      EditorHeader({ title }),
       PageContainer({}, [
-        page.content.map((x) => Item({ item: x })),
-        page.content.length == 0 && Placeholder({ placement: "after", id: "" }),
+        Item({ item: instance }),
+        Placeholder({ placement: "after", id: "" }),
       ]),
-      ItemModals({ content: page.content }),
-      PreviewModal(page),
+      ItemModals({ content: instance }),
+      // PreviewModal(page),
       ComponentAddModal({ components }),
     ]
   );

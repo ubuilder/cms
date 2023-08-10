@@ -1,46 +1,25 @@
 import { Button, Col, View } from "@ulibs/ui";
-import { createModal } from "../../../../../components/createModal.js";
+import { createModal } from "../../../../components/createModal.js";
 import {
   closeModal,
   openModal,
   reload,
   runAction,
-} from "../../../../../utils/ui.js";
+} from "../../../../utils/ui.js";
 import { ComponentEditForm, getPropsArray } from "./ItemModals.js";
-
-const baseComponent = {
-  id: "000",
-  name: "Base",
-  props: [
-    {
-      name: "script",
-      default_value: "",
-      type: "rich_text",
-    },
-    {
-      name: "style",
-      default_value: "",
-      type: "rich_text",
-    },
-    {
-      name: "template",
-      default_value: "",
-      type: "rich_text",
-    },
-  ],
-};
 
 export function openAddComponentModal() {
   return openModal("add-component");
 }
 
 export function runAddComponentAction(
-  { position = "", placement = "", component_id = "", props = "" },
+  { position = "", parent_id = ":''", placement = "", component_id = "", props = "" },
   then = reload()
 ) {
   return runAction(
-    "add_component",
+    "add_instance",
     `{\
+      parent_id${parent_id}, \
       position${position}, \
       placement${placement}, \
       component_id${component_id}, \
@@ -51,7 +30,6 @@ export function runAddComponentAction(
 }
 
 export function ComponentAddModal({ components }) {
-  components = [baseComponent, ...components];
   const openSettings = (id = "active") =>
     openModal(`add-component-' + ${id} + '-settings`);
 
@@ -73,7 +51,7 @@ export function ComponentAddModal({ components }) {
               "loading = true;" +
               runAddComponentAction({component_id: ": clipboard.component_id", props: ": clipboard.props"}, () =>
                 runAction(
-                  "remove_component",
+                  "remove_instance",
                   `{id: clipboard.item_id}`,
                   reload()
                 )

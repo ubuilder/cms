@@ -57,6 +57,39 @@ function renderBody({ content, components }) {
   return result;
 }
 
+
+export async function getInstance(ctx, id) {
+
+  const instance = await ctx.table('instances').get({where: {id}, with: {
+    component: {
+      table: 'components',
+      field: 'component_id'
+    }
+  }})
+  await normalizeProps({ctx, item: instance})
+
+  do {
+
+  let slot = await ctx.table('instances').query({where: {parent_id: id}, with: {
+    component: {
+      table: 'components',
+      field: 'component_id'
+    }
+  }})
+  for(let slotItem of slot) {
+    await normalizeProps({ctx, item: slotItem})
+  }
+  instance.slot = slot.data
+
+} while(slot.length > 0);
+
+
+console.log(instance)
+
+return instance
+
+}
+
 export async function renderPage({ ctx, page }) {
     if(!page) return 'page is not defined';
   for (let item of page.content) {

@@ -17,7 +17,7 @@ function PageItem({
   id = "",
   slug = "",
   head = "",
-  content = [],
+  slot_id,
   is_template = false,
 } = {}) {
   return View(
@@ -49,7 +49,7 @@ function PageItem({
       Button(
         {
           mt: "sm",
-          href: "/admin/pages/editor/" + id,
+          href: "/admin/editor/" + slot_id,
         },
         [Icon({ name: "pencil" }), View({$text: "is_template ? 'Edit template' : 'Edit page'"})]
       ),
@@ -69,10 +69,10 @@ function PageItem({
         mode: "add",
         onAdd: runAction(
           "add",
-          `{title, slug, head, is_template: false, content}`,
-          navigate("'/admin/pages/editor/' + res.id")
+          `{title, slug, head, is_template: false}`,
+          navigate("'/admin/editor/' + res.id")
         ),
-        value: { title, slug, head, content },
+        value: { title, slug, head, },
       }),
 
       PageModal({
@@ -80,9 +80,9 @@ function PageItem({
         mode: "edit",
         onEdit: runAction(
           "update_page",
-          `{id: '${id}',title, slug, head, content, is_template: false}`
+          `{id: '${id}',title, slug, head,  is_template: false}`
         ),
-        value: { id, title, slug, content, head },
+        value: { id, title, slug,  head },
       }),
     ]
   );
@@ -157,7 +157,7 @@ export function PageList({ pages }) {
     {
       title: "Pages",
       actions: [
-        Button({ href: "/admin/components" }, "Components"),
+        // Button({ href: "/admin/components" }, "Components"),
         Button({ onClick: openModal("add-page"), color: "primary" }, [
           Icon({ name: "plus" }),
           "Add Page",
@@ -170,7 +170,7 @@ export function PageList({ pages }) {
         pages.map((page) => PageItem(page))
       ),
       PageModal({
-        onAdd: runAction("add", "{title, slug, is_template}", navigate("'/admin/pages/editor/' + res.id")),
+        onAdd: runAction("add", "{title, slug, is_template}", navigate("'/admin/editor/' + res.id")),
       }),
     ]
   );
