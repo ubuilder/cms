@@ -6,15 +6,12 @@ import {
   DropdownItem,
   Col,
   Row,
-  Input,
   Icon,
   Tooltip
 } from "@ulibs/ui";
 import { runAction } from "../../../utils/ui.js";
 import { copyFileSync, rmSync, cpSync, renameSync, copyFile, cp, } from 'fs'
 import { basename, extname, resolve, join } from 'path'
-import { pathToFileURL } from "url";
-
 
 export default function () {
   return OffCanvas(); 
@@ -93,10 +90,10 @@ function OffCanvas() {
 }
 
 export function headSection() {
-  return Row({ }, [
-    Col({ col: 8, px: 'sm' }, [
+  return Row({}, [
+    Col({ col: 8, px: "sm", pe: 0 }, [
       Tooltip({ placement: "right" }, "Choose A Type"),
-      Dropdown({ style: "width: 100%" }, [
+      Dropdown({ style: "width: 100%; display: flex" }, [
         Button({ style: "width: 100%", $text: "type" }),
         DropdownPanel([
           DropdownItem({ onClick: "type = 'all'" }, "All"),
@@ -106,7 +103,7 @@ export function headSection() {
         ]),
       ]),
     ]),
-    Col({ col: 4,px: 'sm', $data: { file: "" } }, [
+    Col({ col: 4, px: "sm", $data: { file: "" } }, [
       View(
         {
           p: "xs",
