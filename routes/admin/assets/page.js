@@ -6,8 +6,13 @@ import {
   DropdownItem,
   Col,
   Row,
+  Form, 
+  Input,
 } from "@ulibs/ui";
 import { runAction } from "../../../utils/ui.js";
+import { copyFileSync, rmSync, cpSync, renameSync, copyFile, cp, } from 'fs'
+import { basename, extname, resolve, join } from 'path'
+import { pathToFileURL } from "url";
 
 
 export default function () {
@@ -38,18 +43,35 @@ export  async function getAssets({ctx, body}){
     };
 }
 
-export  async function upload({ctx, body}){
+export  async function upload({ctx, body, files}){
+  const file = files.file
+  console.log('object:>>>+>>', files, typeof file.path)
+  
+  
+  
+  
+  if(file.mimetype.startsWith('image')){
+    copyFileSync(file.path.split('\\').join("/"), `./assets/images/${basename(file.path)}`)
+  }else if(file.mimetype.startsWith('video')){
+    copyFileSync(file.path.split('\\').join("/"), `./assets/videos/${basename(file.path)}`)
+  }else if(file.mimetype.startsWith('audeos')){
+    copyFileSync(file.path.split('\\').join("/"), `./assets/audeos/${basename(file.path)}`)
+  }else{
+    throw new Error('This File type is not supported: ', files.file.mimetype)
+  }
+  rmSync(file.path.split('\\').join("/"))
+  
     const asset = {
-        name: '3.jpg',
-        type: 'image',
-        url: '../assets/images/3.jpg',
+        name: file.name,
+        type: file.mimetype.split('/')[0],
+        url: `/assets/images/${basename(file.path)}`,
         alt: 'image',
         description: 'this is image',
         cation: '',
         width: '',
         height: '',
-    }
-    // await ctx.table('assets').insert(asset)
+      }
+      await ctx.table('assets').insert(asset)
     return {
         body: {success: true},
     }
@@ -85,9 +107,12 @@ export function headSection() {
             ]),
           ]),
     ]),
-    Col({col: 4},[Button({style: 'width: 100%',onClick: runAction('upload', `{}`, ()=>console.log('upload done'))},"upload"),]),
+    Col({col: 4, $data: { file: ''}},[
+      Input({type: "file", onChange: "$upload", name: 'file', multiple: true, label: 'choose file'}),
+    ]),
   ]);
 }
+
 
 export function assetsSection() {
   return View({$html: 'view'})
