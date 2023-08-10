@@ -48,7 +48,7 @@ export function EditorHeader({ title }) {
         title: EditableTitle({ title }),
       },
       [
-        Button({ href: "/admin/pages" }, "Back"),
+        Button({ onClick: 'navigation.back()' }, "Back"),
         Button({ onClick: openPreviewModal(), color: "info" }, "Preview"),
         Button({ color: "primary" }, "Publish"),
       ]

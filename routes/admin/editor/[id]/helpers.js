@@ -12,7 +12,6 @@ export async function getInstance(ctx, id) {
       instance.slot ??= []
       instance.slot.push(await getInstance(ctx, slotId))
     }
-    console.log(instance)
   
     return instance;
   }

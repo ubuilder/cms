@@ -1,23 +1,18 @@
-import { renderPage } from "../../../utils/render.js";
+import { renderInstance, renderPage } from "../../../utils/render.js";
 
 
 export async function load({ ctx, params, query }) {
-  const pageId = params.id;
 
-  let page = await ctx.table("pages").get({
-    where: { id: pageId },
-    // with: {
-    //   layout: {
-    //     table: "layouts",
-    //     field: "layout_id",
-    //   },
-    // },
-  });
+  console.log('preview', params.id)
+  let page = await ctx.table("pages").get({where: {slot_id: params.id}});
 
   if (!page) return {};
+  const result = await renderPage({ctx, page})
+  
+  console.log(result)
 
   return {
-    content: await renderPage({ctx, page})
+    content: result
   }
 }
 

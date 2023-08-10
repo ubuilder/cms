@@ -10,12 +10,12 @@ import {
 import { Placeholder } from "./Placeholder.js";
 import { openAddComponentModal } from "./ComponentModals.js";
 
-function ContextMenu({ item }) {
+function ContextMenu({ item, rootId }) {
+  
   function Content(item, mode = "static") {
     if (!item) return;
+    
     const props = [];
-
-    console.log(item)
 
     for (let prop of item.component.props) {
       props.push({
@@ -25,7 +25,6 @@ function ContextMenu({ item }) {
           value: prop.default_value,
         },
       });
-      console.log({ props });
     }
     return Card([
       CardBody({ p: "xxs" }, [
@@ -34,7 +33,7 @@ function ContextMenu({ item }) {
           : "",
 
         ButtonGroup({ align: "center" }, [
-          Button(
+          item.id !== rootId ? Button(
             {
               onClick: `document.querySelector('#item-${
                 item.id
@@ -50,8 +49,8 @@ function ContextMenu({ item }) {
               Tooltip("Cut"),
               Icon({ style: "--icon-size: var(--size-md)", name: "cut" }),
             ]
-          ),
-          Button(
+          ) : '',
+          item.id !== rootId ? Button(
             {
               onClick: `document.querySelector('#item-${
                 item.id
@@ -66,7 +65,7 @@ function ContextMenu({ item }) {
               Tooltip("Copy"),
               Icon({ style: "--icon-size: var(--size-md)", name: "copy" }),
             ]
-          ),
+          ) : '',
           Button(
             {
               size: "sm",
@@ -77,7 +76,7 @@ function ContextMenu({ item }) {
               Icon({ style: "--icon-size: var(--size-md)", name: "settings" }),
             ]
           ),
-          Button(
+          item.id !== rootId ?  Button(
             {
               size: "sm",
               onClick: `$modal.open('component-${item.id}-remove')`,
@@ -86,18 +85,18 @@ function ContextMenu({ item }) {
               Tooltip("Remove Component"),
               Icon({ style: "--icon-size: var(--size-md)", name: "trash" }),
             ]
-          ),
-          Button(
+          ) : '',
+          item.id !== rootId ? Button(
             {
               size: "sm",
-              onClick: `$modal.open('create-component-${item.id}')`,
+              onClick: `parent_id = '${item.parent.id ?? ''}';$modal.open('create-component-${item.id}')`,
             },
             [
               Icon({ style: "--icon-size: var(--size-md)", name: "star" }),
               Tooltip("Create Component"),
             ]
-          ),
-          Button(
+          ) : '',
+          item.id !== rootId ? Button(
             {
               size: "sm",
               onClick: [
@@ -114,8 +113,8 @@ function ContextMenu({ item }) {
                 name: "column-insert-left",
               }),
             ]
-          ),
-          Button(
+          ) : '',
+          item.id !== rootId ? Button(
             {
               size: "sm",
               onClick: [
@@ -132,7 +131,7 @@ function ContextMenu({ item }) {
                 name: "column-insert-right",
               }),
             ]
-          ),
+          ) : '',
         ]),
       ]),
       item.parent ? Content(item.parent) : "",
@@ -151,11 +150,11 @@ function ContextMenu({ item }) {
   );
 }
 
-export function Item({ item }) {
+export function Item({ item, rootId }) {
   if (!item) return "";
   return View(
     {
-      class: "item",
+      class: "item" + (item.component.slot_id ? ' component-instance' : ''),
       id: "item-" + item.id,
       "onClick.outside": "id = ''; contextmenuOpen = false",
       $class: `id === '${item.id}' ? 'active' : ''`,
@@ -176,7 +175,7 @@ export function Item({ item }) {
     },
     [
       item.content,
-      ContextMenu({ item }),
+      ContextMenu({ item, rootId }),
     ]
   );
 }

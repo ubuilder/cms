@@ -157,7 +157,7 @@ export function PageList({ pages }) {
     {
       title: "Pages",
       actions: [
-        // Button({ href: "/admin/components" }, "Components"),
+        Button({ href: "/admin/components" }, "Components"),
         Button({ onClick: openModal("add-page"), color: "primary" }, [
           Icon({ name: "plus" }),
           "Add Page",

@@ -13,8 +13,8 @@ export function openAddComponentModal() {
 }
 
 export function runAddComponentAction(
-  { position = "", parent_id = ":''", placement = "", component_id = "", props = "" },
-  then = reload()
+  { position = "", parent_id = "", placement = "", component_id = "", props = "" },
+  then = reload
 ) {
   return runAction(
     "add_instance",
@@ -25,7 +25,7 @@ export function runAddComponentAction(
       component_id${component_id}, \
       props${props} \
     }`,
-    then
+    then()
   );
 }
 

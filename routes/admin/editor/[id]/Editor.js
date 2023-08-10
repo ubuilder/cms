@@ -28,7 +28,7 @@ function PageContainer(props, slot) {
   ]);
 }
 
-export function Editor({ title, instance, components }) {
+export function Editor({ title, instance, components, rootId }) {
   return Page(
     {
       container: false,
@@ -36,6 +36,7 @@ export function Editor({ title, instance, components }) {
         clipboard: {},
         placement: "",
         position: "",
+        parent_id: '',
         contextmenuOpen: false,
         x: 0,
         y: 0,
@@ -47,11 +48,11 @@ export function Editor({ title, instance, components }) {
       Styles(),
       EditorHeader({ title }),
       PageContainer({}, [
-        Item({ item: instance }),
-        Placeholder({ placement: "after", id: "" }),
+        Item({ item: instance, rootId }),
+        // Placeholder({ placement: "after", id: "" }),
       ]),
       ItemModals({ content: instance }),
-      // PreviewModal(page),
+      PreviewModal({title, slug: 'preview/' + rootId}),
       ComponentAddModal({ components }),
     ]
   );

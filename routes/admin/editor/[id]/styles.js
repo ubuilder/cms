@@ -8,7 +8,7 @@ const style = `
     display: contents;
   }
 
-  .item > :not(.placeholder) {
+  .item > :not(.context-menu) {
     
     transition: all 0.2s ease;
     position: relative;
@@ -18,22 +18,33 @@ const style = `
     border-color: transparent;
   }
 
-  .item.cut > :not(.content-menu) {
+  .item.cut > :not(.context-menu) {
     opacity: 0.5;
     border: 1px solid var(--color-base-400);
   }
 
-  .item.copy > :not(.content-menu) {
+  .item.copy > :not(.context-menu) {
     border: 1px solid var(--color-primary-300);
   }
-
-  .item > :not(.placeholder):hover {
-    border: 1px dashed var(--color-primary-400);
-    
+  .item.component-instance > :not(.context-menu) {
+    border: 1px dashed var(--color-success-200);
   }
-  .item.active > :not(.placeholder) {
+
+  .item > :not(.context-menu):hover {
+    border: 1px dashed var(--color-primary-400);    
+  }
+  .item.component-instance > :not(.context-menu):hover {
+    border: 1px dashed var(--color-success-400);
+  }
+
+  .item.active > :not(.context-menu) {
     border: 1px solid var(--color-primary-500);
     background-color: var(--color-primary-100);
+  }
+  .item.component-instance.active > :not(.context-menu) {
+    border: 1px solid var(--color-success-500);
+    background-color: var(--color-success-100);
+
   }
   
   .placeholder {
