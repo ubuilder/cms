@@ -99,7 +99,7 @@ export function AdminLayout($props, $slots) {
           { tag: "script" },
           `
               document.addEventListener('alpine:init', () => {
-      
+
                   Alpine.directive('data-table', (el) => {
                       Alpine.bind(el, {
                           'u-data'() {
@@ -124,6 +124,23 @@ export function AdminLayout($props, $slots) {
                           }
                       }
                   })
+
+                  window.Alpine.magic('upload', (el) => {
+                    return (callback) => {
+                      //for later updates when the Input component got update
+                      // ==> el =el
+                      // el = el.querySelector('input')
+                      const formData = new FormData()
+                      formData.append('file', el.files[0])
+                      fetch('?upload', {
+                        method: 'POST',
+                        body: formData
+                      }).then(res=> callback())
+                    }
+                      
+
+                      
+                  });
     
               })
               `
