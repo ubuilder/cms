@@ -14,13 +14,15 @@ export function createModal({
   }) {
     let actionButtons = actions;
 
+    
     if (mode === "add") {
       actionButtons = [
         Button({ onClick: closeModal() }, "Cancel"),
-
+        
         Button(
           {
-            onClick: onAdd + ";" + closeModal(),
+            $disabled: 'loading',
+            onClick: 'loading = true;' + onAdd + ";loading = false;" + closeModal(),
             color: "primary",
           },
           [Icon({ name: "plus" }), "Add"]
@@ -32,14 +34,14 @@ export function createModal({
 
         Button(
           {
-            onClick: onEdit + ";" + closeModal(),
+            onClick: 'loading = true;' + onEdit + ";loading = false;" + closeModal(),
             color: "primary",
           },
           [Icon({ name: "pencil" }), "Update"]
         ),
       ];
     }
-    return Modal({$data, name, size }, [
+    return Modal({$data: {...$data, loading: false}, name, size }, [
       Card({ title }, [
         CardBody({ style: "overflow: auto; max-height: 80%" }, [Row([body])]),
         CardFooter([ButtonGroup({ ms: "auto" }, actionButtons)]),

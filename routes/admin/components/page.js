@@ -16,7 +16,6 @@ import {
 import { createModal } from "../../../components/createModal.js";
 import { Page } from "../../../components/Page.js";
 import { openModal, reload, runAction } from "../../../utils/ui.js";
-import { slugify } from "../../../utils/slugify.js";
 
 export async function load({ ctx }) {
   const Components = ctx.table("components");
@@ -31,7 +30,6 @@ export async function load({ ctx }) {
 export async function update({ ctx, body }) {
   const component = {
     name: body.name,
-    slug: slugify(body.name),
     props: body.props,
     template: body.template,
   };
@@ -48,10 +46,8 @@ export async function update({ ctx, body }) {
 export async function add({ ctx, body }) {
   const component = {
     name: body.name,
-    slug: slugify(body.name),
     props: body.props,
     template: body.template,
-    version: 1,
   };
 
   await ctx.table("components").insert(component);
@@ -120,7 +116,7 @@ function ComponentModal({
         Col({ col: 0 }, [
           Button(
             {
-              onClick: `${name}.push({name: new_name, type: 'string', default_value: ''}); new_name = ''`,
+              onClick: `${name}.push({name: new_name, type: 'plain_text', default_value: ''}); new_name = ''`,
             },
             [Icon({ name: "plus" }), "Add Prop"]
           ),

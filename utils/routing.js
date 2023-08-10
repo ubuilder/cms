@@ -13,6 +13,7 @@ export async function fileBasedRouting({
     throw new Error("[fileBasedRouting] addLayout is not defined");
 
   const files = await recursiveReadDir(path);
+  console.log('files', files)
 
   function getSlug(file) {
     const slug = file.replace('routes', '').replace("page.js", "").replace("layout.js", "");

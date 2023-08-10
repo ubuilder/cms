@@ -1,4 +1,5 @@
 export function reload() {
+  // return '$routing.reload()'
   return "navigation.reload()";
 }
 
