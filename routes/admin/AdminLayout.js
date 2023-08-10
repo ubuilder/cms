@@ -126,14 +126,18 @@ export function AdminLayout($props, $slots) {
                   })
 
                   window.Alpine.magic('upload', (el) => {
-                      console.log('el', el)
-                      el = el.querySelector('input')
+                    return (callback) => {
+                      //for later updates when the Input component got update
+                      // ==> el =el
+                      // el = el.querySelector('input')
                       const formData = new FormData()
                       formData.append('file', el.files[0])
                       fetch('?upload', {
                         method: 'POST',
                         body: formData
-                      }).then(res=> console.log('response', res))
+                      }).then(res=> callback())
+                    }
+                      
 
                       
                   });

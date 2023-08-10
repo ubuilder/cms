@@ -6,8 +6,9 @@ import {
   DropdownItem,
   Col,
   Row,
-  Form, 
   Input,
+  Icon,
+  Tooltip
 } from "@ulibs/ui";
 import { runAction } from "../../../utils/ui.js";
 import { copyFileSync, rmSync, cpSync, renameSync, copyFile, cp, } from 'fs'
@@ -26,7 +27,7 @@ export  async function getAssets({ctx, body}){
     }    
     const assets = await ctx.table('assets').query(option).then(res => res.data)
 
-    const result  = View({d: 'flex'},assets.map(asset=>{
+    const result  = View({d: 'flex', style: 'flex-wrap: wrap'},assets.map(asset=>{
       return Media({
         image: View({tag: 'img',src: asset.url, alt: asset.alt, width: '50px'}),
         audeo: View({tag: 'audeo', width: '50px' }, [View({tag: 'source', src: asset.url}), View('View')]),
@@ -45,21 +46,19 @@ export  async function getAssets({ctx, body}){
 
 export  async function upload({ctx, body, files}){
   const file = files.file
+  const path = file.path.split('\\').join("/")
   console.log('object:>>>+>>', files, typeof file.path)
   
-  
-  
-  
   if(file.mimetype.startsWith('image')){
-    copyFileSync(file.path.split('\\').join("/"), `./assets/images/${basename(file.path)}`)
+    copyFileSync(path, `./assets/images/${basename(file.path)}`)
   }else if(file.mimetype.startsWith('video')){
-    copyFileSync(file.path.split('\\').join("/"), `./assets/videos/${basename(file.path)}`)
+    copyFileSync(path, `./assets/videos/${basename(file.path)}`)
   }else if(file.mimetype.startsWith('audeos')){
-    copyFileSync(file.path.split('\\').join("/"), `./assets/audeos/${basename(file.path)}`)
+    copyFileSync(path, `./assets/audeos/${basename(file.path)}`)
   }else{
     throw new Error('This File type is not supported: ', files.file.mimetype)
   }
-  rmSync(file.path.split('\\').join("/"))
+  rmSync(path)
   
     const asset = {
         name: file.name,
@@ -80,7 +79,6 @@ export  async function upload({ctx, body, files}){
 function Media(slot){
   return View({m: 'xs', style: 'border: 2px solid var(--color-primary-400); border-radious : var(--size-sm)' },slot)
 }
-
 function OffCanvas() {
   return Col(
     {
@@ -95,20 +93,45 @@ function OffCanvas() {
 }
 
 export function headSection() {
-  return Row([
-    Col({col: 8},[
-        Dropdown({style: 'flex-grow: 1'},[
-            Button({style: 'width: 100%',$text: 'type'}),
-            DropdownPanel([
-              DropdownItem({onClick: "type = 'all'", }, "All"),
-              DropdownItem({onClick: "type = 'image'"}, "Image"),
-              DropdownItem({onClick: "type = 'video'"}, "Video"),
-              DropdownItem({onClick: "type = 'audeo'"}, "Audeo"),
-            ]),
-          ]),
+  return Row({ }, [
+    Col({ col: 8, px: 'sm' }, [
+      Tooltip({ placement: "right" }, "Choose A Type"),
+      Dropdown({ style: "width: 100%" }, [
+        Button({ style: "width: 100%", $text: "type" }),
+        DropdownPanel([
+          DropdownItem({ onClick: "type = 'all'" }, "All"),
+          DropdownItem({ onClick: "type = 'image'" }, "Image"),
+          DropdownItem({ onClick: "type = 'video'" }, "Video"),
+          DropdownItem({ onClick: "type = 'audeo'" }, "Audeo"),
+        ]),
+      ]),
     ]),
-    Col({col: 4, $data: { file: ''}},[
-      Input({type: "file", onChange: "$upload", name: 'file', multiple: true, label: 'choose file'}),
+    Col({ col: 4,px: 'sm', $data: { file: "" } }, [
+      View(
+        {
+          p: "xs",
+          style:
+            "position: relative;background: var(--color-base-200); color: var(--color-base-800)",
+        },
+        [
+          Icon({ name: "upload" }),
+          View({
+            tag: "input",
+            style:
+              "opacity: 0;width: 100%; height: 100%; position:absolute; top:0px;left: 0px",
+            name: "file",
+            "u-input": true,
+            type: "file",
+            onChange: `$upload(()=>${runAction(
+              "getAssets",
+              `{type}`,
+              "view = res.view"
+            )})`,
+          }),
+          Tooltip({ placement: "right" }, "Upload A File"),
+        ]
+      ),
+      // Input({type: "file", onChange: `$upload(()=>${runAction('getAssets', `{type}`,'view = res.view')})`,style : 'background: var(--color-base-800)' ,name: 'file', multiple: true, label: 'Upload'}),
     ]),
   ]);
 }
