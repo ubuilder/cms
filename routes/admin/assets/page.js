@@ -114,11 +114,13 @@ function Media(props, slots){
 function OffCanvas() {
   return Col(
     {
-      $data: {assets: [],view: '', loader: true, type: 'all'},
-      $effect:"loader; " + runAction('getAssets', `{type}`,"view = res.view"),
+      $data: { assets: [], view: "", loader: true, type: "all" },
+      $effect: "loader; " + runAction("getAssets", `{type}`, "view = res.view"),
       style:
         "width: 300px; height: 100%; background-color: var(--color-base-800); color: var(--color-base-200);text-align:center",
-      script: function greating(View){return View('hellow')},
+      script: function greating(View) {
+        return View("hellow");
+      },
     },
     [View("Assets"), headSection(), assetsSection()]
   );
