@@ -1,5 +1,5 @@
 import { Card, View } from "@ulibs/ui";
-import { openModal, reload, runAction } from "../../../utils/ui.js";
+import { openModal } from "../../../utils/ui.js";
 import { ComponentModal } from "./ComponentModal.js";
 import { runUpdateAction } from "./page.js";
 

@@ -134,26 +134,6 @@ export async function renderInstance(
   return instance;
 }
 
-async function normalizeProps({ ctx, item } = {}) {
-  for (let propName in item?.props ?? {}) {
-    const prop = item.props[propName];
-    if (prop.type === "load") {
-      const res = await ctx
-        .table(prop.table)
-        .get({ where: prop.where, select: { [prop.field]: true } });
-      item.props[propName] = res[prop.field];
-      // loads[] =
-    } else if (prop.type === "static") {
-      item.props[propName] = prop.value;
-    }
-  }
-  if (item.slot) {
-    for (let item2 of item.slot) {
-      await normalizeProps({ ctx, item: item2 });
-    }
-  }
-}
-
 function renderHead({ page }) {
   const ctx = { page: { title: page.title, slug: page.slug } };
 
