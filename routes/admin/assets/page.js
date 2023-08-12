@@ -47,32 +47,28 @@ export  async function getAssets({ctx, body}){
 }
 
 export  async function upload({ctx, body, files}){
+  const supporteTypes = ['image', 'video', 'audeo']
   const file = files.file
   const path = file.path.split('\\').join("/")
-  const type = file.mimetype
+  const type = file.mimetype.split('/')[0]
+  if(!supporteTypes.includes(type)){
+    throw new Error('Unsupported file format, unable to save this file type: type == '+ type)
+  }
   console.log('object:>>>+>>', files, typeof file.path)
   
-  if(file.mimetype.startsWith('image')){
-    copyFileSync(path, `./assets/images/${basename(file.path)}`)
-  }else if(file.mimetype.startsWith('video')){
-    copyFileSync(path, `./assets/videos/${basename(file.path)}`)
-  }else if(file.mimetype.startsWith('audeos')){
-    copyFileSync(path, `./assets/audeos/${basename(file.path)}`)
-  }else{
-    throw new Error('This File type is not supported: ', files.file.mimetype)
-  }
+  copyFileSync(path, `./assets/${type}s/${basename(file.path)}`);
   rmSync(path)
   
     const asset = {
-        name: file.name,
-        type: file.mimetype.split('/')[0],
-        url: `/assets/${type}s/${basename(file.path)}`,
-        alt: 'image',
-        description: 'this is image',
-        cation: '',
-        width: '',
-        height: '',
-      }
+      name: file.name,
+      type: file.mimetype.split("/")[0],
+      url: `/assets/${type}s/${basename(file.path)}`,
+      alt: "image",
+      description: "this is image",
+      cation: "",
+      width: "",
+      height: "",
+    };
       await ctx.table('assets').insert(asset)
     return {
         body: {success: true},
