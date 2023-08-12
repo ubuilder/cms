@@ -49,6 +49,7 @@ export  async function getAssets({ctx, body}){
 export  async function upload({ctx, body, files}){
   const file = files.file
   const path = file.path.split('\\').join("/")
+  const type = file.mimetype
   console.log('object:>>>+>>', files, typeof file.path)
   
   if(file.mimetype.startsWith('image')){
@@ -65,7 +66,7 @@ export  async function upload({ctx, body, files}){
     const asset = {
         name: file.name,
         type: file.mimetype.split('/')[0],
-        url: `/assets/images/${basename(file.path)}`,
+        url: `/assets/${type}s/${basename(file.path)}`,
         alt: 'image',
         description: 'this is image',
         cation: '',
@@ -87,7 +88,7 @@ export async function remove({ctx, body, files}){
     body:{success: true}
   }
 }
-
+``
 export async function update({ctx, body, files}){
   console.log('update asest action body: ', body)
 
