@@ -71,6 +71,25 @@ const ctx = CMS({ dev });
 ctx.addStatic({ path: "./node_modules/@ulibs/ui/dist", prefix: "/dist" });
 ctx.addStatic({ path: "./public", prefix: "/assets" });
 
+async function initData() {
+  const isBaseExists = await ctx.table("components").get({where: {id: '000'}})
+  if(isBaseExists) return;
+  
+  await ctx.table("components").insert({
+    id: "000",
+    name: "Base",
+    props: [
+      {
+        name: "template",
+        type: "rich_text",
+        default_value: "<div>{{{slot}}}</div>",
+      },
+    ],
+  });
+}
+
+await initData();
+
 await fileBasedRouting({
   path: "./routes",
   addPage: ctx.addPage,

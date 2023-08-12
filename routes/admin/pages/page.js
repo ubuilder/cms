@@ -52,18 +52,32 @@ export async function update_page({ctx, body}) {
 }
 
 export async function add({ ctx, body }) {
-  console.log ('add page', body)
+
   const head = `
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{page.title}}</title>
+  <meta name="description" content="{{page.description}}">
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://cdn.quilljs.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
 
-  <link rel="stylesheet" href="https://unpkg.com/@ulibs/ui@next/dist/styles.css"/>
-  <script src="https://unpkg.com/@ulibs/ui@next/dist/ulibs.js"></script>
+  <link rel="preconnect" href="https://cdn.jsdeliver.net">
+
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/@ulibs/ui@next/dist/styles.css"
+    media="print" 
+    onload="this.media='all'; this.onload = null"
+  >
+  <script defer src="https://unpkg.com/@ulibs/ui@next/dist/ulibs.js"></script>
 `
   const page = {
     title: body.title,
     slug: body.slug,
     is_template: body.is_template,
+    description: body.description ?? 'NO DESCRIPTION',
     head: body.head ?? head,
   };
   const [id] = await ctx.table("pages").insert(page);

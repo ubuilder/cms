@@ -48,6 +48,7 @@ export default ({ components }) => {
             name: component.name,
             props: component.props,
             id: component.id,
+            slot_id: component.slot_id
           })
         ),
       ]),

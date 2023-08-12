@@ -93,7 +93,7 @@ function PageModal({
   onAdd = "",
   onEdit = "",
   mode = "add",
-  value = { title: "", slug: "", is_template: false },
+  value = { title: "", slug: "", description: "", is_template: false },
 }) {
 
   return createModal({
@@ -115,6 +115,7 @@ function PageModal({
         name: "slug",
         placeholder: "Enter url part of page /about-us, /blogs/{slug}, ...",
       }),
+      Textarea({ name: "description", label: "Description" }),
 
       (mode === "edit" && [
         Textarea({ name: "head", label: "Head" }),
@@ -170,7 +171,7 @@ export function PageList({ pages }) {
         pages.map((page) => PageItem(page))
       ),
       PageModal({
-        onAdd: runAction("add", "{title, slug, is_template}", navigate("'/admin/editor/' + res.id")),
+        onAdd: runAction("add", "{title, slug, description, is_template}", navigate("'/admin/editor/' + res.id")),
       }),
     ]
   );

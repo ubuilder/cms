@@ -66,7 +66,13 @@ export async function renderInstance(
         console.log({ slotItem, instanceSlot });
         const slot = await renderInstance2(slotItem);
         slotItem.content = slot;
+        slotItem.component = slotItem.component ?? await ctx.table('components').get({where: {id: slotItem.component_id}})
+        slotItem.parent = instance
+        // slotItem.parent = component
 
+        console.log({slotItem})
+        
+        
         slots.push(item({ item: slotItem, rootId }));
       }
 
@@ -90,6 +96,7 @@ export async function renderInstance(
           },
         },
       });
+      console.log(slot)
 
       slot.slot = [];
       for (let slotId of slot.slot_ids) {
@@ -98,6 +105,9 @@ export async function renderInstance(
         );
       }
 
+      console.log(
+        "renderComponent",slot.component
+      )
       return renderComponent(slot.component, slot.props, slot.slot);
     }
   }
@@ -166,19 +176,15 @@ export async function renderPage({ ctx, page }) {
   if (!page) return "page is not defined";
 
   try {
-    const layout = `
-    <!DOCTYPE html>
-<html>
+    const layout = `<!DOCTYPE html>
+<html lang="en">
   <head>
-  <title>{{page.title}}</title>
-
     {{{head}}}
   </head>
-<body>
-  {{{body}}}
-</body>
-</html>
-    `;
+  <body>
+    {{{body}}}
+  </body>
+</html>`;
 
     // const layoutTemplate = page.layout?.template ?? `{{{head}}}{{{body}}}`;
 
@@ -189,10 +195,13 @@ export async function renderPage({ ctx, page }) {
     const renderedInstance = await renderInstance(ctx, instance, page.slot_id);
     const body = renderedInstance.content;
 
+    console.log({head, body})
     const result = template({
       body,
       head,
     });
+
+    console.log(result)
     return result;
   } catch (err) {
     console.log(err);
