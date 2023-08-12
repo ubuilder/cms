@@ -10,7 +10,8 @@ export async function renderInstance(
 
   const props = {};
   instance.component.props.map((prop) => {
-    props[prop.name] = (instanceProps[prop.name] ?? prop.default_value ?? "")
+    console.log(instanceProps, prop.default_value)
+    props[prop.name] = (instanceProps[prop.name] ?? JSON.stringify(prop.default_value) ?? "")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");

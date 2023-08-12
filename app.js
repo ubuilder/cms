@@ -81,9 +81,29 @@ async function initData() {
     props: [
       {
         name: "template",
-        type: "rich_text",
+        type: "code",
         default_value: "<div>{{{slot}}}</div>",
       },
+      {
+        name: 'props',
+        type: 'array',
+        fields: [
+          {
+            name: "name",
+            type: "plain_text",
+            col: 6,
+            default_value: "",
+          },  
+          {
+            name: "value",
+            type: "plain_text",
+            col: 6,
+            default_value: "",
+          },  
+          
+        ],
+        default_value: []
+      }
     ],
   });
 }

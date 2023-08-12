@@ -11,6 +11,7 @@ import {
   Input,
   Row,
   Switch,
+  CodeEditor,
   Textarea,
   View,
 } from "@ulibs/ui";
@@ -52,27 +53,46 @@ export function ComponentEditForm({ onSubmit }) {
         ]),
         Row({ $if: "prop.value.type === 'static'" }, [
           Input({
+            $col: "prop.col",
             $if: "prop.type === 'plain_text'",
             name: "prop.value",
           }),
           Textarea({
+            $col: "prop.col",
             $if: "prop.type === 'rich_text'",
             rows: 10,
             name: "prop.value.value",
           }),
           Input({
+            $col: "prop.col",
             $if: "prop.type === 'number'",
             type: "number",
             name: "prop.value.value",
           }),
+          CodeEditor({
+            $col: "prop.col",
+            $if: "prop.type === 'code'",
+            lang: "hbs",
+            name: "prop.value.value",
+          }),
           Datepicker({
+            $col: "prop.col",
             $if: "prop.type === 'date'",
             name: "prop.value.value",
           }),
           Switch({
+            $col: "prop.col",
             $if: "prop.type === 'boolean'",
             name: "prop.value.value",
           }),
+          Col({
+            $col: 'prop.col',
+            $if: "prop.type === 'array'"
+          }, Accordions([
+            Card({$for: 'field, index in prop.fields', $col: 'field.col'},[
+              Accordion({title: View({$text: "field.name + ' #' + index"}), body: ["BODY"]})
+            ])
+          ]))
         ]),
         Accordions(
           { $if: "prop.value.type === 'load'", style: "border: none" },
@@ -117,7 +137,11 @@ export function ConvertToComponentModal({ name, id }) {
       Button(
         {
           color: "primary",
-          onClick: runAction("create_component", "{id, name, parent_id}", reload()),
+          onClick: runAction(
+            "create_component",
+            "{id, name, parent_id}",
+            reload()
+          ),
         },
         "Create"
       ),

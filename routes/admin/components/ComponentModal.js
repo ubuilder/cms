@@ -18,6 +18,7 @@ import {createModal} from '../../../components/createModal.js'
 const componentPropTypes = [
   { key: "plain_text", text: "Plain Text" },
   { key: "rich_text", text: "Rich Text" },
+  { key: "code", text: "Code" },
   { key: "number", text: "Number" },
   { key: "date", text: "Date" },
   { key: "boolean", text: "Boolean" },
