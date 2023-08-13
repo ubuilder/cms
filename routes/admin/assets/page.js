@@ -19,7 +19,7 @@ import { copyFileSync, rmSync} from 'fs'
 import { basename } from 'path'
 
 export default function () {
-  return OffCanvas(); 
+  return OffCanvas();
 }
 
 export  async function getAssets({ctx, body}){
@@ -54,7 +54,6 @@ export async function getAsset({ ctx, body }) {
     .table("assets")
     .query({ where: { id: body.id } })
     .then((res) => res.data[0]);
-  console.log('asset=====>: ', asset)
   const result = updateModal(
     asset,
     {
@@ -125,32 +124,31 @@ export async function remove({ctx, body, files}){
 }
 
 export async function update({ctx, body, files}){
-  console.log('update asest action body: ', body)
+  // console.log('update asest action body: ', body)
 
   ctx.table('assets').update(body.id, body)
-  
   return {
     body: {success: true}
   }
 }
 
 function updateModal(props, slots){
-  return Modal({ name: "update-modal",$data: props }, [
+  return Modal({ name: "update-modal" }, [
     ModalBody([
       Row([
         // preview
         Col({},slots),
         //properties
-        Col([
+        Col({$data: {...props,name: props.name, description: props.description, caption: props.caption}} ,[
           View([
-            Input({py: 0, mx: 0, label: "name", $model: 'this.name' }),
-            Input({py: 0, mx: 0, label: "description", "u-modal": 'description' }),
-            Input({py: 0, mx: 0, label: "url", name: "url" }),
-            Input({py: 0, mx: 0, label: "caption", name: "caption" }),
-            Input({py: 0, mx: 0, label: "width", name: "width" }),
-            Input({py: 0, mx: 0, label: "height", name: "height" }),
-            Input({py: 0, mx: 0, label: "alt", name: "alt" }),
-            Input({py: 0, mx: 0, label: "type", name: "type" }),
+            Input({py: 0, mx: 0, "name": 'name'}),
+            Input({py: 0, mx: 0, label: "description", "name": 'description' }),
+            Input({py: 0, mx: 0, label: "url", "name": 'url' }),
+            Input({py: 0, mx: 0, label: "caption", "name": "caption" }),
+            Input({py: 0, mx: 0, label: "width", "name": "width" }),
+            Input({py: 0, mx: 0, label: "height", "name": "height" }),
+            Input({py: 0, mx: 0, label: "alt", "name": "alt" }),
+            Input({py: 0, mx: 0, label: "type", "name": "type" }),
           ]),
           Row([
             //control buttons
