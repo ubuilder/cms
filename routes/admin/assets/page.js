@@ -126,7 +126,7 @@ export async function remove({ctx, body, files}){
 export async function update({ctx, body, files}){
   console.log('update asest action body: ', body)
 
-  // ctx.table('assets').update(body.id, body)
+  ctx.table('assets').update(body.id, body)
   return {
     body: {success: true}
   }
