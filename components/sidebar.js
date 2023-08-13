@@ -148,6 +148,7 @@ export function SidebarItem({ mode = 'compact', href, title, icon, ...restProps 
             },
             title
           ),
+          $slots
         ]
       )
     );
