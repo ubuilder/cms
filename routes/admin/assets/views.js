@@ -25,36 +25,82 @@ export function updateModal(props, slots) {
         //properties
         Col({ $data: props }, [
           View([
-            Input({ py: 0, mx: 0, "u-model": "name" }),
             Input({
-              py: 0,
-              mx: 0,
+              style: "height: var(--size-lg)",
+              m: 0,
+              p: 0,
+              label: "name",
+              "u-model": "name",
+            }),
+            Input({
+              style: "height: var(--size-lg)",
+              m: 0,
+              p: 0,
               label: "description",
               "u-model": "description",
             }),
-            Input({ py: 0, mx: 0, label: "url", "u-model": "url" }),
-            Input({ py: 0, mx: 0, label: "caption", "u-model": "caption" }),
-            Input({ py: 0, mx: 0, label: "width", "u-model": "width" }),
-            Input({ py: 0, mx: 0, label: "height", "u-model": "height" }),
-            Input({ py: 0, mx: 0, label: "alt", "u-model": "alt" }),
-            Input({ py: 0, mx: 0, label: "type", "u-model": "type" }),
+            Input({
+              style: "height: var(--size-lg)",
+              m: 0,
+              p: 0,
+              label: "url",
+              "u-model": "url",
+            }),
+            Input({
+              style: "height: var(--size-lg)",
+              m: 0,
+              p: 0,
+              label: "caption",
+              "u-model": "caption",
+            }),
+            Input({
+              style: "height: var(--size-lg)",
+              m: 0,
+              p: 0,
+              label: "width",
+              "u-model": "width",
+            }),
+            Input({
+              style: "height: var(--size-lg)",
+              m: 0,
+              p: 0,
+              label: "height",
+              "u-model": "height",
+            }),
+            Input({
+              style: "height: var(--size-lg)",
+              m: 0,
+              p: 0,
+              label: "alt",
+              "u-model": "alt",
+            }),
+            Input({
+              style: "height: var(--size-lg)",
+              m: 0,
+              p: 0,
+              label: "type",
+              "u-model": "type",
+            }),
           ]),
-          Row([
-            //control buttons
-            Button({ color: "primary", onClick: "$modal.close()" }, "Close"),
-            Button(
-              {
-                color: "error",
-                onClick: `$post(window.location.origin + '/admin/assets?update', {id, name, description, url, caption, width, height, alt, type}).then(res => {$modal.close();loader = !loader})`,
-                // onClick: runAction(
-                //   "update",
-                //   `{id, name, description, url, caption, width, height, alt, type}`,
-                //   "{$modal.close();loader = !loader}"
-                // ),
-              },
-              "Update"
-            ),
-          ]),
+          Row(
+            { d: "flex", p: "xxs", style: "justify-content: space-between" },
+            [
+              //control buttons
+              Button({ color: "primary", onClick: "$modal.close()" }, "Close"),
+              Button(
+                {
+                  color: "error",
+                  onClick: `$post(window.location.origin + '/admin/assets?update', {id, name, description, url, caption, width, height, alt, type}).then(res => {$modal.close();loader = !loader})`,
+                  // onClick: runAction(
+                  //   "update",
+                  //   `{id, name, description, url, caption, width, height, alt, type}`,
+                  //   "{$modal.close();loader = !loader}"
+                  // ),
+                },
+                "Update"
+              ),
+            ]
+          ),
         ]),
       ]),
     ]),
