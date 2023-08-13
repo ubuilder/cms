@@ -124,9 +124,9 @@ export async function remove({ctx, body, files}){
 }
 
 export async function update({ctx, body, files}){
-  // console.log('update asest action body: ', body)
+  console.log('update asest action body: ', body)
 
-  ctx.table('assets').update(body.id, body)
+  // ctx.table('assets').update(body.id, body)
   return {
     body: {success: true}
   }
@@ -139,16 +139,16 @@ function updateModal(props, slots){
         // preview
         Col({},slots),
         //properties
-        Col({$data: {...props,name: props.name, description: props.description, caption: props.caption}} ,[
+        Col({$data: props} ,[
           View([
-            Input({py: 0, mx: 0, "name": 'name'}),
-            Input({py: 0, mx: 0, label: "description", "name": 'description' }),
-            Input({py: 0, mx: 0, label: "url", "name": 'url' }),
-            Input({py: 0, mx: 0, label: "caption", "name": "caption" }),
-            Input({py: 0, mx: 0, label: "width", "name": "width" }),
-            Input({py: 0, mx: 0, label: "height", "name": "height" }),
-            Input({py: 0, mx: 0, label: "alt", "name": "alt" }),
-            Input({py: 0, mx: 0, label: "type", "name": "type" }),
+            Input({py: 0, mx: 0,"some props": 'somehti', "u-model": 'name'}),
+            Input({py: 0, mx: 0, label: "description", "u-model": 'description' }),
+            Input({py: 0, mx: 0, label: "url", "u-model": 'url' }),
+            Input({py: 0, mx: 0, label: "caption", "u-model": "caption" }),
+            Input({py: 0, mx: 0, label: "width", "u-model": "width" }),
+            Input({py: 0, mx: 0, label: "height", "u-model": "height" }),
+            Input({py: 0, mx: 0, label: "alt", "u-model": "alt" }),
+            Input({py: 0, mx: 0, label: "type", "u-model": 'type'}),
           ]),
           Row([
             //control buttons
