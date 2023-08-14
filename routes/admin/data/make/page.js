@@ -7,10 +7,8 @@ export function load() {
   };
 }
 
-
-
 export async function create({ body }) {
-  const result = await createTable(ctx, body);
+  // const result = await createTable(ctx, body);
 
   return {
     status: 201,
