@@ -12,6 +12,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@rollup/plugin-commonjs": "^25.0.4",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.1.0",
     "@tabler/icons": "^2.30.0",
     "@ulibs/db": "^1.0.1-next.34",
     "@ulibs/router": "^0.0.28",
@@ -22,6 +25,8 @@
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3"
+    "cross-env": "^7.0.3",
+    "rollup": "^3.28.0",
+    "rollup-plugin-multi-input": "^1.4.1"
   }
 }

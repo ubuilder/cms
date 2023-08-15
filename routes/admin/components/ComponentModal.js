@@ -107,7 +107,7 @@ export function ComponentModal({
         hasArray: true,
       }),
       value.slot_id && FormField({label: 'Edit'},[
-        Button({ href: '/admin/editor/' + value.slot_id, color: 'primary'}, "Edit Component")
+        Button({ onClick: `openEditComponentModal(${JSON.stringify(value)})`, color: 'primary'}, "Edit Component")
       ]) ||  '',
 
     ],

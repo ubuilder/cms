@@ -1,4 +1,5 @@
 import hbs from "handlebars";
+import { Instances, Components } from "../models.js";
 
 export async function renderInstance(
   ctx,
@@ -6,15 +7,13 @@ export async function renderInstance(
   rootId,
   { item = (x) => x.item.content, placeholder = (x) => "x" } = {}
 ) {
+  if(!instance) throw new Error('Instance not found: ')
   const instanceProps = {};
 
   const props = {};
   instance.component.props.map((prop) => {
-    console.log(instanceProps, prop.default_value)
+    // check if array works
     props[prop.name] = (instanceProps[prop.name] ?? JSON.stringify(prop.default_value) ?? "")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
   });
 
   const slot = [];
@@ -39,7 +38,7 @@ export async function renderInstance(
   instance.slot = slot;
   // instance.props = {}
 
-  async function renderComponent(component, instanceProps, instanceSlot) {
+  async function renderComponent(component, instanceProps, instanceSlot, {item}) {
     if (component.id === "000") {
       async function evaluateProp({ ctx, value }) {
         if (typeof value !== "object") return value;
@@ -64,17 +63,14 @@ export async function renderInstance(
           slots.push(slotItem);
           continue;
         }
-        console.log({ slotItem, instanceSlot });
-        const slot = await renderInstance2(slotItem);
-        slotItem.content = slot;
-        slotItem.component = slotItem.component ?? await ctx.table('components').get({where: {id: slotItem.component_id}})
-        slotItem.parent = instance
-        // slotItem.parent = component
 
-        console.log({slotItem})
-        
+        const slot = await renderInstance2(slotItem, {item: slotItem.component_id === '000' ? item : (x) => x.item.content});
+        slotItem.content = slot;
+        slotItem.component = slotItem.component ?? await Components.get({where: {id: slotItem.component_id}})
+        slotItem.parent = instance
         
         slots.push(item({ item: slotItem, rootId }));
+
       }
 
       props.slot = slots.join("");
@@ -88,7 +84,7 @@ export async function renderInstance(
 
       return hbs.compile(props.template ?? "{{{slot}}}")(props);
     } else {
-      const slot = await ctx.table("instances").get({
+      const slot = await Instances.get({
         where: { id: component.slot_id },
         with: {
           component: {
@@ -97,23 +93,19 @@ export async function renderInstance(
           },
         },
       });
-      console.log(slot)
 
       slot.slot = [];
       for (let slotId of slot.slot_ids) {
         slot.slot.push(
-          await ctx.table("instances").get({ where: { id: slotId } })
+          await Instances.get({ where: { id: slotId } })
         );
       }
 
-      console.log(
-        "renderComponent",slot.component
-      )
-      return renderComponent(slot.component, slot.props, slot.slot);
+      return renderComponent(slot.component, slot.props, slot.slot, {item});
     }
   }
 
-  async function renderInstance2(instance) {
+  async function renderInstance2(instance, {item}) {
     if (typeof instance == "string") return instance;
 
     if (!instance) throw new Error("instance is not defined here");
@@ -136,11 +128,10 @@ export async function renderInstance(
       }
     }
 
-    console.log("renderComponent", {component, props, slot})
-    return renderComponent(component, props, slot);
+    return renderComponent(component, props, slot, {item});
   }
 
-  instance.content = await renderInstance2(instance);
+  instance.content = await renderInstance2(instance, {item});
 
   return instance;
 }
@@ -152,7 +143,7 @@ function renderHead({ page }) {
 }
 
 export async function getInstance(ctx, id) {
-  const instance = await ctx.table("instances").get({
+  const instance = await Instances.get({
     where: { id },
     with: {
       component: {
@@ -174,7 +165,7 @@ export async function getInstance(ctx, id) {
 }
 
 export async function renderPage({ ctx, page }) {
-  if (!page) return "page is not defined";
+  if (!page) throw new Error('Page not found');
 
   try {
     const layout = `<!DOCTYPE html>
@@ -187,8 +178,6 @@ export async function renderPage({ ctx, page }) {
   </body>
 </html>`;
 
-    // const layoutTemplate = page.layout?.template ?? `{{{head}}}{{{body}}}`;
-
     const template = hbs.compile(layout);
 
     const head = renderHead({ page });
@@ -196,13 +185,11 @@ export async function renderPage({ ctx, page }) {
     const renderedInstance = await renderInstance(ctx, instance, page.slot_id);
     const body = renderedInstance.content;
 
-    console.log({head, body})
     const result = template({
       body,
       head,
     });
 
-    console.log(result)
     return result;
   } catch (err) {
     console.log(err);

@@ -1,33 +1,39 @@
 import { Button, Col, View } from "@ulibs/ui";
-import { createModal } from "../../../../components/createModal.js";
+import { createModal } from "../../../components/createModal.js";
 import {
   closeModal,
   openModal,
   reload,
   runAction,
-} from "../../../../utils/ui.js";
+} from "../../../utils/ui.js";
 import { ComponentEditForm, getPropsArray } from "./ItemModals.js";
 
-export function openAddComponentModal() {
-  return openModal("add-component");
-}
+// export function openAddComponentModal() {
+//   return openModal("add-component");
+// }
 
-export function runAddComponentAction(
-  { position = "", parent_id = "", placement = "", component_id = "", props = "" },
-  then = reload
-) {
-  return runAction(
-    "add_instance",
-    `{\
-      parent_id${parent_id}, \
-      position${position}, \
-      placement${placement}, \
-      component_id${component_id}, \
-      props${props} \
-    }`,
-    then()
-  );
-}
+// export function runAddComponentAction(
+//   {
+//     position = "",
+//     parent_id = "",
+//     placement = "",
+//     component_id = "",
+//     props = "",
+//   },
+//   then = reload
+// ) {
+//   return runAction(
+//     "add_instance",
+//     `{\
+//       parent_id${parent_id}, \
+//       position${position}, \
+//       placement${placement}, \
+//       component_id${component_id}, \
+//       props${props} \
+//     }`,
+//     then()
+//   );
+// }
 
 export function ComponentAddModal({ components }) {
   const openSettings = (id = "active") =>
@@ -36,7 +42,7 @@ export function ComponentAddModal({ components }) {
   return [
     components.map((component) => AddComponentSettings({ component })),
     createModal({
-      $data: { active: "" },
+      $data: { active: null },
       name: "add-component",
       title: "Add Component in Page",
       actions: [
@@ -47,15 +53,7 @@ export function ComponentAddModal({ components }) {
             $if: "clipboard && clipboard.mode === 'cut'",
             color: "primary",
             $disabled: "loading",
-            onClick:
-              "loading = true;" +
-              runAddComponentAction({component_id: ": clipboard.component_id", props: ": clipboard.props"}, () =>
-                runAction(
-                  "remove_instance",
-                  `{id: clipboard.item_id}`,
-                  reload()
-                )
-              ),
+            onClick: `onAddInstance({instance_id: clipboard.instance_id}).then(res => onRemoveInstance({instance_id: clipboard.instance_id})).then(res => location.reload())`,
           },
           "Paste"
         ),
@@ -63,17 +61,16 @@ export function ComponentAddModal({ components }) {
         Button(
           {
             $if: "clipboard && clipboard.mode === 'copy'",
-            onClick: runAddComponentAction({
-              component_id: ": clipboard.component_id",
-              props: ": clipboard.props",
-            }),
+            color: 'primary',
+            $disabled: 'loading',
+            onClick: `onAddInstance({instance_id: clipboard.instance_id}).then(res => location.reload())`,
           },
           "Paste"
         ),
         Button(
           {
             $disabled: "!active",
-            onClick: closeModal() + ";" + openSettings("active"),
+            onClick: `onComponentItemSelected({ component: active })`,
 
             color: "primary",
           },
@@ -87,12 +84,9 @@ export function ComponentAddModal({ components }) {
               {
                 class: "component-item",
                 style: "cursor: default",
-                $class: `active === '${component.id}' ? 'active' : ''`,
-                onClick: `active = '${component.id}'`,
-                onDblclick: [
-                  closeModal(),
-                  openSettings(`'${component.id}'`),
-                ].join(";"),
+                $class: `active?.id === "${component.id}" ? 'active' : ''`,
+                onClick: `active = ${JSON.stringify(component)}`,
+                onDblclick: `onComponentItemSelected({component: ${JSON.stringify(component)}})`,
                 border: true,
                 borderColor: "base-400",
                 p: "md",
@@ -114,11 +108,11 @@ export function AddComponentSettings({ component }) {
   const props = getPropsArray({ component, props: {} });
 
   return createModal({
-    $data: { props },
+    $data: `componentSettings(${JSON.stringify(props)})`,
     name: `add-component-${component.id}-settings`,
     mode: "add",
     title: "Component Settings",
-    onAdd: runAddComponentAction({ component_id: `: '${component.id}'` }),
+    onAdd: `onAddInstance({ component_id: "${component.id}", props}).then(res => location.reload())`,
     body: ComponentEditForm({ onSubmit: "" }),
   });
 }

@@ -1,5 +1,7 @@
+import { Instances } from "../../../models.js";
+
 export async function getInstance(ctx, id) {
-    const instance = await ctx.table('instances').get({where: {id}, with: {
+    const instance = await Instances.get({where: {id}, with: {
       component:  {
         table: 'components',
         field: 'component_id'

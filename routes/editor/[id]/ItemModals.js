@@ -14,48 +14,33 @@ import {
   CodeEditor,
   Textarea,
   View,
+  Badge,
+  Select,
 } from "@ulibs/ui";
-import { createModal } from "../../../../components/createModal.js";
-import { closeModal, reload, runAction } from "../../../../utils/ui.js";
+import { createModal } from "../../../components/createModal.js";
+import { closeModal, reload, runAction } from "../../../utils/ui.js";
 
-export function ComponentEditForm({ onSubmit }) {
+export function ComponentEditForm() {
   return Col({ col: 12 }, [
-    // View({
-    //   $if: "props.length === 0",
-    //   $data: { props: [] },
-    //   "u-init": onSubmit,
-    // }),
-
     FormField(
       {
-        $for: "prop in props",
-        label: View({ $text: "prop.name" }),
+        $for: "prop, index in props",
+        label: View({ d: "flex", gap: "xs" }, [
+          View({ $text: "prop.name" }),
+          Badge({
+            onClick: `toggleType(index)`,
+            $text: `isStatic(index) ? 'Static' : 'Dynamic'`,
+            $color: `isStatic(index) ? 'base' : 'primary'`,
+          }),
+        ]),
         style: "position: relative",
       },
       [
-        ButtonGroup({ style: "position: absolute; top: 28px; right: 8px" }, [
-          Button(
-            {
-              size: "sm",
-              onClick: "prop.value.type = 'load'",
-              $color: "prop.value.type === 'load' ? 'primary' : undefined",
-            },
-            Icon({ name: "database" })
-          ),
-          Button(
-            {
-              size: "sm",
-              onClick: "prop.value.type = 'static'",
-              $color: "prop.value.type === 'static' ? 'primary' : undefined",
-            },
-            Icon({ name: "star" })
-          ),
-        ]),
-        Row({ $if: "prop.value.type === 'static'" }, [
+        Row({ $if: "isStatic(index)" }, [
           Input({
             $col: "prop.col",
             $if: "prop.type === 'plain_text'",
-            name: "prop.value",
+            name: "prop.value.value",
           }),
           Textarea({
             $col: "prop.col",
@@ -85,42 +70,54 @@ export function ComponentEditForm({ onSubmit }) {
             $if: "prop.type === 'boolean'",
             name: "prop.value.value",
           }),
-          Col({
-            $col: 'prop.col',
-            $if: "prop.type === 'array'"
-          }, Accordions([
-            Card({$for: 'field, index in prop.fields', $col: 'field.col'},[
-              Accordion({title: View({$text: "field.name + ' #' + index"}), body: ["BODY"]})
-            ])
-          ]))
+          Col(
+            {
+              col: 12,
+              "u-bind:u-col-col": "prop.col",
+              $if: "prop.type === 'array'",
+            },
+            [
+              Accordions(
+                { $if: "prop.value.value.length > 0", style: "border: none" },
+                [
+                  Card(
+                    { $for: "value, index in prop.value.value", mb: "xxs" },
+                    [
+                      Accordion({
+                        style: "border: none",
+                        header: [View({ $text: "'Item #' + index" })],
+                        body: [
+                          Col(
+                            { $for: "field in prop.fields", $col: "field.col" },
+                            [
+                              Input({
+                                name: "value[field.name]",
+                                label: View({
+                                  $text: "field.name",
+                                }),
+                              }),
+                            ]
+                          ),
+                        ],
+                      }),
+                    ]
+                  ),
+                ]
+              ),
+              Button({ onClick: "prop.value.value.push({})" }, [
+                Icon({ name: "plus" }),
+                "Add",
+              ]),
+            ]
+          ),
         ]),
-        Accordions(
-          { $if: "prop.value.type === 'load'", style: "border: none" },
-          [
-            Card([
-              Accordion({
-                style: "border-bottom: none",
-                header: View(
-                  {
-                    d: "flex",
-                    w: 100,
-                    items: "center",
-                    justify: "between",
-                  },
-                  ["Dynamic"]
-                ),
-                body: [
-                  Row([
-                    Input({ label: "Table", name: "prop.value.table" }),
-                    Input({ label: "Field", name: "prop.value.field" }),
-
-                    "Where...",
-                  ]),
-                ],
-              }),
-            ]),
-          ]
-        ),
+        Row({ $if: "!isStatic(index)" }, [
+          Select({
+            class: "dynamic-prop-select",
+            items: ["a", "b", "c", "slug"],
+            name: "prop.value.dynamic_value",
+          }),
+        ]),
       ]
     ),
   ]);
@@ -137,11 +134,7 @@ export function ConvertToComponentModal({ name, id }) {
       Button(
         {
           color: "primary",
-          onClick: runAction(
-            "create_component",
-            "{id, name, parent_id}",
-            reload()
-          ),
+          onClick: "onCreateComponent({id, name, parent_id})",
         },
         "Create"
       ),
@@ -151,14 +144,14 @@ export function ConvertToComponentModal({ name, id }) {
 
 export function ComponentSettingsModal({ id, component, props, onSubmit }) {
   return createModal({
-    $data: { props },
+    $data: `componentSettings(${JSON.stringify(props)})`,
     name: `component-${id}-settings`,
     title: "Component Settings",
     actions: [
       Button({ onClick: "$modal.close()" }, "Cancel"),
       component.slot_id
         ? Button(
-            { href: "/admin/editor/" + component.slot_id },
+            { onClick: `openComponentModal(${JSON.stringify(component)})` },
             "Edit Component"
           )
         : "",
@@ -170,7 +163,7 @@ export function ComponentSettingsModal({ id, component, props, onSubmit }) {
         "Save"
       ),
     ],
-    body: ComponentEditForm({ onSubmit }),
+    body: ComponentEditForm(),
   });
 }
 
@@ -182,7 +175,7 @@ export function ComponentRemoveModal({ id }) {
       Button({ onClick: closeModal() }, "Cancel"),
       Button(
         {
-          onClick: runAction("remove_instance", `{id: '${id}'}`, reload()),
+          onClick: `onRemoveInstance({instance_id: '${id}'}).then(res => location.reload())`,
           color: "error",
         },
         "Remove"
@@ -195,15 +188,15 @@ export function ComponentRemoveModal({ id }) {
 export function getPropsArray({ component, props }) {
   const result = [];
 
-  console.log("getPropsArray", { component, props });
   for (let prop of component.props) {
     result.push({
       name: prop.name,
       value: props[prop.name] ?? {
         type: "static",
-        value: prop.default_value,
+        value: prop.type === "array" ? [] : prop.default_value,
       },
       type: prop.type,
+      fields: prop.type === "array" ? prop.fields : [],
     });
   }
 
@@ -212,7 +205,6 @@ export function getPropsArray({ component, props }) {
 
 export function ItemModal({ item = { props: {}, component: {} } }) {
   if (typeof item === "string") return;
-  console.log("PROPS: ", item.props);
   const props = getPropsArray({ component: item.component, props: item.props });
 
   return [
@@ -221,22 +213,16 @@ export function ItemModal({ item = { props: {}, component: {} } }) {
       id: item.id,
       props,
       component: item.component,
-      onSubmit: runAction(
-        "update_instance",
-        `{id: '${item.id}', props}`,
-        reload()
-      ),
+      onSubmit: `onUpdateInstance({instance_id: '${item.id}', props}).then(res => location.reload())`,
     }),
     ConvertToComponentModal({ name: item.component.name, id: item.id }),
   ];
 }
 
 export function ItemModals({ content }) {
-  console.log("CONTENT: ", content);
   let result = [ItemModal({ item: content })];
 
   if (content.slot) {
-    console.log("SLOT: ", content.slot);
     result = [
       ...result,
       ...content.slot.map((item) => ItemModals({ content: item })),

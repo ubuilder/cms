@@ -1,11 +1,13 @@
-export async function update({ ctx, body }) {
+import { Components, Instances } from "../../../models.js";
+
+export async function update({ body }) {
   const component = {
     name: body.name,
     props: body.props,
   };
   const id = body.id;
 
-  await ctx.table("components").update(id, component);
+  await Components.update(id, component);
 
   return {
     body: {
@@ -13,7 +15,7 @@ export async function update({ ctx, body }) {
     },
   };
 }
-export async function add({ ctx, body }) {
+export async function add({ body }) {
   
   const default_props = {}
   body.props.map(prop => {
@@ -21,7 +23,7 @@ export async function add({ ctx, body }) {
   })
   
 
-  const [id] = await ctx.table('instances').insert({
+  const [id] = await Instances.insert({
     component_id: '000',
     slot_ids: [],
     props: default_props
@@ -33,7 +35,7 @@ export async function add({ ctx, body }) {
     slot_id: id
   };
 
-  await ctx.table("components").insert(component);
+  await Components.insert(component);
 
   return {
     body: {

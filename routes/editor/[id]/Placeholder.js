@@ -1,5 +1,4 @@
 import { Icon, View } from "@ulibs/ui";
-import { openAddComponentModal } from "./ComponentModals.js";
 
 export function Placeholder({ id = '', size = "md", parent_id = "", placement, name } = {}) {
   return View(
@@ -12,7 +11,7 @@ export function Placeholder({ id = '', size = "md", parent_id = "", placement, n
         `parent_id = '${parent_id}'`,
         `position='${id}'`,
         `placement='${placement}'`,
-        `if(position === '${id}') {${openAddComponentModal()}}`,
+        `if(position === '${id}') $modal.open('add-component')`,
       ].join(";"),
     },
     false
