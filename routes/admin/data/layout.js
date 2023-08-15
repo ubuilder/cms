@@ -28,7 +28,7 @@ export default (props, $slots) => {
         color: "primary",
         justify: "center",
         icon: "plus",
-        href: "/admin/data/create",
+        href: "/admin/data/make",
         style: "position: sticky; top: 0",
       },
       [Icon({ name: "plus" }), Tooltip({ placement: "right" }, "Create Table")]
@@ -56,7 +56,7 @@ export default (props, $slots) => {
     ...props.tables.map((table) =>
       SidebarItem({
         mode,
-        href: "/admin/data/" + table.slug,
+        href: "/admin/data/" + table.slug + "/edit",
         title: table.name,
         icon: table.icon,
       })

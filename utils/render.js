@@ -63,7 +63,7 @@ export async function renderInstance(
           slots.push(slotItem);
           continue;
         }
-        console.log({ slotItem, instanceSlot });
+        // console.log({ slotItem, instanceSlot });
         const slot = await renderInstance2(slotItem);
         slotItem.content = slot;
 
@@ -125,7 +125,7 @@ export async function renderInstance(
       }
     }
 
-    console.log("renderComponent", {component, props, slot})
+    // console.log("renderComponent", {component, props, slot})
     return renderComponent(component, props, slot);
   }
 
@@ -195,7 +195,7 @@ export async function renderPage({ ctx, page }) {
     });
     return result;
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return `there is an error in template of this page, \n\n${err.message}.\n\n <a href="/admin/page/${page.slug}">Edit Page</a>"`;
   }
 }

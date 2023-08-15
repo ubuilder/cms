@@ -51,9 +51,9 @@ export function CMS({
     addLayout,
     addStatic,
     getModel(name) {
-      console.log(
-        `do not use getModel("${name}"), instead you can use table("${name}")`
-      );
+      // console.log(
+      //   `do not use getModel("${name}"), instead you can use table("${name}")`
+      // );
       return db.getModel(name);
     },
     table(name) {

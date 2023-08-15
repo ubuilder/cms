@@ -15,12 +15,21 @@ export async function updateTable(ctx, body) {
   const payload = {
     name: body.name,
     icon: body.icon,
+    fields: body.fields
   };
   const table = await ctx.Tables.get({where: {id}})
 
   await ctx.Tables.update(id, payload);
 
-  await syncTableFields(ctx, { fields: body.fields, table_id: id, table_name: table.slug });
+  // await syncTableFields(ctx, { fields: body.fields, table_id: id, table_name: table.slug });
+}
+
+export async function removeTable(body) {
+  const id = body.id;
+
+  const table = await ctx.Tables.remove(id)
+
+  return success({message: 'table deleted'});
 }
 
 export async function createTable(ctx, body) {
@@ -28,64 +37,66 @@ export async function createTable(ctx, body) {
     name: body.name,
     icon: body.icon,
     slug: slugify(body.name),
+    fields: body.fields
   };
 
   const result = await ctx.Tables.insert(newTable);
   const table_id = result[0];
 
-  await ctx.createTable(newTable.slug, {});
+  // await createTable(newTable.slug, {});
 
-  await syncTableFields(ctx, { fields: body.fields, table_id, table_name: newTable.slug });
-
-  //   todo: add fields
+  // await syncTableFields(ctx, { fields: body.fields, table_id, table_name: newTable.slug });
+// console.log("data: ",body)
+    // todo: add fields
   return success({data: result});
+
 }
 
-export async function syncTableFields(ctx, { fields, table_id, table_name }) {
+// export async function syncTableFields(ctx, { fields, table_id, table_name }) {
  
-  for (let field of fields) {
-    if (field.new) {
-      const payload = {
-        table_id,
-        name: field.name,
-        slug: slugify(field.name),
-        hint: field.hint,
-        default: field.default_value,
-        required: field.required,
-      };
+//   for (let field of fields) {
+//     if (field.new) {
+//       const payload = {
+//         table_id,
+//         name: field.name,
+//         slug: slugify(field.name),
+//         hint: field.hint,
+//         default: field.default_value,
+//         required: field.required,
+//       };
 
-      await ctx.Fields.insert(payload);
+//       await ctx.Fields.insert(payload);
 
-      // await ctx.addColumns(table_name, {
-      //   [slugify(field.name)]: "string" + (field.required ? "|required" : ""),
-      // });
+//       // await ctx.addColumns(table_name, {
+//       //   [slugify(field.name)]: "string" + (field.required ? "|required" : ""),
+//       // });
 
-      // create field
-    } else if (field.removed) {
-      const id = field.id;
-      await ctx.Fields.remove(id);
+//       // create field
+//     } else if (field.removed) {
+//       const id = field.id;
+//       await ctx.Fields.remove(id);
 
-      //
-      console.log('remove columns', table_name, [slugify(field.name)])
-      // await ctx.removeColumns(table_name, [slugify(field.name)]);
-    } else {
-      const id = field.id;
-      const payload = {
-        name: field.name,
-        hint: field.hint,
-        default: field.default_value,
-        required: field.required,
-      };
+//       //
+//       console.log('remove columns', table_name, [slugify(field.name)])
+//       // await ctx.removeColumns(table_name, [slugify(field.name)]);
+//     } else {
+//       const id = field.id;
+//       const payload = {
+//         name: field.name,
+//         hint: field.hint,
+//         default: field.default_value,
+//         required: field.required,
+//       };
 
-      await ctx.Fields.update(id, payload);
+//       await ctx.Fields.update(id, payload);
 
 
-      // check if need update
-      // await ctx.updateColumn(table_name, slugify(field.name), "string" + (field.required ? "|required" : ""))
+//       // check if need update
+//       // await ctx.updateColumn(table_name, slugify(field.name), "string" + (field.required ? "|required" : ""))
 
-    }
-  }
-}
+//     }
+//   }
+// }
 
 export async function insertData(ctx, body) {
   const {table, data} = body

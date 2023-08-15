@@ -1,5 +1,6 @@
 import { Page } from "../../../../components/Page.js";
 import { TableEditor } from "../TableEditor.js";
+import { createTable } from "./actions.js";
 
 export function load() {
   return {
@@ -7,8 +8,8 @@ export function load() {
   };
 }
 
-export async function create({ body }) {
-  // const result = await createTable(ctx, body);
+export async function create({ ctx, body }) {
+  await createTable(ctx, body);
 
   return {
     status: 201,
@@ -23,7 +24,5 @@ export async function create({ body }) {
 }
 
 export default (props) => {
-  return Page({title: props.title},[
-    TableEditor({ action: "create" }),
-  ]);
+  return Page({ title: props.title }, [TableEditor({ action: "create" })]);
 };

@@ -46,7 +46,7 @@ export  async function getAssets({ctx, body}){
     };
 }
 export async function getAsset({ ctx, body }) {
-  console.log('getasset body' , body)
+  // console.log('getasset body' , body)
   if (!body?.id) {
     return { body: { success: false, message: "missing asset id" } };
   }
@@ -54,7 +54,7 @@ export async function getAsset({ ctx, body }) {
     .table("assets")
     .query({ where: { id: body.id } })
     .then((res) => res.data[0]);
-  console.log('asset=====>: ', asset)
+  // console.log('asset=====>: ', asset)
   const result = updateModal(
     asset,
     {
@@ -92,7 +92,7 @@ export  async function upload({ctx, body, files}){
   if(!supportedTypes.includes(type)){
     throw new Error('Unsupported file format, unable to save this file type: type == '+ type)
   }
-  console.log('object:>>>+>>', files, typeof file.path)
+  // console.log('object:>>>+>>', files, typeof file.path)
   
   //from temp folder to project folder
   copyFileSync(path, `./assets/${type}s/${basename(file.path)}`);
@@ -125,7 +125,7 @@ export async function remove({ctx, body, files}){
 }
 
 export async function update({ctx, body, files}){
-  console.log('update asest action body: ', body)
+  // console.log('update asest action body: ', body)
 
   ctx.table('assets').update(body.id, body)
   
