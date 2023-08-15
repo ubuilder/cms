@@ -71,7 +71,7 @@ const dev = !!process.env.DEV_MODE;
 const ctx = CMS({ dev });
 
 ctx.addStatic({ path: "./node_modules/@ulibs/ui/dist", prefix: "/dist" });
-ctx.addStatic({ path: "./public", prefix: "/assets" });
+ctx.addStatic({ path: "./", prefix: "/assets" });
 ctx.addStatic({ path: "./public", prefix: "/res" });
 
 initModels(ctx);
