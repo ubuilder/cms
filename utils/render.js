@@ -212,7 +212,6 @@ export async function renderInstance({
       let slots = [];
       console.log(slot);
       for (let slotItem of slot) {
-        console.log(slotItem);
         const res = await renderInstance({
           instance: slotItem,
           parent: instance,
@@ -352,7 +351,7 @@ export async function renderPage({ page }) {
 
     return result;
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return `there is an error in template of this page, \n\n${err.message}.\n\n <a href="/admin/page/${page.slug}">Edit Page</a>"`;
   }
 }

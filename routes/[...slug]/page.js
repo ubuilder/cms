@@ -1,7 +1,6 @@
 import { Pages } from "../../models.js";
 import { renderPage } from "../../utils/render.js";
 
-
 export async function load({ ctx, params, query }) {
   const slug = params['*'];
 
@@ -20,11 +19,15 @@ export async function load({ ctx, params, query }) {
   return {
     content: await renderPage({ctx, page})
   }
+
 }
 
 export default ({ content }) => {
+
   if (!content) {
     return;
   }
+
   return content;
+
 };
