@@ -79,13 +79,14 @@ export function PageModal({
 
 export function AddPageModal({ ...props }) {
   return PageModal({
-    ...props,
     size: "xs",
     onAdd: runAction(
       "add",
       "{title, slug, description, is_template}",
       navigate("'/admin/pages/' + res.id")
     ),
+    ...props,
+
   });
 }
 

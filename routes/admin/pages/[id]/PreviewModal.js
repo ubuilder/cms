@@ -21,7 +21,7 @@ export function PreviewModal({ title, slug }) {
       CardHeader([
         CardTitle(title),
         ButtonGroup([
-          Button({ href: slug, target: "_blank" }, [
+          Button({ href: '/' + slug, target: "_blank" }, [
             Icon({ name: "external-link" }),
             "Open in new tab",
           ]),

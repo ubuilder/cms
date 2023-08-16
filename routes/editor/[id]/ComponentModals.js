@@ -107,12 +107,14 @@ export function ComponentAddModal({ components }) {
 export function AddComponentSettings({ component }) {
   const props = getPropsArray({ component, props: {} });
 
-  return createModal({
-    $data: `componentSettings(${JSON.stringify(props)})`,
+  return [
+    View({tag: 'script', type: 'text/json', id: 'prop-' + component.id}, JSON.stringify(props)),
+    createModal({
+    $data: `componentSettings("${component.id}")`,
     name: `add-component-${component.id}-settings`,
     mode: "add",
     title: "Component Settings",
     onAdd: `onAddInstance({ component_id: "${component.id}", props}).then(res => location.reload())`,
     body: ComponentEditForm({ onSubmit: "" }),
-  });
+  })];
 }

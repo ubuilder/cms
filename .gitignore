@@ -1,5 +1,6 @@
 /node_modules
 .env
 app.db
+db
 db.json
 db.json.bak

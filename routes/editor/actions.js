@@ -1,19 +1,7 @@
-import { uuid } from "uuidv4";
-import { getInstance } from "./[id]/helpers.js";
-import { Components, Instances } from "../../models.js";
+import { Components, Instances, id } from "../../models.js";
+import { cloneInstance } from "../../utils/instance.js";
 
-// export async function update_title({ ctx, params, body }) {
-//   const title = body.title;
-//   const page = await getInstance(ctx, params.id);
 
-//   await Pages.update(page.id, { title });
-
-//   return {
-//     body: {
-//       success: true,
-//     },
-//   };
-// }
 
 export async function create_component({ ctx, body, params }) {
   const { id, parent_id = params.id, name } = body;
@@ -49,27 +37,6 @@ export async function create_component({ ctx, body, params }) {
   };
 }
 
-async function cloneInstance(instance_id) {
-  console.log({instance_id})
-  const instance = await Instances.get({where: {id: instance_id}})
-
-  const slot_ids = []
-  
-  if(!instance) throw new Error('Instance not found: ' + instance_id)
-
-  for(let slotId of instance.slot_ids) {
-    const [newId] = await cloneInstance(slotId)
-    result.slot_ids.push(newId);
-  }
-  
-
-  return Instances.insert({
-    component_id: instance.component_id,
-    props: instance.props,
-    slot_ids
-  })
-}
-
 export async function add_instance({ ctx, body }) {
   console.log('add instance', body)
   const parentId = body.parent_id
@@ -91,7 +58,7 @@ export async function add_instance({ ctx, body }) {
 
 
   const newInstance = {
-    id: uuid(),
+    id: id(),
     component_id: componentId,
     slot_ids: [],
     props: props.reduce((prev, curr) => {

@@ -20,7 +20,8 @@ window.addEventListener("alpine:init", (e) => {
         }
       },
       clearSelection() {
-        (this.id = ""), (this.contextmenuOpen = false);
+        this.id = ""; 
+        this.contextmenuOpen = false;
       },
       openContextMenu($event, id) {
         $event.preventDefault();
@@ -98,9 +99,10 @@ window.addEventListener("alpine:init", (e) => {
           location.reload();
         }
       },
-      openComponentModal(component) {
+      openComponentModal(id) {
+        const component = JSON.parse(document.querySelector('script[type="text/json"]#component-' + id).textContent)
+
         this.component = component;
-        console.log(component)
         this.$modal.close()
         // console.log('should open edit component modal', component)
         this.$modal.open('component-edit-modal')
@@ -108,11 +110,21 @@ window.addEventListener("alpine:init", (e) => {
       closeComponentModal() {
         this.$modal.close()
         location.reload()
+      },
+      onClickPlaceholder($event, instance_id) {
+        $event.stopPropagation();
+        this.contextmenuOpen = false;
+        this.position = ''
+        this.parent_id = instance_id
+
+        this.$modal.open('add-component')
       }
     };
   });
 
-  Alpine.data("componentSettings", (props) => {
+  Alpine.data("componentSettings", (id) => {
+    const props = JSON.parse(document.querySelector('script[type="text/json"]#prop-' + id).textContent)
+
     return {
       props,
       toggleType(index) {
@@ -126,5 +138,5 @@ window.addEventListener("alpine:init", (e) => {
     };
   });
 
-  console.log({ page });
+
 });

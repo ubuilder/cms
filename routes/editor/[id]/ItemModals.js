@@ -143,15 +143,18 @@ export function ConvertToComponentModal({ name, id }) {
 }
 
 export function ComponentSettingsModal({ id, component, props, onSubmit }) {
-  return createModal({
-    $data: `componentSettings(${JSON.stringify(props)})`,
+  return [
+    View({tag: 'script', type: 'text/json', id: 'prop-' + id}, JSON.stringify(props)),
+    View({tag: 'script', type: 'text/json', id: 'component-' + id}, JSON.stringify({...component, slot: undefined})),
+    createModal({
+    $data: `componentSettings("${id}")`,
     name: `component-${id}-settings`,
     title: "Component Settings",
     actions: [
       Button({ onClick: "$modal.close()" }, "Cancel"),
       component.slot_id
         ? Button(
-            { onClick: `openComponentModal(${JSON.stringify(component)})` },
+            { onClick: `openComponentModal("${id}")` },
             "Edit Component"
           )
         : "",
@@ -164,7 +167,8 @@ export function ComponentSettingsModal({ id, component, props, onSubmit }) {
       ),
     ],
     body: ComponentEditForm(),
-  });
+  })
+];
 }
 
 export function ComponentRemoveModal({ id }) {
@@ -220,12 +224,14 @@ export function ItemModal({ item = { props: {}, component: {} } }) {
 }
 
 export function ItemModals({ content }) {
+  console.log('itemModals, ', content)
   let result = [ItemModal({ item: content })];
 
-  if (content.slot) {
+  if (content.slots) {
+    console.log('slot: ', content.slots)
     result = [
       ...result,
-      ...content.slot.map((item) => ItemModals({ content: item })),
+      ...content.slots.map((slot) => ItemModals({ content: slot })),
     ];
   }
 

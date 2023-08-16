@@ -8,9 +8,16 @@ import {
   View,
 } from "@ulibs/ui";
 
-function ContextMenu({ item, rootId }) {
-  console.log(item.id,item.parent?.id)
-  function ContextMenuButton({ if: if_ = true, onClick, tooltip, icon }) {
+/**
+ * 
+ * @param {Object} param0 
+ * @param {Instance} param0.instance
+ * 
+ * @returns {string}
+ */
+function ContextMenu({ instance }) {
+
+  function ContextMenuButton({ if: if_, onClick, tooltip, icon }) {
     if (!if_) return "";
     return Button(
       {
@@ -24,73 +31,62 @@ function ContextMenu({ item, rootId }) {
     );
   }
 
-  function Content(item, mode = "static") {
-    if (!item) return;
+  function Content(instance, mode = "static") {
+    if (!instance) return;
+    console.log('here: ', instance)
 
-
-
-    const props = [];
-
-    for (let prop of item.component.props) {
-      props.push({
-        name: prop.name,
-        value: item.props[prop.name] ?? {
-          type: "static",
-          value: prop.default_value,
-        },
-      });
-    }
     return Card([
       CardBody({ p: "xxs" }, [
         mode === "static"
-          ? View({ py: "xs", px: "xxs" }, [item.component.name + " Settings"])
+          ? View({ py: "xs", px: "xxs" }, [instance.component.name + " Settings"])
           : "",
 
         ButtonGroup({ align: "center" }, [
           ContextMenuButton({
-            onClick: `onCutInstance("${item.id}", "${item.component.id}")`,
-            if: item.parent,
+            onClick: `onCutInstance("${instance.id}", "${instance.component.id}")`,
+            if: instance.parent,
             icon: "cut",
             tooltip: "Cut",
           }),
           ContextMenuButton({
-            onClick: `onCopyInstance("${item.id}"), "${item.component.id}"`,
+            onClick: `onCopyInstance("${instance.id}", "${instance.component.id}")`,
             icon: 'copy',
             tooltip: 'Copy',
-            if: item.parent
+            if: instance.parent
           }),
           ContextMenuButton({
-            onClick: `$modal.open('component-${item.id}-settings')`,
+            onClick: `$modal.open('component-${instance.id}-settings')`,
             icon: 'settings',
             tooltip: 'Component Settings',
+            if: true,
           }),
           ContextMenuButton({
-            onClick: `$modal.open('component-${item.id}-remove')`,
+            onClick: `$modal.open('component-${instance.id}-remove')`,
             icon: 'trash',
             tooltip: 'Remove Component',
-            if: item.parent
+            if: instance.parent
           }),
           ContextMenuButton({
-            onClick: `openCreateComponentModal("${item.id}", "${item.parent?.id ?? ''}")`,
+            onClick: `openCreateComponentModal("${instance.id}", "${instance.parent?.id ?? ''}")`,
             icon: 'star',
             tooltip: 'Create Component',
-            if: item.parent
+            if: instance.parent
           }),
           ContextMenuButton({
-            onClick: `openInsertModal("${item.id}", "${item.parent?.id ?? ''}", "before")`,
+            onClick: `openInsertModal("${instance.id}", "${instance.parent?.id ?? ''}", "before")`,
             icon: 'column-insert-left',
             tooltip: 'Insert Before',
-            if: item.parent
+            if: instance.parent
           }),
           ContextMenuButton({
-            onClick: `openInsertModal("${item.id}", "${item.parent?.id ?? ''}", "after")`,
+            onClick: `openInsertModal("${instance.id}", "${instance.parent?.id ?? ''}", "after")`,
             icon: 'column-insert-right',
             tooltip: 'Insert After',
-            if: item.parent
+            if: instance.parent
           }),
         ]),
       ]),
-      item.parent ? Content(item.parent) : "",
+      instance.parent ? Content(instance.parent) : "",
     ]);
   }
 
@@ -100,23 +96,33 @@ function ContextMenu({ item, rootId }) {
       "u-cloak": true,
       "onClick.outside": "contextmenuOpen = false",
       onClick: "contextmenuOpen = false",
-      $class: `(contextmenuOpen && id==='${item.id}') ? 'open' : ''`,
-      $style: `(contextmenuOpen && id==='${item.id}') ? ('top: ' + y + 'px;' + 'left: ' + x + 'px') : ''`,
+      $class: `(contextmenuOpen && id==='${instance.id}') ? 'open' : ''`,
+      $style: `(contextmenuOpen && id==='${instance.id}') ? ('top: ' + y + 'px;' + 'left: ' + x + 'px') : ''`,
     },
-    [Content(item, "dynamic")]
+    [Content(instance, "dynamic")]
   );
 }
 
-export function Item({ item, rootId }) {
-  if (!item) return "";
+
+/**
+ * Wrapper elementt which enables in-page Editing
+ * @param {Object} param0 
+ * @param {Instance} param0.instance
+ * @param {string} param0.html
+ * @param {Instance | undefined} param0.parent
+ * 
+ * @returns {string}
+ */
+export function InstanceWrapper({ instance, html }) {
+  
   return View(
     {
-      class: "item" + (item.component.id !== '000' ? " component-instance" : ""),
-      id: "item-" + item.id,
+      class: "item" + (instance.component_id !== '000' ? " component-instance" : ""),
+      id: "item-" + instance.id,
       "onClick.outside": "clearSelection",
-      $class: `id === '${item.id}' ? 'active' : ''`,
-      onContextmenu: `openContextMenu($event, "${item.id}")`,
+      $class: `id === '${instance.id}' ? 'active' : ''`,
+      onContextmenu: `openContextMenu($event, "${instance.id}")`,
     },
-    [item.content, ContextMenu({ item, rootId })]
+    [html, ContextMenu({ instance })]
   );
 }

@@ -1,6 +1,6 @@
 import { Button, Card, CardHeader, Col, Modal, View } from "@ulibs/ui";
 import { Page } from "../../../components/Page.js";
-import { Item } from "./Item.js";
+import { InstanceWrapper } from "./Item.js";
 import { ItemModals } from "./ItemModals.js";
 import { ComponentAddModal } from "./ComponentModals.js";
 
@@ -30,7 +30,9 @@ function EditComponentModal() {
   ])
 }
 
-export function Editor({ title, instance, components, rootId }) {
+export function Editor({ html, instance, components, rootId }) {
+
+  console.log({html})
   return Page(
     {
       container: false,
@@ -42,7 +44,7 @@ export function Editor({ title, instance, components, rootId }) {
       ]
     },
     [
-      PageContainer({}, [Item({ item: instance, rootId })]),
+      PageContainer({}, [ html ]),
       ItemModals({ content: instance }),
       ComponentAddModal({ components }),
       EditComponentModal({})

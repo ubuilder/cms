@@ -6,7 +6,7 @@
   display: contents;
 }
 
-.item > :not(.context-menu) {
+.item > :not(.context-menu):not([u-slot-placeholder]) {
   cursor: default;
   transition: all 0.2s ease;
   position: relative;
@@ -44,9 +44,10 @@
   background-color: var(--color-success-100);
 }
 
-.placeholder {
+[u-slot-placeholder] {
   transition: all 0.2s ease;
   min-width: var(--size-sm);
+  cursor: pointer;
   background-image: repeating-linear-gradient(
     45deg,
     var(--color-base-300),
@@ -57,48 +58,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--size-md);
+  font-size: var(--size-sm);
+  color: var(--color-primary-600);
   gap: var(--size-xs);
   border: 1px dashed var(--color-primary-200);
   opacity: 1;
   width: 100%;
-}
 
-.placeholder-md {
-  height: var(--size-xl);
-}
-
-.placeholder-sm {
-  height: 0;
-  display: none;
-}
-
-.item.active > .placeholder-sm {
-  height: calc(var(--size-sm));
-  border: 1px solid var(--color-primary-200);
-  top: 0;
-  bottom: 0;
-}
-
-.item.active > .placeholder-sm.placeholder-before {
-  bottom: calc(100% + 1px);
-  top: auto;
-  left: -1px;
-  right: -1px;
-}
-
-.item.active > .placeholder-sm.placeholder-after {
-  left: -1px;
-  right: -1px;
-  bottom: auto;
-  top: calc(100% + 1px);
-}
-
-.placeholder-slot {
   min-height: var(--size-xl);
 }
 
-.placeholder.active {
+[u-slot-placeholder].active {
   border: 1px solid var(--color-primary-500);
 }
 

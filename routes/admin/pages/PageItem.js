@@ -13,7 +13,7 @@ export function PageItem({
   } = {}) {
     return View(
       {
-        $data: { is_template },
+        $data: { slot_id, is_template },
         border: true,
         borderColor: "base-400",
         bgColor: "base-200",
@@ -62,8 +62,8 @@ export function PageItem({
           name: "add-page-" + id,
           onAdd: runAction(
             "add",
-            `{title, slug, head, is_template: false}`,
-            navigate("'/admin/editor/' + res.id")
+            `{title, slug, head, is_template: false, slot_id}`,
+            navigate("'/admin/pages/' + res.id")
           ),
           value: { title, slug, description, head: 'head' },
         }),
