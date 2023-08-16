@@ -18,12 +18,13 @@ import {createModal} from '../../../components/createModal.js'
 const componentPropTypes = [
   { key: "plain_text", text: "Plain Text" },
   { key: "rich_text", text: "Rich Text" },
+  { key: "code", text: "Code" },
   { key: "number", text: "Number" },
   { key: "date", text: "Date" },
   { key: "boolean", text: "Boolean" },
 ];
 
-function Props({ label, description, name }) {
+function Props({ label, description, name, hasArray, buttonText= 'Add Prop', placeholder = 'Enter name of new prop...' }) {
   return FormField({ label, description }, [
     Accordions({ $for: `prop, index in ${name}`, style: "border: none" }, [
       Card({ mb: "xxs" }, [
@@ -39,9 +40,13 @@ function Props({ label, description, name }) {
                 name: "prop.type",
                 key: "key",
                 text: "text",
-                items: componentPropTypes,
+                items: hasArray ? [...componentPropTypes, {key: 'array', text: 'Array'}] : componentPropTypes,
               }),
-              Input({ label: "Default Value", name: "prop.default_value" }),
+              Input({ $if: "prop.type !== 'array'", label: "Default Value", name: "prop.default_value" }),
+
+              hasArray && Col({$if: "prop.type === 'array'", col: 12}, [
+                Props({label: 'Fields', description: 'Enter fields of the Array', name: `prop.fields`, hasArray: false, buttonText: 'Add Field', placeholder: 'Enter name of new field...'})
+              ]) || '',
 
               Col({ d: "flex", justify: "end", col: 12 }, [
                 Button(
@@ -60,15 +65,15 @@ function Props({ label, description, name }) {
     Row({ mt: "sm", $data: { new_name: "" } }, [
       Input({
         col: true,
-        placeholder: "Enter name of new prop...",
+        placeholder,
         name: "new_name",
       }),
       Col({ col: 0 }, [
         Button(
           {
-            onClick: `${name}.push({name: new_name, type: 'plain_text', default_value: ''}); new_name = ''`,
+            onClick: `${name}.push({name: new_name, type: 'plain_text', ${hasArray ? 'fields: [], ' : ''}default_value: ''}); new_name = ''`,
           },
-          [Icon({ name: "plus" }), "Add Prop"]
+          [Icon({ name: "plus" }), buttonText]
         ),
       ]),
     ]),
@@ -80,7 +85,7 @@ export function ComponentModal({
   onEdit = "",
   name = "add-component",
   mode = "add",
-  value = { props: [], name: "", new_name: "" },
+  value = { props: [], slot_id: '', name: "", new_name: "" },
 }) {
   return createModal({
     name,
@@ -99,9 +104,10 @@ export function ComponentModal({
         name: "props",
         label: "Props",
         description: "any prop that you add, will be accessible in template",
+        hasArray: true,
       }),
-      value.id !== '000' && FormField({label: 'Edit'},[
-        Button({ href: '/admin/editor/' + value.slot_id, color: 'primary'}, "Edit Component")
+      value.slot_id && FormField({label: 'Edit'},[
+        Button({ onClick: `openEditComponentModal(${JSON.stringify(value)})`, color: 'primary'}, "Edit Component")
       ]) ||  '',
 
     ],
