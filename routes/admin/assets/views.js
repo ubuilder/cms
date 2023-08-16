@@ -25,57 +25,49 @@ export function updateModal(props, slots) {
         //properties
         Col({ $data: props }, [
           View([
-            Input({
-              style: "height: var(--size-lg)",
+            View({
               m: 0,
               p: 0,
               label: "name",
               "u-model": "name",
             }),
-            Input({
-              style: "height: var(--size-lg)",
+            View({
               m: 0,
               p: 0,
               label: "description",
               "u-model": "description",
             }),
-            Input({
-              style: "height: var(--size-lg)",
+            View({
               m: 0,
               p: 0,
               label: "url",
               "u-model": "url",
             }),
-            Input({
-              style: "height: var(--size-lg)",
+            View({
               m: 0,
               p: 0,
               label: "caption",
               "u-model": "caption",
             }),
-            Input({
-              style: "height: var(--size-lg)",
+            View({
               m: 0,
               p: 0,
               label: "width",
               "u-model": "width",
             }),
-            Input({
-              style: "height: var(--size-lg)",
+            View({
               m: 0,
               p: 0,
               label: "height",
               "u-model": "height",
             }),
-            Input({
-              style: "height: var(--size-lg)",
+            View({
               m: 0,
               p: 0,
               label: "alt",
               "u-model": "alt",
             }),
-            Input({
-              style: "height: var(--size-lg)",
+            View({
               m: 0,
               p: 0,
               label: "type",
