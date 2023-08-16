@@ -52,7 +52,7 @@ export async function update_page({ctx, body}) {
 }
 
 export async function add({ ctx, body }) {
-  console.log ('add page', body)
+  // console.log ('add page', body)
   const head = `
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">

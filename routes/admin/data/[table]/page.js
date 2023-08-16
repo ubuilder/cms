@@ -1,6 +1,6 @@
 import { Button, Card, CardBody, CardFooter, Icon, Input, Modal, Row, Select, TableActions, Tooltip, View } from "@ulibs/ui";
 import { PageHeader } from "../../../../components/PageHeader.js";
-import { insertData, removeData, updateData } from "../create/actions.js";
+import { insertData, removeData, updateData } from "../make/actions.js";
 import { DataTable } from "../../../../components/DataTable.js";
 
 export async function load({ ctx, locals, params }, { redirect }) {
