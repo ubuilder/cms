@@ -11,6 +11,8 @@ import {
 } from "@ulibs/ui";
 import { Sidebar, SidebarItem } from "../../components/sidebar.js";
 import { Logo } from "../../components/Logo.js";
+import { Popover } from "@ulibs/ui";
+import Asset from './assets/page.js'
 
 export function Header($props, $slots) {
   return View(
@@ -49,7 +51,7 @@ export function AdminLayout($props, $slots) {
       htmlHead: [
         `<meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">`,
-          `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.30.0/tabler-icons.min.css">`,
+        `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.30.0/tabler-icons.min.css">`,
         View({
           tag: "link",
           rel: "stylesheet",
@@ -132,7 +134,7 @@ export function AdminLayout($props, $slots) {
                       // el = el.querySelector('input')
                       const formData = new FormData()
                       formData.append('file', el.files[0])
-                      fetch('?upload', {
+                      fetch(window.location.origin + '/admin/assets?upload', {
                         method: 'POST',
                         body: formData
                       }).then(res=> callback())
@@ -163,12 +165,15 @@ export function AdminLayout($props, $slots) {
           icon: "database",
           href: "/admin/data",
         }),
-        SidebarItem({
-          mode,
-          title: "Assets",
-          icon: "photo",
-          href: "/admin/assets",
-        }),
+        SidebarItem(
+          {
+            mode,
+            title: "Assets",
+            icon: "photo",
+            // href: "/admin/assets"
+          },
+          Popover({ placement: "right-start" }, Asset())
+        ),
         SidebarItem({
           mode,
           title: "Market",
@@ -188,13 +193,16 @@ export function AdminLayout($props, $slots) {
           // check if is logged in from props
 
           Col({ dSm: "none", col: 0 }, Icon({ name: "menu-2" })),
-          Input({
-            col: 4,
-            d: "none",
-            dSm: "block",
-            style: "margin-bottom: 0;",
-            placeholder: "Search",
-          }),
+          Col(
+            { col: 6 },
+            Input({
+              d: "none",
+              dSm: "block",
+              style: "margin-bottom: 0;",
+              placeholder: "Search",
+            })
+          ),
+
           Col({ col: true }),
           Col({ class: "hide-light" }, [
             Icon({
