@@ -171,7 +171,7 @@ export function ComponentRemoveModal({ id }) {
 export function getPropsArray({ component, props }) {
   const result = [];
 
-  console.log("getPropsArray", { component, props });
+  // console.log("getPropsArray", { component, props });
   for (let prop of component.props) {
     result.push({
       name: prop.name,
@@ -188,7 +188,7 @@ export function getPropsArray({ component, props }) {
 
 export function ItemModal({ item = { props: {}, component: {} } }) {
   if (typeof item === "string") return;
-  console.log("PROPS: ", item.props);
+  // console.log("PROPS: ", item.props);
   const props = getPropsArray({ component: item.component, props: item.props });
 
   return [
@@ -208,11 +208,11 @@ export function ItemModal({ item = { props: {}, component: {} } }) {
 }
 
 export function ItemModals({ content }) {
-  console.log("CONTENT: ", content);
+  // console.log("CONTENT: ", content);
   let result = [ItemModal({ item: content })];
 
   if (content.slot) {
-    console.log("SLOT: ", content.slot);
+    // console.log("SLOT: ", content.slot);
     result = [
       ...result,
       ...content.slot.map((item) => ItemModals({ content: item })),

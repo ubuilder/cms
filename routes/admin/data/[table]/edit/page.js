@@ -3,9 +3,10 @@ import { TableEditor } from "../../TableEditor.js";
 import { Page } from "../../../../../components/Page.js";
 import { updateTable, removeTable } from "../../make/actions.js";
 
-export async function load({ ctx, params, locals }) {
-  const table = locals.table;
-  console.log({ locals, table });
+export async function load({ ctx, params }) {
+  // const table = ctx.Tables.get({where: {id: params.name}});
+  console.log(params)
+  // console.log({ locals, table });
   return {
     title: "Edit Table",
     table,
@@ -27,20 +28,20 @@ export async function update({ ctx, body }) {
   };
 }
 
-export async function remove({ ctx, body }) {
-  // await removeTable(body);
-console.log('.remove..............................')
-  // return {
-  //   status: 202,
-  //   body: {
-  //     message: {
-  //       type: "success",
-  //       content: "Table Successfully deleted!",
-  //     },
-  //     result: true,
-  //   },
-  // };
+export async function remove({ctx, body }) {
+  await removeTable(ctx, body);
+  return {
+    status: 202,
+    body: {
+      message: {
+        type: "success",
+        content: "Table Successfully deleted!",
+      },
+      result: true,
+    },
+  };
 }
+
 export default (props) => {
     if(!props.table) return 'Table not found (TODO: Go Back)'
     
@@ -71,7 +72,8 @@ export default (props) => {
             Button({ onClick: `$modal.close()` }, "Cancel"),
             Button(
               {
-                onClick: `$post('?remove', {id: ${props.table.id}}).then(res => $modal.close())`,
+                // onClick: `$post('?remove', {id: '${props.table.id}'}).then(res => {$modal.close()}).then(a => location.href = 'http://localhost:3043/admin/data')`,
+                onClick: `console.log('')`,
                 color: "error",
               },
               "Remove"

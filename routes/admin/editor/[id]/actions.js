@@ -52,7 +52,7 @@ export async function add_instance({ ctx, body, params }) {
   const parentId = body.parent_id || params.id;
 
   if (body.instance_id) {
-    console.log("TODO: get props from instance");
+    // console.log("TODO: get props from instance");
   }
 
   const newInstance = {

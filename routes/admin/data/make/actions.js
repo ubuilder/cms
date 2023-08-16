@@ -24,7 +24,7 @@ export async function updateTable(ctx, body) {
   // await syncTableFields(ctx, { fields: body.fields, table_id: id, table_name: table.slug });
 }
 
-export async function removeTable(body) {
+export async function removeTable(ctx, body) {
   const id = body.id;
 
   const table = await ctx.Tables.remove(id)
