@@ -16,11 +16,11 @@ import {
 } from "@ulibs/ui";
 import { runAction } from "../../../utils/ui.js";
 //all the frontend conponent for this page
-import { OffCanvas } from "./views.js";
+import view from "./views.js";
 
 //actions
 export * from './actions.js'
 
 export default function () {
-  return OffCanvas();
+  return view();
 }
