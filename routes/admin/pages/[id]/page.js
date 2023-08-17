@@ -1,6 +1,5 @@
 import { View } from "@ulibs/ui"
 import { Page } from "../../../../components/Page.js"
-import { Components, Instances, Pages } from "../../../../models.js"
 import { EditorHeader } from "./EditorHeader.js"
 import { PreviewModal } from "./PreviewModal.js"
 import { Editor } from "../../../editor/[id]/Editor.js"
@@ -8,11 +7,11 @@ import { renderInstance } from "../../../../utils/render.js"
 import { InstanceWrapper } from "../../../editor/[id]/Item.js"
 import { SlotPlaceholder } from "../../../editor/[id]/Placeholder.js"
 
-export async function update_title({  params, body }) {
+export async function update_title({ ctx, params, body }) {
   const title = body.title;
-  const page = await Pages.get({where: {id: params.id}});
+  const page = await ctx.table('pages').get({where: {id: params.id}});
 
-  await Pages.update(page.id, { title });
+  await ctx.table('pages').update(page.id, { title });
 
   return {
     body: {
@@ -22,15 +21,15 @@ export async function update_title({  params, body }) {
 }
 
 export async function load({ctx, params: {id}}) {
-    const page = await Pages.get({where: {id}})
+    const page = await ctx.table('pages').get({where: {id}})
 
     if(!page) throw new Error('Page not found: ' +  id)
 
-    const instance = await Instances.get({where: {id: page.slot_id}});
+    const instance = await ctx.table('instances').get({where: {id: page.slot_id}});
 
-    const components = await Components.query({perPage: 100}).then(res => res.data)
+    const components = await ctx.table('components').query({perPage: 100}).then(res => res.data)
 
-    const html = await renderInstance({instance, instanceWrapper: InstanceWrapper, slotPlaceholder: SlotPlaceholder});
+    const html = await renderInstance(ctx, {instance, instanceWrapper: InstanceWrapper, slotPlaceholder: SlotPlaceholder});
 
 
     return {

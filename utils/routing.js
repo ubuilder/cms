@@ -1,8 +1,11 @@
 import recursiveReadDir from "recursive-readdir";
+import { connect } from "@ulibs/db";
 import { resolve, sep } from "path";
 import { existsSync } from "fs";
 import { readFile } from "fs/promises";
+import { slugify } from "./slugify.js";
 import { View } from "@ulibs/ui";
+import { initData } from "./models.js";
 
 export async function fileBasedRouting({
   path,
@@ -43,15 +46,35 @@ export async function fileBasedRouting({
     const { load, default: page, ...actions } = module;
 
     if (load) {
-      result.load = function (req, ...args) {
-        return load({ ctx, ...req }, ...args);
+      result.load = async function (req, ...args) {
+        if (!req.headers.host) throw new Error("Host header is not available");
+        const filename = "db/" + slugify(req.headers.host, "-") + ".json";
+
+        const { getModel } = connect({ filename });
+
+        ctx.table = (tableName) => {
+          return getModel(tableName);
+        };
+        await initData(ctx);
+
+        return await load({ ctx, ...req }, ...args);
       };
     }
 
     result.actions = {};
     for (let action in actions) {
-      result.actions[action] = (req, ...args) =>
-        actions[action]({ ctx, ...req }, ...args);
+      result.actions[action] = async function (req, ...args) {
+        if (!req.headers.host) throw new Error("Host header is not available");
+        const filename = "db/" + slugify(req.headers.host, "-") + ".json";
+
+        const { getModel } = connect({ filename });
+
+        ctx.table = (tableName) => {
+          return getModel(tableName);
+        };
+        await initData(ctx);
+        return await actions[action]({ ctx, ...req }, ...args);
+      };
     }
 
     if (file.endsWith("page.js")) {
@@ -70,29 +93,41 @@ export async function fileBasedRouting({
         );
       }
 
-      if(page) {
+      console.log("Page: ", page);
+      if (page) {
+        result.page = (props) => {
+          if (typeof page !== "function") return page;
 
-      result.page = (props) => {
-        return View(
-          {
-            d: "contents",
-            htmlHead: [result.style ? `<style>${result.style}</style>` : ""],
-          },
-          [
-            typeof page === 'string' ? page : page(props),
-            result.script ? `<script>${result.script}</script>` : "",
-            result.style ? View({htmlHead: [`<style>${result.style}</style>`]}) : "",
-            
-          ]
-        );
-      };
-    }
+          const content = page(props);
+          console.log("content: ", content);
 
+          if (typeof content === "string") {
+            return content;
+          }
+
+          if (!content) return content;
+
+          return View(
+            {
+              d: "contents",
+              htmlHead: [result.style ? `<style>${result.style}</style>` : ""],
+            },
+            [
+              content,
+              result.script ? `<script>${result.script}</script>` : "",
+              result.style
+                ? View({ htmlHead: [`<style>${result.style}</style>`] })
+                : "",
+            ]
+          );
+        };
+      }
     } else {
       result.page = page;
       result.type = "layout";
     }
 
+    console.log(result)
     return result;
   }
 

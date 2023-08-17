@@ -151,7 +151,7 @@ export function AdminLayout($props, $slots) {
     [
       Sidebar({ mode }, ({ mode }) => [
         Logo({ mode }),
-        SidebarItem({ mode, title: "Home", icon: "dashboard", href: "/" }),
+        SidebarItem({ mode, title: "Home", icon: "dashboard", href: "/admin" }),
         SidebarItem({
           mode,
           title: "Pages",

@@ -1,7 +1,4 @@
 import hbs from "handlebars";
-import { Instances, Components } from "../models.js";
-import { InstanceWrapper } from "../routes/editor/[id]/Item.js";
-import { SlotPlaceholder } from "../routes/editor/[id]/Placeholder.js";
 
 async function evaluateProp(value) {
   console.log(value);
@@ -89,7 +86,7 @@ const EmptySlotPlaceholder = ({ instance, parent }) => "x";
 
 //         const slot = await renderInstance2(slotItem, {item: slotItem.component_id === '000' ? item : (x) => x.item.content});
 //         slotItem.content = slot;
-//         slotItem.component = slotItem.component ?? await Components.get({where: {id: slotItem.component_id}})
+//         slotItem.component = slotItem.component ?? await ctx.table('components').get({where: {id: slotItem.component_id}})
 //         slotItem.parent = instance
 
 //         slots.push(item({ item: slotItem, rootId }));
@@ -107,7 +104,7 @@ const EmptySlotPlaceholder = ({ instance, parent }) => "x";
 
 //       return hbs.compile(props.template ?? "{{{slot}}}")(props);
 //     } else {
-//       const slot = await Instances.get({
+//       const slot = await ctx.table('instances').get({
 //         where: { id: component.slot_id },
 //         with: {
 //           component: {
@@ -120,7 +117,7 @@ const EmptySlotPlaceholder = ({ instance, parent }) => "x";
 //       slot.slot = [];
 //       for (let slotId of slot.slot_ids) {
 //         slot.slot.push(
-//           await Instances.get({ where: { id: slotId } })
+//           await ctx.table('instances').get({ where: { id: slotId } })
 //         );
 //       }
 
@@ -169,7 +166,7 @@ const EmptySlotPlaceholder = ({ instance, parent }) => "x";
  *
  * @returns {Promise<string>}
  */
-export async function renderInstance({
+export async function renderInstance(ctx, {
   instance,
   parent = undefined,
   instanceWrapper = EmptyInstanceWrapper,
@@ -180,7 +177,7 @@ export async function renderInstance({
   instance.parent = parent;
 
   if (!instance.component) {
-    instance.component = await Components.get({
+    instance.component = await ctx.table('components').get({
       where: { id: instance.component_id },
     });
   }
@@ -189,7 +186,7 @@ export async function renderInstance({
     instance.slots = [];
 
     for (let slot_id of instance.slot_ids) {
-      const slot = await Instances.get({
+      const slot = await ctx.table('instances').get({
         where: { id: slot_id },
         with: {
           component: {
@@ -203,6 +200,9 @@ export async function renderInstance({
   }
 
   async function renderComponent({ component, props, slot }, isInsideComponent = false) {
+    console.log({component, props, slot})
+    if(!component) throw new Error("Component not found")
+
     if(isInsideComponent){
       instanceWrapper = EmptyInstanceWrapper
       slotPlaceholder = EmptySlotPlaceholder
@@ -212,7 +212,7 @@ export async function renderInstance({
       let slots = [];
       console.log(slot);
       for (let slotItem of slot) {
-        const res = await renderInstance({
+        const res = await renderInstance(ctx, {
           instance: slotItem,
           parent: instance,
           instanceWrapper,
@@ -241,7 +241,7 @@ export async function renderInstance({
       return hbs.compile(_props.template)(_props);
     } else {
       if (!instance.component?.slot?.component) {
-        instance.component = await Components.get({
+        instance.component = await ctx.table('components').get({
           where: { id: instance.component_id },
           with: {
             slot: {
@@ -251,7 +251,7 @@ export async function renderInstance({
           },
         });
         instance.component.slot ??= {};
-        instance.component.slot.component = await Components.get({
+        instance.component.slot.component = await ctx.table('components').get({
           where: { id: instance.component.slot?.component_id },
           with: {
             slot: {
@@ -261,9 +261,10 @@ export async function renderInstance({
           },
         });
         instance.component.slot.slots = [];
+        if(!instance.component.slot.slot_ids) throw new Error("Instance has no slot " + instance.id)
 
-        for (let slot_id of instance.component.slot.slot_ids) {
-          const slot = await Instances.get({ where: { id: slot_id } });
+        for (let slot_id of instance.component.slot.slot_ids ?? []) {
+          const slot = await ctx.table('instances').get({ where: { id: slot_id } });
 
           instance.component.slot.slots.push(slot);
         }
@@ -294,23 +295,23 @@ export async function renderInstance({
  * @param {Page} page
  * @returns string
  */
-function renderHead(page) {
-  const ctx = { page: { title: page.title, slug: page.slug } };
+function renderHead(ctx, page) {
+  const props = { page: { title: page.title, slug: page.slug } };
 
-  return hbs.compile(page.head)(ctx);
+  return hbs.compile(page.head)(props);
 }
 
 /**
  * @param {Page} page
  *
- * @returns {string}
+ * @returns {Promise<string>}
  */
-async function renderBody(page) {
+async function renderBody(ctx, page) {
   if (!page.slot) {
-    page.slot = await Instances.get({ where: { id: page.slot_id } });
+    page.slot = await ctx.table('instances').get({ where: { id: page.slot_id } });
   }
 
-  const body = await renderInstance({
+  const body = await renderInstance(ctx, {
     instance: page.slot,
     instanceWrapper: EmptyInstanceWrapper,
     slotPlaceholder: EmptySlotPlaceholder,
@@ -325,7 +326,7 @@ async function renderBody(page) {
  * @param {Page | undefined} param0.page
  * @returns
  */
-export async function renderPage({ page }) {
+export async function renderPage(ctx, { page }) {
   if (!page) throw new Error("Page not found");
 
   try {
@@ -341,14 +342,18 @@ export async function renderPage({ page }) {
 
     const template = hbs.compile(layout);
 
-    const head = renderHead(page);
-    const body = await renderBody(page);
+    const head = renderHead(ctx, page);
+    const body = await renderBody(ctx, page);
+
+    console.log({head, body, layout})
+    
 
     const result = template({
       body,
       head,
     });
 
+    console.log(result)
     return result;
   } catch (err) {
     // console.log(err);

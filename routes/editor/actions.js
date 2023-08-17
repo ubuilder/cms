@@ -1,4 +1,4 @@
-import { Components, Instances, id } from "../../models.js";
+import { id } from "@ulibs/db";
 import { cloneInstance } from "../../utils/instance.js";
 
 
@@ -12,23 +12,23 @@ export async function create_component({ ctx, body, params }) {
     props: [],
   };
 
-  const [component_id] = await Components.insert(newComponent);
+  const [component_id] = await ctx.table('components').insert(newComponent);
 
   // create instance of new component and replace in page
-  const [instanceId] = await Instances.insert({
+  const [instanceId] = await ctx.table('instances').insert({
     component_id,
     props: {},
     slot_ids: [],
   });
 
-  const parentInstance = await Instances.get(parent_id);
+  const parentInstance = await ctx.table('instances').get(parent_id);
 
   parentInstance.slot_ids = parentInstance.slot_ids.map((x) => {
     if (x === id) return instanceId;
     return x;
   });
 
-  await Instances.update(parentInstance.id, parentInstance);
+  await ctx.table('instances').update(parentInstance.id, parentInstance);
 
   return {
     body: {
@@ -50,7 +50,7 @@ export async function add_instance({ ctx, body }) {
 
   let instance_id;
   if (instanceId) {
-    const newInstance = await cloneInstance(body.instance_id);
+    const newInstance = await cloneInstance(ctx, body.instance_id);
 
     instance_id = newInstance[0];
 
@@ -69,7 +69,7 @@ export async function add_instance({ ctx, body }) {
     }, {}),
   };
 
-  const [instanceId] = await Instances.insert(newInstance);
+  const [instanceId] = await ctx.table('instances').insert(newInstance);
   instance_id = instanceId
 }
 
@@ -107,7 +107,7 @@ console.log({instance_id})
 
   console.log({parentInstance})
 
-  await Instances.update(parentId, {
+  await ctx.table('instances').update(parentId, {
     slot_ids: parentInstance.slot_ids,
   });
 
@@ -123,7 +123,7 @@ export async function update_instance({ ctx, body, params }) {
   const instanceId = body.instance_id;
 
 
-  await Instances.update(instanceId, {
+  await ctx.table('instances').update(instanceId, {
     props: props.reduce((prev, curr) => {
       return {
         ...prev,
@@ -139,13 +139,13 @@ export async function update_instance({ ctx, body, params }) {
   };
 }
 
-async function removeInstance(instance_id) {
-  await Instances.remove(instance_id);
-  const instances = await Instances.query({})
+async function removeInstance(ctx, instance_id) {
+  await ctx.table('instances').remove(instance_id);
+  const instances = await ctx.table('instances').query({})
   for(let instance of instances.data) {
     if(instance.slot_ids.includes(instance_id)) {
       // 
-      await Instances.update(instance.id, {
+      await ctx.table('instances').update(instance.id, {
         slot_ids: instance.slot_ids.filter(x => x !== instance_id)
       })
     }
@@ -155,7 +155,7 @@ async function removeInstance(instance_id) {
 export async function remove_instance({ ctx, params, body }) {
   const instanceId = body.instance_id;
 
-  await removeInstance(instanceId);
+  await removeInstance(ctx, instanceId);
   
   return {
     body: {

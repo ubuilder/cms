@@ -40,7 +40,7 @@ import { IconPicker } from "../../../components/IconPicker.js";
       id, name: table_name, icon, fields\
     })\
     .then(async res => {\
-      window.location.href = 'http://localhost:3043/admin/data/' +$data.slug; \
+      window.location.href = '/admin/data/' +$data.slug; \
         $alert.success('${successMessage}')\
       })\
   `;

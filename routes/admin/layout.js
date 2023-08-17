@@ -1,6 +1,8 @@
 import { AdminLayout } from "./AdminLayout.js";
 
 export function load() {
+  console.log('request...')
+  
   return {
     user: {
       name: "hadi",

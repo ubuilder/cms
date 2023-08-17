@@ -114,90 +114,14 @@ export async function getAsset({ ctx, body }) {
   };
 }
 
-export async function getSelectableAssets({ ctx, body }) {
-  console.log("getting assets");
-  const option = {
-    perpage: 50,
-    where: body?.type !== "all" ? { type: body.type } : undefined,
-  };
-  const assets = await ctx
-    .table("assets")
-    .query(option)
-    .then((res) => res.data);
-
-  const result = View(
-    { d: "flex", style: "flex-wrap: wrap" },
-    assets.map((asset) => {
-      return Media(
-        { id: `${asset.id}` , mode: 'select'},
-        {
-          image: View({
-            tag: "img",
-            style: "width: auto; height: auto; max-height: 100%;",
-            src: asset.url,
-            alt: asset.alt,
-            loading: "lazy",
-          }),
-          audio: View(
-            {
-              tag: "div",
-              style:
-                "display: flex;flex-direction: column;justify-content: space-beetween; width: 100%; height: 100%",
-            },
-            [
-              Icon({ name: "music", size: "xl", p: "md" }),
-              View(
-                {
-                  style: "text-align: center;background: rgba(10,10,10,0.3); ",
-                },
-                asset.name
-              ),
-            ]
-          ),
-          video: [
-            View({
-              tag: "video",
-              style: "width: auto; height: auto; max-height: 100%;",
-              src: asset.url,
-            }),
-            Icon({
-              name: "video",
-              size: "xl",
-              style:
-                "position: absolute; top: 50%; left: 50%; transform: translate(-50%, -80%)",
-            }),
-            View(
-              {
-                style:
-                  "padding-bottom: 3px;background: rgba(10,10,10,0.3);width: 100% ;position: absolute; bottom: 0px ;left: 50%; transform: translate(-50% , 0% ) ",
-              },
-              asset.name
-            ),
-          ],
-        }[asset.type]
-      );
-    })
-  );
-
-  return {
-    body: {
-      success: true,
-      assets,
-      view: result.toString(),
-    },
-  };
-}
-
-export async function upload({ ctx, body, files }) {
-  console.log("something uploaded");
-  const supportedTypes = ["image", "video", "audio"];
-  const file = files.file;
-  const path = file.path.split("\\").join("/");
-  const type = file.mimetype.split("/")[0];
-  if (!supportedTypes.includes(type)) {
-    throw new Error(
-      "Unsupported file format, unable to save this file type: type == " + type
-    );
+export  async function upload({ctx, body, files}){
+    console.log('something uploaded', files)
+  const supportedTypes = ['image', 'video', 'audio']
+  const file = files.file
+  const path = file.path.split('\\').join("/")
+  const type = file.mimetype.split('/')[0]
+  if(!supportedTypes.includes(type)){
+    throw new Error('Unsupported file format, unable to save this file type: type == '+ type)
   }
 
   //from temp folder to project folder
