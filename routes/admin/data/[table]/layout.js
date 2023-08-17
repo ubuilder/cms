@@ -1,8 +1,8 @@
 export async function load({ ctx, params, locals }) {
-  const table = await ctx.Tables.query({
-    perPage: 100,
-    with: { fields: { table: "fields", field: "table_id", multiple: true } },
-  }).then((res) => res.data[0]);
-
+  const table = await ctx.Tables.get({where: {
+      slug: params.table
+    }
+  })
+  
   locals.table = table;
 }

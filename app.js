@@ -8,39 +8,25 @@ import { fileBasedRouting } from "./utils/routing.js";
 
 export function CMS({
   dev = false,
-
   filename = ":memory:",
-  client = "sqlite3",
 } = {}) {
-  const { startServer, addPage, addLayout, addStatic } = Router({
+  const { startServer, addPage, addLayout, addStatic, build } = Router({
     dev,
     reloadTimeout: 1000,
   });
 
-  const configs = {
-    production: {
-      client: "mysql",
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      database: process.env.DB_DATABASE,
-      password: process.env.DB_PASSWORD,
-    },
-    dev: {
-      // client: 'sqlite3',
-      filename: "./db.json",
-    },
-  };
-
-  const db = connect(configs[dev ? "dev" : "dev"]);
+  const db = connect({
+    filename
+  });
 
   async function resetDatabase() {
-    if (configs["dev"]["filename"] === ":memory:") return;
+    if (filename === ":memory:") return;
 
     await rename(
-      configs["dev"]["filename"],
-      configs["dev"]["filename"] + ".bak"
+      filename,
+      filename + ".bak"
     );
-    await writeFile(configs["dev"]["filename"], "{}");
+    await writeFile(filename, "{}");
     db.invalidate();
   }
 
@@ -50,6 +36,7 @@ export function CMS({
     addPage,
     addLayout,
     addStatic,
+    build,
     getModel(name) {
       // console.log(
       //   `do not use getModel("${name}"), instead you can use table("${name}")`
@@ -66,10 +53,11 @@ export function CMS({
 
 const dev = !!process.env.DEV_MODE;
 
-const ctx = CMS({ dev });
+const ctx = CMS({ dev, filename: process.env.DB_FILENAME ?? "./db/app.json" });
 
 ctx.addStatic({ path: "./node_modules/@ulibs/ui/dist", prefix: "/dist" });
 ctx.addStatic({ path: "./", prefix: "/assets" });
+ctx.addStatic({ path: "./public", prefix: "/res" });
 
 await fileBasedRouting({
   path: "./routes",
@@ -79,3 +67,5 @@ await fileBasedRouting({
 });
 
 ctx.startServer(process.env.PORT ?? 3043);
+
+// ctx.build('./dist')

@@ -1,3 +1,6 @@
+import { Button, Icon } from '@ulibs/ui'
+import { Page } from "../../../../components/Page.js";
+
 export default () => {
   return Page({
     title: "Translations",

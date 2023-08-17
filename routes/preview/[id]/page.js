@@ -1,12 +1,12 @@
-import { renderInstance, renderPage } from "../../../utils/render.js";
+import { renderPage } from "../../../utils/render.js";
 
 export async function load({ ctx, params, query }) {
 
-  // console.log('preview', params.id)
-  let page = await ctx.table("pages").get({where: {slot_id: params.id}});
+  console.log('preview', params.id)
+  let page = await ctx.table('pages').get({where: {id: params.id}});
 
   if (!page) return {};
-  const result = await renderPage({ctx, page})
+  const result = await renderPage(ctx, {page})
   
   // console.log(result)
 

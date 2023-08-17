@@ -16,7 +16,7 @@ export function ComponentItem({ id, name, props, slot_id }) {
           borderColor: "base-400",
           borderRadius: "xs",
         },
-        [View({style: 'font-size: var(--size-md)'}, name), slot_id]
+        [View({style: 'font-size: var(--size-md)'}, name)]
       ),
       ComponentModal({
         mode: "edit",

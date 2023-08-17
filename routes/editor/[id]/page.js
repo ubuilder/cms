@@ -1,6 +1,6 @@
 
 // actions
-export * from './actions.js'
+export * from '../actions.js'
 
 // load
 export {default as load} from './load.js' 

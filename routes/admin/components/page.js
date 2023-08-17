@@ -8,6 +8,7 @@ import { Page } from "../../../components/Page.js";
 import { openModal, reload, runAction } from "../../../utils/ui.js";
 import { ComponentModal } from "./ComponentModal.js";
 import { ComponentItem } from "./ComponentItem.js";
+import { EditComponentModal } from "../../../components/ComponentEditor.js";
 
 export * from './actions.js'
 export {load} from './load.js'
@@ -23,12 +24,12 @@ export function runUpdateAction({id = '', name = '', props = ''}) {
 export default ({ components }) => {
   let script = `const data = {};`;
 
-  script = script + components.map(x => `data['${x.id}'] = ${JSON.stringify(x)}; `).join('\n')
+  script = [script + components.map(x => `data['${x.id}'] = ${JSON.stringify(x)}; `).join('\n')]
   
   return Page(
     {
       title: "Components",
-
+      $data: 'page',
       script,
       actions: [
         Button({ href: "/admin/pages" }, [
@@ -48,12 +49,14 @@ export default ({ components }) => {
             name: component.name,
             props: component.props,
             id: component.id,
+            slot_id: component.slot_id
           })
         ),
       ]),
       ComponentModal({
         onAdd: runAddAction({}),
       }),
+      EditComponentModal()
     ]
   );
 };
