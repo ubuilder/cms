@@ -158,7 +158,7 @@ export function SidebarItem({ mode = 'compact', href, title, icon, ...restProps 
     return View(
       {
 
-        htmlHead:[`<style>${styles}</style>`] ,
+        htmlHead: View({tag: 'style'}, styles),
         "u-sidebar": true,
         tag: "ul",
         d: "flex",

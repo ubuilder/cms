@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Card, CardBody, CardFooter, Modal } from "@ulibs/ui";
 import { TableEditor } from "../../TableEditor.js";
-import { PageHeader } from "../../../../../components/PageHeader.js";
 import { Page } from "../../../../../components/Page.js";
+import { updateTable, removeTable } from "../../make/actions.js";
 
 export async function load({ ctx, params, locals }) {
   const table = locals.table;
@@ -13,34 +13,33 @@ export async function load({ ctx, params, locals }) {
 }
 
 export async function update({ ctx, body }) {
-  const result = await updateTable(ctx, body);
+  await updateTable(ctx, body);
 
   return {
-    status: 201,
+    status: 204,
     body: {
       message: {
         type: "success",
-        content: "Table Successfully created!",
+        content: "Table Successfully updated!",
       },
-      result,
+      result: true,
     },
   };
 }
+
 export async function remove({ ctx, body }) {
-  const id = body.id;
-
-  // remove table
-
-  return {
-    status: 201,
-    body: {
-      message: {
-        type: "success",
-        content: "Table Successfully created!",
-      },
-      result: id,
-    },
-  };
+  // await removeTable(body);
+console.log('.remove..............................')
+  // return {
+  //   status: 202,
+  //   body: {
+  //     message: {
+  //       type: "success",
+  //       content: "Table Successfully deleted!",
+  //     },
+  //     result: true,
+  //   },
+  // };
 }
 export default (props) => {
     if(!props.table) return 'Table not found (TODO: Go Back)'

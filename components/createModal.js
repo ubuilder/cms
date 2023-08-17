@@ -41,8 +41,8 @@ export function createModal({
         ),
       ];
     }
-    return Modal({$data: {...$data, loading: false}, name, size }, [
-      Card({ title }, [
+    return Modal({$data, name, size }, [
+      Card({ title, $data: {loading: false} }, [
         CardBody({ style: "overflow: auto; max-height: 80%" }, [Row([body])]),
         CardFooter([ButtonGroup({ ms: "auto" }, actionButtons)]),
       ]),

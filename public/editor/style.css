@@ -1,0 +1,108 @@
+[u-cloak] {
+  display: none;
+}
+
+.item {
+  display: contents;
+}
+
+.item > :not(.context-menu):not([u-slot-placeholder]) {
+  cursor: default;
+  transition: all 0.2s ease;
+  position: relative;
+  min-height: var(--size-lg);
+  border-width: 1px;
+  border-style: solid;
+  border-color: transparent;
+}
+
+.item.cut > :not(.context-menu) {
+  opacity: 0.5;
+  border: 1px solid var(--color-base-400);
+}
+
+.item.copy > :not(.context-menu) {
+  border: 1px solid var(--color-primary-300);
+}
+.item.component-instance > :not(.context-menu) {
+  border: 1px dashed var(--color-success-200);
+}
+
+.item > :not(.context-menu):hover {
+  border: 1px dashed var(--color-primary-400);
+}
+.item.component-instance > :not(.context-menu):hover {
+  border: 1px dashed var(--color-success-400);
+}
+
+.item.active > :not(.context-menu) {
+  border: 1px solid var(--color-primary-500);
+  background-color: var(--color-primary-100);
+}
+.item.component-instance.active > :not(.context-menu) {
+  border: 1px solid var(--color-success-500);
+  background-color: var(--color-success-100);
+}
+
+[u-slot-placeholder] {
+  transition: all 0.2s ease;
+  min-width: var(--size-sm);
+  cursor: pointer;
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--color-base-300),
+    var(--color-base-300) 2px,
+    var(--color-primary-100) 2px,
+    var(--color-primary-100) 4px
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--size-sm);
+  color: var(--color-primary-600);
+  gap: var(--size-xs);
+  border: 1px dashed var(--color-primary-200);
+  opacity: 1;
+  width: 100%;
+
+  min-height: var(--size-xl);
+}
+
+[u-slot-placeholder].active {
+  border: 1px solid var(--color-primary-500);
+}
+
+.component-item {
+}
+.component-item.active {
+  border: 1px solid var(--color-primary-300);
+}
+
+.component-item.active {
+  border: 1px solid var(--color-primary-500);
+  background-color: var(--color-base-300);
+}
+
+.page-container {
+  height: 100%;
+  overflow-y: auto;
+  outline: none;
+  box-shadow: 0 0 4px var(--color-base-700);
+
+  background-color: var(--color-base-100);
+  border: 1px solid var(--color-base-700);
+}
+
+.context-menu {
+  display: none;
+}
+.context-menu.open {
+  z-index: 2;
+  min-height: auto;
+  position: fixed;
+  display: block;
+}
+
+.dynamic-prop-select > [u-select] {
+  border-color: var(--color-primary-400) !important;
+}
