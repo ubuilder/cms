@@ -261,8 +261,9 @@ export async function renderInstance({
           },
         });
         instance.component.slot.slots = [];
+        if(!instance.component.slot.slot_ids) throw new Error("Instance has no slot " + instance.id)
 
-        for (let slot_id of instance.component.slot.slot_ids) {
+        for (let slot_id of instance.component.slot.slot_ids ?? []) {
           const slot = await Instances.get({ where: { id: slot_id } });
 
           instance.component.slot.slots.push(slot);

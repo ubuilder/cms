@@ -111,7 +111,7 @@ export async function getAsset({ ctx, body }) {
 }
 
 export  async function upload({ctx, body, files}){
-    console.log('something uploaded')
+    console.log('something uploaded', files)
   const supportedTypes = ['image', 'video', 'audio']
   const file = files.file
   const path = file.path.split('\\').join("/")
