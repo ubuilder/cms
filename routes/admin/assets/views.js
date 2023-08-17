@@ -122,9 +122,9 @@ export function Media(props, slots) {
     return View(
       {
         ...props,
+        m: 'sm',
         onClick: `$modal.open('options-${props.id}')`,
-        m: "xs",
-        style: 'position: relative;border: 1px solid var(--color-base-400);display: flex; justify-content: center; align-items: centter;cursor: pointer; overflow: hidden;width: 100px; height: 100px',
+        style: ';position: relative;border: 1px solid var(--color-base-400);display: flex; justify-content: center; align-items: centter;cursor: pointer; overflow: hidden;width: 100px; height: 100px',
       },
       [slots, assetModal(`options-${props.id}`)]
     );
@@ -192,7 +192,7 @@ export function headSection() {
 }
 
 export function assetsSection() {
-  return View({ $html: "view", style: "height: 100px" });
+  return View({ $html: "view", });
 }
 
 export function assetModal(name) {

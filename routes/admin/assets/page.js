@@ -1,6 +1,7 @@
 //all the frontend conponent for this page
 import { Page } from "../../../components/Page.js";
 import { typeSelect, fileUpload, assetsSection } from "./views.js";
+import { View } from "@ulibs/ui";
 
 //actions
 export * from './actions.js'
@@ -15,6 +16,10 @@ export default function () {
       typeSelect({onChange: (selectedType)=> `type = '${selectedType}'`}),
       fileUpload(()=>"(loader = !loader)")
     ]},
-    assetsSection()
+    View({
+      bgColor: "base-200",
+      borderColor: 'base-400',
+      style: 'height: max-content'
+    },assetsSection())
   );
 }
