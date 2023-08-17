@@ -54,7 +54,7 @@ export function AdminLayout($props, $slots) {
         View({
           tag: "link",
           rel: "stylesheet",
-          href: "http://localhost:3043/dist/styles.css",
+          href: "/dist/styles.css",
         }),
 
         View({
