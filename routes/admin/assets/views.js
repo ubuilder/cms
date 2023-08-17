@@ -26,48 +26,56 @@ export function updateModal(props, slots) {
         Col({ $data: props }, [
           View([
             View({
+              tag: 'input',
               m: 0,
               p: 0,
               label: "name",
               "u-model": "name",
             }),
             View({
+              tag: 'input',
               m: 0,
               p: 0,
               label: "description",
               "u-model": "description",
             }),
             View({
+              tag: 'input',
               m: 0,
               p: 0,
               label: "url",
               "u-model": "url",
             }),
             View({
+              tag: 'input',
               m: 0,
               p: 0,
               label: "caption",
               "u-model": "caption",
             }),
             View({
+              tag: 'input',
               m: 0,
               p: 0,
               label: "width",
               "u-model": "width",
             }),
             View({
+              tag: 'input',
               m: 0,
               p: 0,
               label: "height",
               "u-model": "height",
             }),
             View({
+              tag: 'input',
               m: 0,
               p: 0,
               label: "alt",
               "u-model": "alt",
             }),
             View({
+              tag: 'input',
               m: 0,
               p: 0,
               label: "type",
@@ -100,15 +108,27 @@ export function updateModal(props, slots) {
 }
 
 export function Media(props, slots) {
-  return View(
-    {
-      ...props,
-      onClick: `$modal.open('options-${props.id}')`,
-      m: "xs",
-      style: 'position: relative;border: 1px solid var(--color-base-400);display: flex; justify-content: center; align-items: centter;cursor: pointer; overflow: hidden;width: 100px; height: 100px',
-    },
-    [slots, assetModal(`options-${props.id}`)]
-  );
+  if (props.mode == 'select'){
+    return View(
+      {
+        ...props,
+        onClick: "console.log('selected')",
+        style:
+          "position: relative;border: 1px solid var(--color-base-400);display: flex; justify-content: center; align-items: centter;cursor: pointer; overflow: hidden;width: 100px; height: 100px",
+      },
+      [slots]
+    );
+  }else{
+    return View(
+      {
+        ...props,
+        onClick: `$modal.open('options-${props.id}')`,
+        m: "xs",
+        style: 'position: relative;border: 1px solid var(--color-base-400);display: flex; justify-content: center; align-items: centter;cursor: pointer; overflow: hidden;width: 100px; height: 100px',
+      },
+      [slots, assetModal(`options-${props.id}`)]
+    );
+  }
 }
 export default function() {
   return Col(
@@ -123,41 +143,50 @@ export default function() {
   );
 }
 
+export function fileUpload(callback){
+  return  Button(
+    {
+      
+      style:
+        "position: relative;background: var(--color-base-200); color: var(--color-base-800)",
+    },
+    [
+      Icon({ name: "upload" }),
+      View('Upload'),
+      View({
+        tag: "input",
+        style:
+          "opacity: 0;width: 100%; height: 100%; position:absolute; top:0px;left: 0px",
+        name: "file",
+        "u-input": true,
+        type: "file",
+        onChange: `$upload(()=> ${callback()})`,
+      }),
+      Tooltip({ placement: "right" }, "Upload A File"),
+    ]
+  )
+}
+
+export function typeSelect({
+  onChange = (type)=>{console.log('no call back for this type: '+ type)},
+  types = ["all", 'image', "video", "audio"]
+}) {
+  return Dropdown({ style: " display: flex" }, [
+      Button({ style: "width: 100%", $text: "type.charAt(0).toUpperCase()+ type.slice(1)" }),
+      Tooltip({ placement: "right" }, "Choose A Type"),
+      DropdownPanel(
+        types.map((type)=>DropdownItem({ onClick: onChange(type) }, type.charAt(0).toUpperCase() + type.slice(1)),)
+      ),
+    ])
+}
+
 export function headSection() {
   return Row({}, [
     Col({ col: 8, px: "sm", pe: 0 }, [
-      Tooltip({ placement: "right" }, "Choose A Type"),
-      Dropdown({ style: "width: 100%; display: flex" }, [
-        Button({ style: "width: 100%", $text: "type" }),
-        DropdownPanel([
-          DropdownItem({ onClick: "type = 'all'" }, "All"),
-          DropdownItem({ onClick: "type = 'image'" }, "Image"),
-          DropdownItem({ onClick: "type = 'video'" }, "Video"),
-          DropdownItem({ onClick: "type = 'audeo'" }, "Audeo"),
-        ]),
-      ]),
+      typeSelect({onChange: (selectedType)=> `type = '${selectedType}'`})
     ]),
-    Col({ col: 4, px: "sm", $data: { file: "" } }, [
-      View(
-        {
-          p: "xs",
-          style:
-            "position: relative;background: var(--color-base-200); color: var(--color-base-800)",
-        },
-        [
-          Icon({ name: "upload" }),
-          View({
-            tag: "input",
-            style:
-              "opacity: 0;width: 100%; height: 100%; position:absolute; top:0px;left: 0px",
-            name: "file",
-            "u-input": true,
-            type: "file",
-            onChange: `$upload(()=> loader = !loader)`,
-          }),
-          Tooltip({ placement: "right" }, "Upload A File"),
-        ]
-      ),
+    Col({ col: 4, px: "sm",  }, [
+      fileUpload(()=>"(loader = !loader)")
     ]),
   ]);
 }
@@ -204,4 +233,24 @@ export function assetModal(name) {
       ]),
     ]),
   ]);
+}
+
+
+export function selectionTypeModal(){
+  return Modal({name: 'select-file'}, [
+    ModalBody([
+      Button({onClick: "$modal.open('select-asset')"},'from Assets'),
+      fileUpload(()=>'')
+    ])
+  ])
+}
+
+
+export function selectAssetModal(){
+  return Modal({name: 'select-asset', $data: {view: '', type: 'all'} , $effect: "loader;$post(window.location.origin + '/admin/assets?getSelectableAssets' , {type}).then(res=> view = res.view) "},[
+    ModalBody([
+      headSection(),
+      assetsSection()
+    ])
+  ])
 }
