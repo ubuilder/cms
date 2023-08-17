@@ -15,9 +15,9 @@ export default () => {
     FormField(
       {
         label: "Reset Database",
-        description: "You should restart server to take effect",
+        description: "This action will remove everything from database",
       },
-      [Button({ color: "error", onClick: `$post('?reset-db')` }, "Reset")]
+      [Button({ color: "error", onClick: `$post('?reset_db')` }, "Reset")]
     ),
   ]);
 };

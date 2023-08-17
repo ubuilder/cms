@@ -8,13 +8,13 @@ export default (props, slots) => {
     SidebarItem({
       icon: "settings",
       title: "General",
-      href: "/settings",
+      href: "/admin/settings",
       mode,
     }),
     SidebarItem({
       icon: "language",
       title: "Translations",
-      href: "/settings/translations",
+      href: "/admin/settings/translations",
       mode,
     }),
   ];
