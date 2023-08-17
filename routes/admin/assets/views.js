@@ -25,57 +25,49 @@ export function updateModal(props, slots) {
         //properties
         Col({ $data: props }, [
           View([
-            Input({
-              style: "height: var(--size-lg)",
+            View({
               m: 0,
               p: 0,
               label: "name",
               "u-model": "name",
             }),
-            Input({
-              style: "height: var(--size-lg)",
+            View({
               m: 0,
               p: 0,
               label: "description",
               "u-model": "description",
             }),
-            Input({
-              style: "height: var(--size-lg)",
+            View({
               m: 0,
               p: 0,
               label: "url",
               "u-model": "url",
             }),
-            Input({
-              style: "height: var(--size-lg)",
+            View({
               m: 0,
               p: 0,
               label: "caption",
               "u-model": "caption",
             }),
-            Input({
-              style: "height: var(--size-lg)",
+            View({
               m: 0,
               p: 0,
               label: "width",
               "u-model": "width",
             }),
-            Input({
-              style: "height: var(--size-lg)",
+            View({
               m: 0,
               p: 0,
               label: "height",
               "u-model": "height",
             }),
-            Input({
-              style: "height: var(--size-lg)",
+            View({
               m: 0,
               p: 0,
               label: "alt",
               "u-model": "alt",
             }),
-            Input({
-              style: "height: var(--size-lg)",
+            View({
               m: 0,
               p: 0,
               label: "type",
@@ -113,20 +105,19 @@ export function Media(props, slots) {
       ...props,
       onClick: `$modal.open('options-${props.id}')`,
       m: "xs",
-      style:
-        "border: 2px solid var(--color-primary-400); border-radious : var(--size-sm)",
+      style: 'position: relative;border: 1px solid var(--color-base-400);display: flex; justify-content: center; align-items: centter;cursor: pointer; overflow: hidden;width: 100px; height: 100px',
     },
     [slots, assetModal(`options-${props.id}`)]
   );
 }
-export function OffCanvas() {
+export default function() {
   return Col(
     {
       $data: { assets: [], view: "", loader: true, type: "all" },
       $effect: "loader;$post(window.location.origin + '/admin/assets?getAssets' , {type}).then(res=> view = res.view) ",
       // $effect: "loader; " + runAction("getAssets", `{type}`, "view = res.view"),
       style:
-        "width: 300px; height: 85vh;overflow-y:auto; background-color: var(--color-base-800); color: var(--color-base-200);text-align:center",
+        "width: 100%; height: 100%; ;text-align:center",
     },
     [View("Assets"), headSection(), assetsSection()]
   );

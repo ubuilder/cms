@@ -12,7 +12,6 @@ import {
 import { Sidebar, SidebarItem } from "../../components/sidebar.js";
 import { Logo } from "../../components/Logo.js";
 import { Popover } from "@ulibs/ui";
-import Asset from './assets/page.js'
 
 export function Header($props, $slots) {
   return View(
@@ -170,9 +169,8 @@ export function AdminLayout($props, $slots) {
             mode,
             title: "Assets",
             icon: "photo",
-            // href: "/admin/assets"
+            href: "/admin/assets"
           },
-          Popover({ placement: "right-start" }, Asset())
         ),
         SidebarItem({
           mode,

@@ -1,5 +1,6 @@
 import {
     View,
+    Icon
   } from "@ulibs/ui";
 import { copyFileSync, rmSync} from 'fs'
 import { basename } from 'path'
@@ -14,12 +15,54 @@ export async function getAssets({ctx, body}){
     const assets = await ctx.table('assets').query(option).then(res => res.data)
 
     const result  = View({d: 'flex', style: 'flex-wrap: wrap'},assets.map(asset=>{
-      return Media({id: `${asset.id}`},{
-        image: View({tag: 'img'  ,src: asset.url, alt: asset.alt, width: '50px', loading: 'lazy'}),
-        audeo: View({tag: 'audeo', width: '50px' }, [View({tag: 'source', src: asset.url}), View('View')]),
-        vidio: View({tag: 'video', width: '50px' }, [View({tag: 'source', src: asset.url}), View('View')]),
-      }[asset.type]
-    )}))
+      return Media(
+        { id: `${asset.id}` },
+        {
+          image: View({
+            tag: "img",
+            style: "width: auto; height: auto; max-height: 100%;",
+            src: asset.url,
+            alt: asset.alt,
+            loading: "lazy",
+          }),
+          audio: View(
+            {
+              tag: "div",
+              style:
+                "display: flex;flex-direction: column;justify-content: space-beetween; width: 100%; height: 100%",
+            },
+            [
+              Icon({ name: "music", size: "xl", p: "md" }),
+              View(
+                {
+                  style: "text-align: center;background: rgba(10,10,10,0.3); ",
+                },
+                asset.name
+              ),
+            ]
+          ),
+          video: [
+            View({
+              tag: "video",
+              style: "width: auto; height: auto; max-height: 100%;",
+              src: asset.url,
+            }),
+            Icon({
+              name: "video",
+              size: "xl",
+              style:
+                "position: absolute; top: 50%; left: 50%; transform: translate(-50%, -80%)",
+            }),
+            View(
+              {
+                style:
+                  "padding-bottom: 3px;background: rgba(10,10,10,0.3);width: 100% ;position: absolute; bottom: 0px ;left: 50%; transform: translate(-50% , 0% ) ",
+              },
+              asset.name
+            ),
+          ],
+        }[asset.type]
+      );}))
 
     return {
       body: {
@@ -47,11 +90,11 @@ export async function getAsset({ ctx, body }) {
         alt: asset.alt,
         width: "500px",
       }),
-      audeo: View({ tag: "audeo", width: "500px" }, [
+      audio: View({ tag: "audio", width: "500px" , controls: true}, [
         View({ tag: "source", src: asset.url }),
         View("View"),
       ]),
-      vidio: View({ tag: "video", width: "500px" }, [
+      video: View({ tag: "video", width: "500px", controls: true }, [
         View({ tag: "source", src: asset.url }),
         View("View"),
       ]),
@@ -69,7 +112,7 @@ export async function getAsset({ ctx, body }) {
 
 export  async function upload({ctx, body, files}){
     console.log('something uploaded')
-  const supportedTypes = ['image', 'video', 'audeo']
+  const supportedTypes = ['image', 'video', 'audio']
   const file = files.file
   const path = file.path.split('\\').join("/")
   const type = file.mimetype.split('/')[0]

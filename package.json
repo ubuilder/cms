@@ -13,9 +13,9 @@
   "license": "ISC",
   "dependencies": {
     "@tabler/icons": "^2.30.0",
-    "@ulibs/db": "^1.0.1-next.34",
+    "@ulibs/db": "^1.0.1-next.35",
     "@ulibs/router": "^0.0.28",
-    "@ulibs/ui": "^0.0.2-next.134",
+    "@ulibs/ui": "^0.0.2-next.135",
     "dotenv": "^16.3.1",
     "handlebars": "^4.7.7",
     "nanoid": "^4.0.2",
