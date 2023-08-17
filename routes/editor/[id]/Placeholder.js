@@ -1,4 +1,4 @@
-import { placeholder } from "@codemirror/view";
+// import { placeholder } from "@codemirror/view";
 import { Icon, View } from "@ulibs/ui";
 
 export function SlotPlaceholder({ instance, parent }) {
