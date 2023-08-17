@@ -4,13 +4,10 @@ import { WithSidebar } from "../../../components/WithSidebar.js";
 
 export async function load({ ctx, locals }) {
   // move to better place
-  ctx.Tables = ctx.getModel("tables");
+  ctx.Tables = ctx.table("tables");
 
   locals.tables = (
-    await ctx.Tables.query({
-      perPage: 100,
-      with: { fields: { table: "fields", field: "table_id", multiple: true } },
-    })
+    await ctx.Tables.query({perPage: 100})
   ).data;
 
   locals.title = "Table & Data";

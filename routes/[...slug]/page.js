@@ -1,10 +1,9 @@
-import { Pages } from "../../models.js";
 import { renderPage } from "../../utils/render.js";
 
 export async function load({ ctx, params, query }) {
   const slug = params['*'];
 
-  let page = await Pages.get({
+  let page = await ctx.table('pages').get({
     where: { slug },
     with: {
       layout: {

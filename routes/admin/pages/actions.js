@@ -1,8 +1,7 @@
-import { Instances, Pages } from "../../../models.js";
 import { cloneInstance } from "../../../utils/instance.js";
 
-export async function convert_to_template({ body }) {
-  await Pages.update(body.id, {
+export async function convert_to_template({ ctx, body }) {
+  await ctx.table('pages').update(body.id, {
     is_template: true,
   });
 
@@ -13,8 +12,8 @@ export async function convert_to_template({ body }) {
   };
 }
 
-export async function convert_to_page({ body }) {
-  await Pages.update(body.id, {
+export async function convert_to_page({ ctx, body }) {
+  await ctx.table('pages').update(body.id, {
     is_template: false,
   });
 
@@ -25,8 +24,8 @@ export async function convert_to_page({ body }) {
   };
 }
 
-export async function remove_page({ body }) {
-  await Pages.remove(body.id);
+export async function remove_page({ ctx, body }) {
+  await ctx.table('pages').remove(body.id);
 
   return {
     body: {
@@ -35,8 +34,8 @@ export async function remove_page({ body }) {
   };
 }
 
-export async function update_page({ body }) {
-  await Pages.update(body.id, {
+export async function update_page({ ctx, body }) {
+  await ctx.table('pages').update(body.id, {
     title: body.title,
     slug: body.slug,
     head: body.head,
@@ -50,7 +49,7 @@ export async function update_page({ body }) {
   };
 }
 
-export async function add({ body }) {
+export async function add({ ctx, body }) {
   const head = `
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -79,15 +78,15 @@ export async function add({ body }) {
     // head: body.head ?? head,
     head
   };
-  const [id] = await Pages.insert(page);
+  const [id] = await ctx.table('pages').insert(page);
 
   let instance_id;
   if (body.slot_id) {
-    const [instanceId] = await cloneInstance(body.slot_id);
+    const [instanceId] = await cloneInstance(ctx, body.slot_id);
 
     instance_id = instanceId;
   } else {
-    const [instanceId] = await Instances.insert({
+    const [instanceId] = await ctx.table('instances').insert({
       component_id: "000",
       slot_ids: [],
       props: {
@@ -101,7 +100,7 @@ export async function add({ body }) {
     instance_id = instanceId;
   }
 
-  await Pages.update(id, {
+  await ctx.table('pages').update(id, {
     slot_id: instance_id,
   });
 

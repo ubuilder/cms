@@ -5,7 +5,6 @@ import { connect } from "@ulibs/db";
 import "dotenv/config";
 import { rename, writeFile } from "fs/promises";
 import { fileBasedRouting } from "./utils/routing.js";
-import { Components, initModels } from "./models.js";
 
 export function CMS({
   dev = false,
@@ -59,27 +58,6 @@ const ctx = CMS({ dev, filename: process.env.DB_FILENAME ?? "./db/app.json" });
 ctx.addStatic({ path: "./node_modules/@ulibs/ui/dist", prefix: "/dist" });
 ctx.addStatic({ path: "./", prefix: "/assets" });
 ctx.addStatic({ path: "./public", prefix: "/res" });
-
-initModels(ctx);
-
-async function initData() {
-  const isBaseExists = await Components.get({where: {id: '000'}})
-  if(isBaseExists) return;
-  
-  await Components.insert({
-    id: "000",
-    name: "Base",
-    props: [
-      {
-        name: "template",
-        type: "code",
-        default_value: "<div>{{{slot}}}</div>",
-      }
-    ],
-  });
-}
-
-await initData();
 
 await fileBasedRouting({
   path: "./routes",
