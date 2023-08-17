@@ -1,7 +1,7 @@
 import { View, Icon } from "@ulibs/ui";
 import { copyFileSync, rmSync } from "fs";
 import { basename } from "path";
-import { Media, updateModal, selectionTypeModal } from "./views.js";
+import { Media, updateModal, } from "./views.js";
 
 export async function getAssets({ ctx, body }) {
   console.log("getting assets");
