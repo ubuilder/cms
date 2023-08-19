@@ -16,7 +16,7 @@ export async function load({ ctx, params, query }) {
   if (!page) return {};
 
   return {
-    content: await renderPage({ctx, page})
+    content: await renderPage(ctx, {page})
   }
 
 }

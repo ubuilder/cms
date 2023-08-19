@@ -49,8 +49,8 @@ window.addEventListener("alpine:init", (e) => {
           // props,
         };
       },
-      onCreateComponent({id, parent_id, name}) {
-        this.$post("/editor?create_component", {id, parent_id, name}).then(res => location.reload())
+      onCreateComponent({instance_id, parent_id, name}) {
+        this.$post("/editor?create_component", {instance_id, parent_id, name}).then(res => location.reload())
       },
       openCreateComponentModal(instance_id, parent_id) {
         this.parent_id = parent_id ?? "";

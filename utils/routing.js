@@ -93,14 +93,12 @@ export async function fileBasedRouting({
         );
       }
 
-      console.log("Page: ", page);
       if (page) {
         result.page = (props) => {
           if (typeof page !== "function") return page;
 
           const content = page(props);
-          console.log("content: ", content);
-
+        
           if (typeof content === "string") {
             return content;
           }
@@ -127,7 +125,6 @@ export async function fileBasedRouting({
       result.type = "layout";
     }
 
-    console.log(result)
     return result;
   }
 

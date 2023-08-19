@@ -1,4 +1,4 @@
-import { Input, Textarea, CodeEditor, Button, View, Col } from "@ulibs/ui";
+import { Input, Textarea, CodeEditor, Button, View, Col, Select } from "@ulibs/ui";
 import { createModal } from "../../../components/createModal.js";
 import { navigate, reload, runAction } from "../../../utils/ui.js";
 
@@ -12,6 +12,7 @@ export function PageModal({
     title: "",
     slug: "",
     head: "",
+    theme: "bootstrap",
     description: "",
     is_template: false,
   },
@@ -38,6 +39,10 @@ export function PageModal({
       }),
       Textarea({ name: "description", label: "Description" }),
 
+      (mode === "add" && [
+        Select({label: 'Theme', key: 'key', text: 'text', items: [{key: 'ulibs', text: "ULibs"}, {key: 'bootstrap', text: 'Bootstrap 5'}], name: 'theme'})
+      ]) ||
+        "",
       (mode === "edit" && [
         (false && CodeEditor({ name: "head", lang: "hbs", label: "Head" })) ||
           "",
@@ -82,7 +87,7 @@ export function AddPageModal({ ...props }) {
     size: "xs",
     onAdd: runAction(
       "add",
-      "{title, slug, description, is_template}",
+      "{title, slug, description, theme, is_template}",
       navigate("'/admin/pages/' + res.id")
     ),
     ...props,

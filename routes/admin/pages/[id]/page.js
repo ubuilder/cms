@@ -36,18 +36,19 @@ export async function load({ctx, params: {id}}) {
         title: page.title,
         head: page.head,
         page,
+        page_id: page.id,
         components,
         html,
         instance,
     }         
                               
 }
-export default ({html, title, page, instance, components}) => {
+export default ({html, page_id, head, title, page, instance, components}) => {
     return Page({container: false}, [
         EditorHeader({title}),
         // View({w: 100, tag: 'iframe', style: 'border: none; height: calc(100vh - 112px);', p: 'xs', src: '/editor/' + slot_id})
         View({style: 'padding: var(--size-xs); height: calc(100vh - 112px);'}, [
-            Editor({html, title, instance, components, rootId: instance.id})
+            Editor({head, page_id, html, title, instance, components, rootId: instance.id})
         ]),
         PreviewModal({title, slug: 'preview/' + page.id}),
 

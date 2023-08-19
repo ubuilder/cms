@@ -1,5 +1,4 @@
 export async function cloneInstance(ctx, instance_id) {
-    console.log({instance_id})
     const instance = await ctx.table('instances').get({where: {id: instance_id}})
   
     const slot_ids = []
@@ -12,7 +11,7 @@ export async function cloneInstance(ctx, instance_id) {
     }
     
   
-    return ctx.table('instances').insert({
+    return await ctx.table('instances').insert({
       component_id: instance.component_id,
       props: instance.props,
       slot_ids
