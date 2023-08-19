@@ -123,18 +123,18 @@ export function ComponentEditForm() {
   ]);
 }
 
-export function ConvertToComponentModal({ name, id }) {
+export function ConvertToComponentModal({ name, instance_id }) {
   return createModal({
-    $data: { name, id },
+    $data: { name, instance_id },
     title: "Create Component",
-    name: `create-component-${id}`,
+    name: `create-component-${instance_id}`,
     body: [Input({ label: "Component Name", name: "name" })],
     actions: [
       Button({ onClick: closeModal() }, "Cancel"),
       Button(
         {
           color: "primary",
-          onClick: "onCreateComponent({id, name, parent_id})",
+          onClick: "onCreateComponent({instance_id, name, parent_id})",
         },
         "Create"
       ),
@@ -219,16 +219,15 @@ export function ItemModal({ item = { props: {}, component: {} } }) {
       component: item.component,
       onSubmit: `onUpdateInstance({instance_id: '${item.id}', props}).then(res => location.reload())`,
     }),
-    ConvertToComponentModal({ name: item.component.name, id: item.id }),
+    ConvertToComponentModal({ name: item.component.name, instance_id: item.id }),
   ];
 }
 
 export function ItemModals({ content }) {
-  console.log('itemModals, ', content)
+
   let result = [ItemModal({ item: content })];
 
   if (content.slots) {
-    console.log('slot: ', content.slots)
     result = [
       ...result,
       ...content.slots.map((slot) => ItemModals({ content: slot })),

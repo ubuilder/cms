@@ -5,6 +5,7 @@ import { connect } from "@ulibs/db";
 import "dotenv/config";
 import { rename, writeFile } from "fs/promises";
 import { fileBasedRouting } from "./utils/routing.js";
+import { getDb, initData } from "./utils/models.js";
 
 export function CMS({
   dev = false,
@@ -19,14 +20,13 @@ export function CMS({
     filename
   });
 
-  async function resetDatabase() {
-    if (filename === ":memory:") return;
+  async function resetDatabase(id) {
+    const filename = `db/${id}.json`
 
     await rename(
       filename,
-      filename + ".bak"
+      `db/${id}-backup-${new Date().valueOf()}.json`
     );
-    await writeFile(filename, "{}");
     db.invalidate();
   }
 
@@ -36,16 +36,7 @@ export function CMS({
     addPage,
     addLayout,
     addStatic,
-    build,
-    getModel(name) {
-      // console.log(
-      //   `do not use getModel("${name}"), instead you can use table("${name}")`
-      // );
-      return db.getModel(name);
-    },
-    table(name) {
-      return db.getModel(name);
-    },
+    build
   };
 
   return ctx;

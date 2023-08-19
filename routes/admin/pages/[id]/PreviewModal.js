@@ -28,7 +28,7 @@ export function PreviewModal({ title, slug }) {
           Button({ onClick: closeModal() }, "Close"),
         ]),
       ]),
-      CardBody({ style: "max-height: 80%; overflow: auto", p: 0 }, [
+      CardBody({ style: "height: 80%; overflow: auto", p: 0 }, [
         View({
           tag: "iframe",
           src: "/" + slug,

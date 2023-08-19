@@ -101,7 +101,7 @@ export async function createTable(ctx, body) {
 export async function insertData(ctx, body) {
   const {table, data} = body
 
-  const [id] = await ctx.getModel(table).insert(data);
+  const [id] = await ctx.table(table).insert(data);
 
   return success({data: id})
 }
@@ -109,7 +109,7 @@ export async function insertData(ctx, body) {
 export async function updateData(ctx, body) {
   const {id, table, data} = body
 
-  const result = await ctx.getModel(table).update(id, data)
+  const result = await ctx.table(table).update(id, data)
 
   return success({data: result}) 
 }
@@ -117,7 +117,7 @@ export async function updateData(ctx, body) {
 export async function removeData(ctx, body) {
   const {table, id} = body
 
-  await ctx.getModel(table).remove(id);
+  await ctx.table(table).remove(id);
 
   return success()
 

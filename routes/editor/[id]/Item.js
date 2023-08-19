@@ -33,7 +33,6 @@ function ContextMenu({ instance }) {
 
   function Content(instance, mode = "static") {
     if (!instance) return;
-    console.log('here: ', instance)
 
     return Card([
       CardBody({ p: "xxs" }, [

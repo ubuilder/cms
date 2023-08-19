@@ -18,27 +18,27 @@ function PageContainer(props, slot) {
   ]);
 }
 
-function EditComponentModal() {
+function EditComponentModal({page_id} = {}) {
   return Modal({persistent: true, name: 'component-edit-modal', size: 'md'}, [
     Card({style: 'height: 80%'}, [
       CardHeader([
         View({$text: 'component.name'}),
         Button({onClick: 'closeComponentModal'}, "Close")
       ]),
-      View({tag: 'iframe', w: 100, h: 100, style: 'border: none', $src: `component?.slot_id ? '/editor/' + component.slot_id : ''`})
+      View({tag: 'iframe', w: 100, h: 100, style: 'border: none', $src: `(component?.slot_id ? '/editor/' + component.slot_id : '') + '?page_id=${page_id}'`})
     ]),
   ])
 }
 
-export function Editor({ html, instance, components, rootId }) {
+export function Editor({ page_id, html, head, instance, components, rootId }) {
 
-  console.log({html})
   return Page(
     {
       container: false,
       $data: `page("${rootId}")`,
       onClick: "clearSelection",
       htmlHead: [
+        head,
         View({tag: 'link', rel: 'stylesheet', href: '/res/editor/style.css'}),
         View({tag: 'script', src: '/res/editor/script.js'}),
       ]
@@ -47,7 +47,7 @@ export function Editor({ html, instance, components, rootId }) {
       PageContainer({}, [ html ]),
       ItemModals({ content: instance }),
       ComponentAddModal({ components }),
-      EditComponentModal({})
+      EditComponentModal({page_id})
     ]
   );
 }

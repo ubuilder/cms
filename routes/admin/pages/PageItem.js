@@ -7,6 +7,7 @@ export function PageItem({
     id = "",
     slug = "",
     description = "",
+    theme = "",
     head = "",
     slot_id,
     is_template = false,
@@ -24,6 +25,8 @@ export function PageItem({
           View({ d: "flex", gap: "md", align: "center" }, [
             View({ tag: "h3" }, title),
             Badge({ $if: "is_template", color: "primary" }, "Template"),
+            theme === 'bootstrap' ? Badge({ color: "warning" }, "Bootstrap") : '',
+            theme === 'ulibs' ? Badge({ color: "success" }, "ULibs") : '',
           ]),
           Button(
             { color: "primary", href: "/preview/" + id },
@@ -65,7 +68,7 @@ export function PageItem({
             `{title, slug, head, is_template: false, slot_id}`,
             navigate("'/admin/pages/' + res.id")
           ),
-          value: { title, slug, description, head: 'head' },
+          value: { title, slug, description, head: 'head', theme },
         }),
   
         EditPageModal({ id, value: {id, title, slug, description, head: 'head'} }),
