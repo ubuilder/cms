@@ -4,7 +4,7 @@ import { insertData, removeData, updateData } from "../make/actions.js";
 import { DataTable } from "../../../../components/DataTable.js";
 
 export async function load({ ctx, locals, params }, { redirect }) {
-    console.log({locals})
+  console.log({locals})
   const table = locals.tables?.find((x) => x.slug === params.table);
   if (!table) redirect({ path: "/admin/data" });
 
@@ -21,6 +21,7 @@ export async function load({ ctx, locals, params }, { redirect }) {
     table: table ?? {},
     rows,
   };
+  
 }
 
 export async function insert({ ctx, params, body }) {
