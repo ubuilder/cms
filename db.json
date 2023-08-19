@@ -1,1 +1,484 @@
-{"assets":[{"id":"9b092a54-52a4-4236-bbb5-c58ca7e7e87d","name":"Button1.png","type":"image","url":"/assets/images/acc727cc-ddd0-428c-807d-27887590ca9e.png","alt":"image","description":"","width":"","height":"","caption":""},{"id":"659a5de3-eb42-401c-ae07-ebfdba1ea36f","name":"images.jpg","type":"image","url":"/assets/images/1dfb055d-208c-4513-8128-7b4be2894444.jpg","alt":"image","description":"this is image","cation":"","width":"","height":""}],"pages":[{"id":"396cd33e-2fca-4aec-b839-ca9e22eabedd","title":"abc","slug":"svb","is_template":false,"head":"\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\n  <link rel=\"stylesheet\" href=\"https://unpkg.com/@ulibs/ui@next/dist/styles.css\"/>\n  <script src=\"https://unpkg.com/@ulibs/ui@next/dist/ulibs.js\"></script>\n","slot_id":"ace81d3e-f683-40c4-b5e8-b6dbcc33e893"},{"id":"4dd52312-a864-486b-a9b4-cfb6ef0bab3e","title":"Button","slug":"button","is_template":false,"head":"\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\n  <link rel=\"stylesheet\" href=\"https://unpkg.com/@ulibs/ui@next/dist/styles.css\"/>\n  <script src=\"https://unpkg.com/@ulibs/ui@next/dist/ulibs.js\"></script>\n","slot_id":"90d1eb01-968e-4bc5-af28-90bc1aa5805b"},{"id":"ac4a5cad-a4ae-46b2-82f6-386ca9d60948","title":"test","slug":"123","is_template":false,"head":"\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\n  <link rel=\"stylesheet\" href=\"https://unpkg.com/@ulibs/ui@next/dist/styles.css\"/>\n  <script src=\"https://unpkg.com/@ulibs/ui@next/dist/ulibs.js\"></script>\n","slot_id":"dc729e20-9755-425a-929b-0a702e93f49e"},{"id":"1a4ad766-6c61-4728-bf75-c4a7a5641dfa","title":"Helo","slug":"23","is_template":false,"head":"\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\n  <link rel=\"stylesheet\" href=\"https://unpkg.com/@ulibs/ui@next/dist/styles.css\"/>\n  <script src=\"https://unpkg.com/@ulibs/ui@next/dist/ulibs.js\"></script>\n","slot_id":"c63bdadf-6b90-45cd-a2e5-c35b46b02374"}],"components":[{"id":"000","name":"Base","props":[{"name":"template","type":"rich_text","default_value":"<div>{{{slot}}}</div>"}]},{"id":"6938e941-b6f0-4b35-8643-93c3163851d7","name":"Col","slot_id":"eec2f976-2391-44a0-a455-c73b7b7ea22d","props":[]},{"id":"a8b0d53d-7aa4-414e-a1ed-9f705bcf67e2","name":"Container","slot_id":"c42fd117-dbdc-46af-9474-8d1bed715522","props":[]},{"id":"6ec4e987-a966-4097-9f18-508774578e0a","name":"Title","slot_id":"886162e3-322d-4d1e-a61c-944c29cc8896","props":[]},{"id":"bfe848ce-aeb3-4d6b-b153-6b6ca098e504","name":"Title","slot_id":"886162e3-322d-4d1e-a61c-944c29cc8896","props":[]},{"id":"6d7f4bb8-4157-454e-8446-c78dd3c217eb","name":"Base","slot_id":"886162e3-322d-4d1e-a61c-944c29cc8896","props":[]},{"id":"93f50813-4590-456f-82d2-0cfbc44d53ff","name":"Title 2","slot_id":"0edffd0c-4eb7-467d-90be-f411d2eb8942","props":[]}],"instances":[{"id":"ace81d3e-f683-40c4-b5e8-b6dbcc33e893","component_id":"000","slot_ids":["83ed35cd-dd22-466e-bdac-3db3665601e9","0b5d6779-cc53-4090-b700-143cdc5548c5","1ba2e799-a882-4f7d-b8ae-9c59faf232a2","1aa25a83-0e8b-487c-9a5e-3655e922fcf5","a2b6c9c9-63a8-47cb-a5c6-0b46a38d5388","a0024936-25a3-4462-b01d-5d00ec94a36f","4f4ecdd4-8b60-425e-b95f-5a3a99f54696","e911cd34-e7a8-4226-9076-59bc42636830"],"props":{"template":{"type":"static","value":"<div u-container u-container-size=\"xl\" u-view-mx=\"auto\">{{{slot}}}</div>"}}},{"id":"84185d80-af2d-4f4b-8085-579d33fee2de","component_id":"000","slot_ids":[],"props":{"template":{"type":"static","value":"<div u-container u-container-size=\"xl\" u-view-mx=\"auto\">{{{slot}}}</div>"}}},{"id":"90766cfe-aa8f-4c7e-8e30-5f6053b4f762","component_id":"000","slot_ids":[],"props":{"template":{"type":"static","value":"<div>Hello</div>"}}},{"id":"a8be373d-af8b-48e6-b924-a2599d0ecebe","component_id":"000","slot_ids":[],"props":{"template":{"type":"static","value":"<h1>HI</h1>"}}},{"id":"83ed35cd-dd22-466e-bdac-3db3665601e9","component_id":"000","slot_ids":["eec2f976-2391-44a0-a455-c73b7b7ea22d","3c88bbc2-8847-4319-9e8a-ef8ae2f9238d"],"props":{}},{"id":"0b5d6779-cc53-4090-b700-143cdc5548c5","component_id":"000","slot_ids":[],"props":{}},{"id":"1ba2e799-a882-4f7d-b8ae-9c59faf232a2","component_id":"000","slot_ids":["6ce3fe53-4f39-4205-8740-001098dcab10"],"props":{"template":{"type":"static","value":"<div u-row>{{{slot}}}</div>"}}},{"id":"a2b6c9c9-63a8-47cb-a5c6-0b46a38d5388","component_id":"000","slot_ids":[],"props":{"template":{"type":"static","value":"<div u-view-bg-color=\"base-200\"><h1>Hello</h1></div>"}}},{"id":"a0024936-25a3-4462-b01d-5d00ec94a36f","component_id":"000","slot_ids":[],"props":{"template":{"type":"static","value":"<div u-view-bg-color=\"error-100\">{{{slot}}}</div>"}}},{"id":"4f4ecdd4-8b60-425e-b95f-5a3a99f54696","component_id":"000","slot_ids":[],"props":{"template":{"type":"static","value":"Base"}}},{"id":"6ce3fe53-4f39-4205-8740-001098dcab10","component_id":"000","slot_ids":[],"props":{"template":{"type":"static","value":"<h3>H3</h3>"}}},{"id":"eec2f976-2391-44a0-a455-c73b7b7ea22d","component_id":"000","slot_ids":[],"props":{"template":{"type":"static","value":"<div u-col><div u-accordions=\"\"><div u-accordion=\"\"><button u-accordion-header=\"\" type=\"button\" id=\"accordion-1\">Accordion #1</button>\n<div u-accordion-content=\"\" id=\"accordion-1\"><div u-accordion-body=\"\">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas quos explicabo voluptates, autem, ipsum sapiente maiores sed sit minus facere maxime veniam iste aut magnam. Magni voluptates deleniti nemo minima.</div></div></div>\n<div u-accordion=\"\"><button u-accordion-header=\"\" type=\"button\" id=\"accordion-2\"><div u-view-d=\"flex\" u-view-gap=\"xs\">Accordion #3\n<span u-badge=\"\" color=\"light\" size=\"md\">New</span>\n<span u-badge=\"\" color=\"error\" size=\"md\" u-badge-color=\"error\">Required</span></div></button>\n<div u-accordion-content=\"\" id=\"accordion-2\"><div u-accordion-body=\"\">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas quos explicabo voluptates, autem, ipsum sapiente maiores sed sit minus facere maxime veniam iste aut magnam. Magni voluptates deleniti nemo minima.\n<div u-button-group=\"\"><button u-button=\"\" u-button-size=\"md\">Previous</button>\n<button u-button=\"\" u-button-size=\"md\" u-button-color=\"primary\">Next</button></div></div></div></div>\n<div u-accordion=\"\"><button u-accordion-header=\"\" type=\"button\" id=\"accordion-3\">Accordion #3\n<span u-badge=\"\" color=\"light\" size=\"md\">New</span></button>\n<div u-accordion-content=\"\" id=\"accordion-3\"><div u-accordion-body=\"\">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas quos explicabo voluptates, autem, ipsum sapiente maiores sed sit minus facere maxime veniam iste aut magnam. Magni voluptates deleniti nemo minima.\n<div u-button-group=\"\"><button u-button=\"\" u-button-size=\"md\">Previous</button>\n<button u-button=\"\" u-button-size=\"md\" u-button-color=\"primary\">Submit</button></div></div></div></div></div></div>"}}},{"id":"4a31532a-4f94-4eb9-bd6c-add0f3a85a9e","component_id":"6938e941-b6f0-4b35-8643-93c3163851d7","props":{},"slot_ids":[]},{"id":"3c88bbc2-8847-4319-9e8a-ef8ae2f9238d","component_id":"6938e941-b6f0-4b35-8643-93c3163851d7","slot_ids":[],"props":{}},{"id":"1aa25a83-0e8b-487c-9a5e-3655e922fcf5","component_id":"000","slot_ids":[],"props":{"template":{"type":"static","value":"<div u-col u-col-col=\"6\">{{{slot}}}</div>"}}},{"id":"e911cd34-e7a8-4226-9076-59bc42636830","component_id":"000","slot_ids":["48d94b98-87b2-452f-b620-98314fcd8713","4eac3669-6f93-4648-a686-8f8bbe83c967"],"props":{"template":{"type":"static","value":"<div u-row>{{{slot}}}</div>"}}},{"id":"48d94b98-87b2-452f-b620-98314fcd8713","component_id":"000","slot_ids":[],"props":{}},{"id":"4eac3669-6f93-4648-a686-8f8bbe83c967","component_id":"6938e941-b6f0-4b35-8643-93c3163851d7","slot_ids":[],"props":{}},{"id":"90d1eb01-968e-4bc5-af28-90bc1aa5805b","component_id":"000","slot_ids":["6728051e-8090-437d-b225-a95e2bbb7a36","c42fd117-dbdc-46af-9474-8d1bed715522"],"props":{"template":{"type":"static","value":"<div>{{{slot}}}</div>"}}},{"id":"29c40db5-4eaa-4140-9d57-5c887de93b2f","component_id":"000","slot_ids":["2ddc8be7-9675-4f6b-ba5f-b43705e616e1"],"props":{}},{"id":"2ddc8be7-9675-4f6b-ba5f-b43705e616e1","component_id":"000","slot_ids":[],"props":{}},{"id":"6728051e-8090-437d-b225-a95e2bbb7a36","component_id":"000","slot_ids":["302e6938-758c-49c3-aa4c-df6e1c415b17"],"props":{"template":{"type":"static","value":"<div u-view-p=\"sm\" u-view-border u-view-bg-color=\"base-200\" u-view-border-color=\"base-400\">{{{slot}}}</div>"}}},{"id":"302e6938-758c-49c3-aa4c-df6e1c415b17","component_id":"000","slot_ids":[],"props":{"template":{"type":"static","value":"<h1>Title</h1>"}}},{"id":"c42fd117-dbdc-46af-9474-8d1bed715522","component_id":"000","slot_ids":["a91e792e-eb4c-42fc-b5e7-dba414634d0d","85347737-51ff-4bf6-bf72-bbf07b43cd15","d3239660-301c-4982-a1e8-21f588098e88"],"props":{"template":{"type":"static","value":"<div u-container u-container-size=\"xl\" u-view-mx=\"auto\">{{{slot}}}</div>"}}},{"id":"5f0afff1-648c-466c-a3d4-fde0e4375836","component_id":"a8b0d53d-7aa4-414e-a1ed-9f705bcf67e2","props":{},"slot_ids":[]},{"id":"a91e792e-eb4c-42fc-b5e7-dba414634d0d","component_id":"000","slot_ids":["29f58526-1b7e-4528-a976-25740e4b1e77","adbb5906-d840-4c73-bc19-d4ba02729521"],"props":{"template":{"type":"static","value":"<div u-row u-row-gutter=\"md\">{{{slot}}}</div>"}}},{"id":"adbb5906-d840-4c73-bc19-d4ba02729521","component_id":"6938e941-b6f0-4b35-8643-93c3163851d7","slot_ids":[],"props":{}},{"id":"85347737-51ff-4bf6-bf72-bbf07b43cd15","component_id":"6938e941-b6f0-4b35-8643-93c3163851d7","slot_ids":[],"props":{}},{"id":"d3239660-301c-4982-a1e8-21f588098e88","component_id":"6938e941-b6f0-4b35-8643-93c3163851d7","slot_ids":[],"props":{}},{"id":"dc729e20-9755-425a-929b-0a702e93f49e","component_id":"000","slot_ids":["bdf4ed56-a891-41f5-abc8-f40b3092a261"],"props":{"template":{"type":"static","value":"{{{slot}}}"}}},{"id":"bdf4ed56-a891-41f5-abc8-f40b3092a261","component_id":"a8b0d53d-7aa4-414e-a1ed-9f705bcf67e2","slot_ids":[],"props":{}},{"id":"c63bdadf-6b90-45cd-a2e5-c35b46b02374","component_id":"000","slot_ids":["0edffd0c-4eb7-467d-90be-f411d2eb8942","7f62b32d-e3a6-4901-b281-9ffa452f5e52"],"props":{"template":{"type":"static","value":"{{{slot}}}"}}},{"id":"886162e3-322d-4d1e-a61c-944c29cc8896","component_id":"000","slot_ids":[],"props":{"template":{"type":"static","value":"<h1>Component updated 2</h1>"}}},{"id":"4a4cf6ab-f83e-42fb-aafd-d552ff924202","component_id":"6ec4e987-a966-4097-9f18-508774578e0a","props":{},"slot_ids":[]},{"id":"906e2797-8b8e-4352-8de9-b75f5993e73c","component_id":"bfe848ce-aeb3-4d6b-b153-6b6ca098e504","props":{},"slot_ids":[]},{"id":"8136896b-111f-45a5-9d82-fc52f91b2511","component_id":"6d7f4bb8-4157-454e-8446-c78dd3c217eb","props":{},"slot_ids":[]},{"id":"0edffd0c-4eb7-467d-90be-f411d2eb8942","component_id":"bfe848ce-aeb3-4d6b-b153-6b6ca098e504","slot_ids":[],"props":{}},{"id":"fbade7e5-b8ea-47c1-89f5-829e8543593f","component_id":"93f50813-4590-456f-82d2-0cfbc44d53ff","props":{},"slot_ids":[]},{"id":"7f62b32d-e3a6-4901-b281-9ffa452f5e52","component_id":"000","slot_ids":["f6b77904-9128-4797-8533-783c04ebe340"],"props":{"template":{"type":"static","value":"<div u-view-bg-color=\"info-100\">{{{slot}}}</div>"}}},{"id":"f6b77904-9128-4797-8533-783c04ebe340","component_id":"bfe848ce-aeb3-4d6b-b153-6b6ca098e504","slot_ids":[],"props":{}}],"tables":[{"id":"9e205d95-52a4-4b32-a400-2e79c30942fe","name":"posts","icon":"database","slug":"posts"},{"id":"9574840b-e4a1-4f04-83cb-7854997de584","name":"mistakes","icon":"x","slug":"mistakes"},{"id":"c25e5c6c-c843-4d0b-af96-a5ef115d3149","name":"books","icon":"book","slug":"books"},{"id":"909049b1-c7e5-4f17-8ed0-473936f2d37e","name":"something else","icon":"database","slug":"something_else"},{"id":"1f825e30-8c48-445a-a823-46d99be15277","name":"yyy","icon":"database","slug":"yyy","fields":[{"name":"ggggg","type":"text","hint":"","default_value":"","new":true,"removed":false,"required":false,"default_active":false}]}]}
+{
+  "assets": [
+    {
+      "id": "9b092a54-52a4-4236-bbb5-c58ca7e7e87d",
+      "name": "Button1.png",
+      "type": "image",
+      "url": "/assets/images/acc727cc-ddd0-428c-807d-27887590ca9e.png",
+      "alt": "image",
+      "description": "",
+      "width": "",
+      "height": "",
+      "caption": ""
+    },
+    {
+      "id": "659a5de3-eb42-401c-ae07-ebfdba1ea36f",
+      "name": "images.jpg",
+      "type": "image",
+      "url": "/assets/images/1dfb055d-208c-4513-8128-7b4be2894444.jpg",
+      "alt": "image",
+      "description": "this is image",
+      "cation": "",
+      "width": "",
+      "height": ""
+    }
+  ],
+  "pages": [
+    {
+      "id": "396cd33e-2fca-4aec-b839-ca9e22eabedd",
+      "title": "abc",
+      "slug": "svb",
+      "is_template": false,
+      "head": "\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\n  <link rel=\"stylesheet\" href=\"https://unpkg.com/@ulibs/ui@next/dist/styles.css\"/>\n  <script src=\"https://unpkg.com/@ulibs/ui@next/dist/ulibs.js\"></script>\n",
+      "slot_id": "ace81d3e-f683-40c4-b5e8-b6dbcc33e893"
+    },
+    {
+      "id": "4dd52312-a864-486b-a9b4-cfb6ef0bab3e",
+      "title": "Button",
+      "slug": "button",
+      "is_template": false,
+      "head": "\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\n  <link rel=\"stylesheet\" href=\"https://unpkg.com/@ulibs/ui@next/dist/styles.css\"/>\n  <script src=\"https://unpkg.com/@ulibs/ui@next/dist/ulibs.js\"></script>\n",
+      "slot_id": "90d1eb01-968e-4bc5-af28-90bc1aa5805b"
+    },
+    {
+      "id": "ac4a5cad-a4ae-46b2-82f6-386ca9d60948",
+      "title": "test",
+      "slug": "123",
+      "is_template": false,
+      "head": "\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\n  <link rel=\"stylesheet\" href=\"https://unpkg.com/@ulibs/ui@next/dist/styles.css\"/>\n  <script src=\"https://unpkg.com/@ulibs/ui@next/dist/ulibs.js\"></script>\n",
+      "slot_id": "dc729e20-9755-425a-929b-0a702e93f49e"
+    },
+    {
+      "id": "1a4ad766-6c61-4728-bf75-c4a7a5641dfa",
+      "title": "Helo",
+      "slug": "23",
+      "is_template": false,
+      "head": "\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\n  <link rel=\"stylesheet\" href=\"https://unpkg.com/@ulibs/ui@next/dist/styles.css\"/>\n  <script src=\"https://unpkg.com/@ulibs/ui@next/dist/ulibs.js\"></script>\n",
+      "slot_id": "c63bdadf-6b90-45cd-a2e5-c35b46b02374"
+    }
+  ],
+  "components": [
+    {
+      "id": "000",
+      "name": "Base",
+      "props": [
+        {
+          "name": "template",
+          "type": "rich_text",
+          "default_value": "<div>{{{slot}}}</div>"
+        }
+      ]
+    },
+    {
+      "id": "6938e941-b6f0-4b35-8643-93c3163851d7",
+      "name": "Col",
+      "slot_id": "eec2f976-2391-44a0-a455-c73b7b7ea22d",
+      "props": []
+    },
+    {
+      "id": "a8b0d53d-7aa4-414e-a1ed-9f705bcf67e2",
+      "name": "Container",
+      "slot_id": "c42fd117-dbdc-46af-9474-8d1bed715522",
+      "props": []
+    },
+    {
+      "id": "6ec4e987-a966-4097-9f18-508774578e0a",
+      "name": "Title",
+      "slot_id": "886162e3-322d-4d1e-a61c-944c29cc8896",
+      "props": []
+    },
+    {
+      "id": "bfe848ce-aeb3-4d6b-b153-6b6ca098e504",
+      "name": "Title",
+      "slot_id": "886162e3-322d-4d1e-a61c-944c29cc8896",
+      "props": []
+    },
+    {
+      "id": "6d7f4bb8-4157-454e-8446-c78dd3c217eb",
+      "name": "Base",
+      "slot_id": "886162e3-322d-4d1e-a61c-944c29cc8896",
+      "props": []
+    },
+    {
+      "id": "93f50813-4590-456f-82d2-0cfbc44d53ff",
+      "name": "Title 2",
+      "slot_id": "0edffd0c-4eb7-467d-90be-f411d2eb8942",
+      "props": []
+    }
+  ],
+  "instances": [
+    {
+      "id": "ace81d3e-f683-40c4-b5e8-b6dbcc33e893",
+      "component_id": "000",
+      "slot_ids": [
+        "83ed35cd-dd22-466e-bdac-3db3665601e9",
+        "0b5d6779-cc53-4090-b700-143cdc5548c5",
+        "1ba2e799-a882-4f7d-b8ae-9c59faf232a2",
+        "1aa25a83-0e8b-487c-9a5e-3655e922fcf5",
+        "a2b6c9c9-63a8-47cb-a5c6-0b46a38d5388",
+        "a0024936-25a3-4462-b01d-5d00ec94a36f",
+        "4f4ecdd4-8b60-425e-b95f-5a3a99f54696",
+        "e911cd34-e7a8-4226-9076-59bc42636830"
+      ],
+      "props": {
+        "template": {
+          "type": "static",
+          "value": "<div u-container u-container-size=\"xl\" u-view-mx=\"auto\">{{{slot}}}</div>"
+        }
+      }
+    },
+    {
+      "id": "84185d80-af2d-4f4b-8085-579d33fee2de",
+      "component_id": "000",
+      "slot_ids": [],
+      "props": {
+        "template": {
+          "type": "static",
+          "value": "<div u-container u-container-size=\"xl\" u-view-mx=\"auto\">{{{slot}}}</div>"
+        }
+      }
+    },
+    {
+      "id": "90766cfe-aa8f-4c7e-8e30-5f6053b4f762",
+      "component_id": "000",
+      "slot_ids": [],
+      "props": { "template": { "type": "static", "value": "<div>Hello</div>" } }
+    },
+    {
+      "id": "a8be373d-af8b-48e6-b924-a2599d0ecebe",
+      "component_id": "000",
+      "slot_ids": [],
+      "props": { "template": { "type": "static", "value": "<h1>HI</h1>" } }
+    },
+    {
+      "id": "83ed35cd-dd22-466e-bdac-3db3665601e9",
+      "component_id": "000",
+      "slot_ids": [
+        "eec2f976-2391-44a0-a455-c73b7b7ea22d",
+        "3c88bbc2-8847-4319-9e8a-ef8ae2f9238d"
+      ],
+      "props": {}
+    },
+    {
+      "id": "0b5d6779-cc53-4090-b700-143cdc5548c5",
+      "component_id": "000",
+      "slot_ids": [],
+      "props": {}
+    },
+    {
+      "id": "1ba2e799-a882-4f7d-b8ae-9c59faf232a2",
+      "component_id": "000",
+      "slot_ids": ["6ce3fe53-4f39-4205-8740-001098dcab10"],
+      "props": {
+        "template": { "type": "static", "value": "<div u-row>{{{slot}}}</div>" }
+      }
+    },
+    {
+      "id": "a2b6c9c9-63a8-47cb-a5c6-0b46a38d5388",
+      "component_id": "000",
+      "slot_ids": [],
+      "props": {
+        "template": {
+          "type": "static",
+          "value": "<div u-view-bg-color=\"base-200\"><h1>Hello</h1></div>"
+        }
+      }
+    },
+    {
+      "id": "a0024936-25a3-4462-b01d-5d00ec94a36f",
+      "component_id": "000",
+      "slot_ids": [],
+      "props": {
+        "template": {
+          "type": "static",
+          "value": "<div u-view-bg-color=\"error-100\">{{{slot}}}</div>"
+        }
+      }
+    },
+    {
+      "id": "4f4ecdd4-8b60-425e-b95f-5a3a99f54696",
+      "component_id": "000",
+      "slot_ids": [],
+      "props": { "template": { "type": "static", "value": "Base" } }
+    },
+    {
+      "id": "6ce3fe53-4f39-4205-8740-001098dcab10",
+      "component_id": "000",
+      "slot_ids": [],
+      "props": { "template": { "type": "static", "value": "<h3>H3</h3>" } }
+    },
+    {
+      "id": "eec2f976-2391-44a0-a455-c73b7b7ea22d",
+      "component_id": "000",
+      "slot_ids": [],
+      "props": {
+        "template": {
+          "type": "static",
+          "value": "<div u-col><div u-accordions=\"\"><div u-accordion=\"\"><button u-accordion-header=\"\" type=\"button\" id=\"accordion-1\">Accordion #1</button>\n<div u-accordion-content=\"\" id=\"accordion-1\"><div u-accordion-body=\"\">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas quos explicabo voluptates, autem, ipsum sapiente maiores sed sit minus facere maxime veniam iste aut magnam. Magni voluptates deleniti nemo minima.</div></div></div>\n<div u-accordion=\"\"><button u-accordion-header=\"\" type=\"button\" id=\"accordion-2\"><div u-view-d=\"flex\" u-view-gap=\"xs\">Accordion #3\n<span u-badge=\"\" color=\"light\" size=\"md\">New</span>\n<span u-badge=\"\" color=\"error\" size=\"md\" u-badge-color=\"error\">Required</span></div></button>\n<div u-accordion-content=\"\" id=\"accordion-2\"><div u-accordion-body=\"\">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas quos explicabo voluptates, autem, ipsum sapiente maiores sed sit minus facere maxime veniam iste aut magnam. Magni voluptates deleniti nemo minima.\n<div u-button-group=\"\"><button u-button=\"\" u-button-size=\"md\">Previous</button>\n<button u-button=\"\" u-button-size=\"md\" u-button-color=\"primary\">Next</button></div></div></div></div>\n<div u-accordion=\"\"><button u-accordion-header=\"\" type=\"button\" id=\"accordion-3\">Accordion #3\n<span u-badge=\"\" color=\"light\" size=\"md\">New</span></button>\n<div u-accordion-content=\"\" id=\"accordion-3\"><div u-accordion-body=\"\">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas quos explicabo voluptates, autem, ipsum sapiente maiores sed sit minus facere maxime veniam iste aut magnam. Magni voluptates deleniti nemo minima.\n<div u-button-group=\"\"><button u-button=\"\" u-button-size=\"md\">Previous</button>\n<button u-button=\"\" u-button-size=\"md\" u-button-color=\"primary\">Submit</button></div></div></div></div></div></div>"
+        }
+      }
+    },
+    {
+      "id": "4a31532a-4f94-4eb9-bd6c-add0f3a85a9e",
+      "component_id": "6938e941-b6f0-4b35-8643-93c3163851d7",
+      "props": {},
+      "slot_ids": []
+    },
+    {
+      "id": "3c88bbc2-8847-4319-9e8a-ef8ae2f9238d",
+      "component_id": "6938e941-b6f0-4b35-8643-93c3163851d7",
+      "slot_ids": [],
+      "props": {}
+    },
+    {
+      "id": "1aa25a83-0e8b-487c-9a5e-3655e922fcf5",
+      "component_id": "000",
+      "slot_ids": [],
+      "props": {
+        "template": {
+          "type": "static",
+          "value": "<div u-col u-col-col=\"6\">{{{slot}}}</div>"
+        }
+      }
+    },
+    {
+      "id": "e911cd34-e7a8-4226-9076-59bc42636830",
+      "component_id": "000",
+      "slot_ids": [
+        "48d94b98-87b2-452f-b620-98314fcd8713",
+        "4eac3669-6f93-4648-a686-8f8bbe83c967"
+      ],
+      "props": {
+        "template": { "type": "static", "value": "<div u-row>{{{slot}}}</div>" }
+      }
+    },
+    {
+      "id": "48d94b98-87b2-452f-b620-98314fcd8713",
+      "component_id": "000",
+      "slot_ids": [],
+      "props": {}
+    },
+    {
+      "id": "4eac3669-6f93-4648-a686-8f8bbe83c967",
+      "component_id": "6938e941-b6f0-4b35-8643-93c3163851d7",
+      "slot_ids": [],
+      "props": {}
+    },
+    {
+      "id": "90d1eb01-968e-4bc5-af28-90bc1aa5805b",
+      "component_id": "000",
+      "slot_ids": [
+        "6728051e-8090-437d-b225-a95e2bbb7a36",
+        "c42fd117-dbdc-46af-9474-8d1bed715522"
+      ],
+      "props": {
+        "template": { "type": "static", "value": "<div>{{{slot}}}</div>" }
+      }
+    },
+    {
+      "id": "29c40db5-4eaa-4140-9d57-5c887de93b2f",
+      "component_id": "000",
+      "slot_ids": ["2ddc8be7-9675-4f6b-ba5f-b43705e616e1"],
+      "props": {}
+    },
+    {
+      "id": "2ddc8be7-9675-4f6b-ba5f-b43705e616e1",
+      "component_id": "000",
+      "slot_ids": [],
+      "props": {}
+    },
+    {
+      "id": "6728051e-8090-437d-b225-a95e2bbb7a36",
+      "component_id": "000",
+      "slot_ids": ["302e6938-758c-49c3-aa4c-df6e1c415b17"],
+      "props": {
+        "template": {
+          "type": "static",
+          "value": "<div u-view-p=\"sm\" u-view-border u-view-bg-color=\"base-200\" u-view-border-color=\"base-400\">{{{slot}}}</div>"
+        }
+      }
+    },
+    {
+      "id": "302e6938-758c-49c3-aa4c-df6e1c415b17",
+      "component_id": "000",
+      "slot_ids": [],
+      "props": { "template": { "type": "static", "value": "<h1>Title</h1>" } }
+    },
+    {
+      "id": "c42fd117-dbdc-46af-9474-8d1bed715522",
+      "component_id": "000",
+      "slot_ids": [
+        "a91e792e-eb4c-42fc-b5e7-dba414634d0d",
+        "85347737-51ff-4bf6-bf72-bbf07b43cd15",
+        "d3239660-301c-4982-a1e8-21f588098e88"
+      ],
+      "props": {
+        "template": {
+          "type": "static",
+          "value": "<div u-container u-container-size=\"xl\" u-view-mx=\"auto\">{{{slot}}}</div>"
+        }
+      }
+    },
+    {
+      "id": "5f0afff1-648c-466c-a3d4-fde0e4375836",
+      "component_id": "a8b0d53d-7aa4-414e-a1ed-9f705bcf67e2",
+      "props": {},
+      "slot_ids": []
+    },
+    {
+      "id": "a91e792e-eb4c-42fc-b5e7-dba414634d0d",
+      "component_id": "000",
+      "slot_ids": [
+        "29f58526-1b7e-4528-a976-25740e4b1e77",
+        "adbb5906-d840-4c73-bc19-d4ba02729521"
+      ],
+      "props": {
+        "template": {
+          "type": "static",
+          "value": "<div u-row u-row-gutter=\"md\">{{{slot}}}</div>"
+        }
+      }
+    },
+    {
+      "id": "adbb5906-d840-4c73-bc19-d4ba02729521",
+      "component_id": "6938e941-b6f0-4b35-8643-93c3163851d7",
+      "slot_ids": [],
+      "props": {}
+    },
+    {
+      "id": "85347737-51ff-4bf6-bf72-bbf07b43cd15",
+      "component_id": "6938e941-b6f0-4b35-8643-93c3163851d7",
+      "slot_ids": [],
+      "props": {}
+    },
+    {
+      "id": "d3239660-301c-4982-a1e8-21f588098e88",
+      "component_id": "6938e941-b6f0-4b35-8643-93c3163851d7",
+      "slot_ids": [],
+      "props": {}
+    },
+    {
+      "id": "dc729e20-9755-425a-929b-0a702e93f49e",
+      "component_id": "000",
+      "slot_ids": ["bdf4ed56-a891-41f5-abc8-f40b3092a261"],
+      "props": { "template": { "type": "static", "value": "{{{slot}}}" } }
+    },
+    {
+      "id": "bdf4ed56-a891-41f5-abc8-f40b3092a261",
+      "component_id": "a8b0d53d-7aa4-414e-a1ed-9f705bcf67e2",
+      "slot_ids": [],
+      "props": {}
+    },
+    {
+      "id": "c63bdadf-6b90-45cd-a2e5-c35b46b02374",
+      "component_id": "000",
+      "slot_ids": [
+        "0edffd0c-4eb7-467d-90be-f411d2eb8942",
+        "7f62b32d-e3a6-4901-b281-9ffa452f5e52"
+      ],
+      "props": { "template": { "type": "static", "value": "{{{slot}}}" } }
+    },
+    {
+      "id": "886162e3-322d-4d1e-a61c-944c29cc8896",
+      "component_id": "000",
+      "slot_ids": [],
+      "props": {
+        "template": {
+          "type": "static",
+          "value": "<h1>Component updated 2</h1>"
+        }
+      }
+    },
+    {
+      "id": "4a4cf6ab-f83e-42fb-aafd-d552ff924202",
+      "component_id": "6ec4e987-a966-4097-9f18-508774578e0a",
+      "props": {},
+      "slot_ids": []
+    },
+    {
+      "id": "906e2797-8b8e-4352-8de9-b75f5993e73c",
+      "component_id": "bfe848ce-aeb3-4d6b-b153-6b6ca098e504",
+      "props": {},
+      "slot_ids": []
+    },
+    {
+      "id": "8136896b-111f-45a5-9d82-fc52f91b2511",
+      "component_id": "6d7f4bb8-4157-454e-8446-c78dd3c217eb",
+      "props": {},
+      "slot_ids": []
+    },
+    {
+      "id": "0edffd0c-4eb7-467d-90be-f411d2eb8942",
+      "component_id": "bfe848ce-aeb3-4d6b-b153-6b6ca098e504",
+      "slot_ids": [],
+      "props": {}
+    },
+    {
+      "id": "fbade7e5-b8ea-47c1-89f5-829e8543593f",
+      "component_id": "93f50813-4590-456f-82d2-0cfbc44d53ff",
+      "props": {},
+      "slot_ids": []
+    },
+    {
+      "id": "7f62b32d-e3a6-4901-b281-9ffa452f5e52",
+      "component_id": "000",
+      "slot_ids": ["f6b77904-9128-4797-8533-783c04ebe340"],
+      "props": {
+        "template": {
+          "type": "static",
+          "value": "<div u-view-bg-color=\"info-100\">{{{slot}}}</div>"
+        }
+      }
+    },
+    {
+      "id": "f6b77904-9128-4797-8533-783c04ebe340",
+      "component_id": "bfe848ce-aeb3-4d6b-b153-6b6ca098e504",
+      "slot_ids": [],
+      "props": {}
+    }
+  ],
+  "tables": [
+    {
+      "id": "9e205d95-52a4-4b32-a400-2e79c30942fe",
+      "name": "posts",
+      "icon": "database",
+      "slug": "posts"
+    },
+    {
+      "id": "9574840b-e4a1-4f04-83cb-7854997de584",
+      "name": "mistakes",
+      "icon": "x",
+      "slug": "mistakes"
+    },
+    {
+      "id": "c25e5c6c-c843-4d0b-af96-a5ef115d3149",
+      "name": "books",
+      "icon": "book",
+      "slug": "books"
+    },
+    {
+      "id": "909049b1-c7e5-4f17-8ed0-473936f2d37e",
+      "name": "something else",
+      "icon": "database",
+      "slug": "something_else"
+    },
+    {
+      "id": "1f825e30-8c48-445a-a823-46d99be15277",
+      "name": "yyy",
+      "icon": "database",
+      "slug": "yyy",
+      "fields": [
+        {
+          "name": "ggggg",
+          "type": "text",
+          "hint": "",
+          "default_value": "",
+          "new": true,
+          "removed": false,
+          "required": false,
+          "default_active": false
+        }
+      ]
+    }
+  ]
+}
