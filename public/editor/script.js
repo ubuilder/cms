@@ -81,7 +81,7 @@ window.addEventListener("alpine:init", (e) => {
           placement: placement || this.placement,
           position: position || this.position,
           parent_id: parent_id || this.parent_id || current_id,
-        });
+        }).then(res => location.reload());
       },
       onRemoveInstance({ instance_id }) {
         return this.$post("/editor?remove_instance", { instance_id });
@@ -95,8 +95,7 @@ window.addEventListener("alpine:init", (e) => {
         if (component.props.length > 0) {
           this.$modal.open("add-component-" + component.id + "-settings");
         } else {
-          this.onAddInstance({ component_id: component.id, props: [] });
-          location.reload();
+          return this.onAddInstance({ component_id: component.id, props: [] })
         }
       },
       openComponentModal(id) {

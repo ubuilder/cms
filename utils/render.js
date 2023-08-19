@@ -75,7 +75,6 @@ export async function renderInstance(ctx, {
       let slots = [];
  
       for (let slotItem of slot) {
-        console.log(slot)
         if(!slotItem) throw new Error('Instance doesn\'t exists...')
         
         
@@ -178,7 +177,6 @@ async function renderBody(ctx, page) {
     page.slot = await ctx.table('instances').get({ where: { id: page.slot_id } });
   }
 
-  console.log('renderInstance', page.slot)
   const body = await renderInstance(ctx, {
     instance: page.slot,
     instanceWrapper: EmptyInstanceWrapper,

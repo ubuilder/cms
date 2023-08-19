@@ -1,11 +1,9 @@
 import recursiveReadDir from "recursive-readdir";
-import { connect } from "@ulibs/db";
-import { resolve, sep } from "path";
+import { sep } from "path";
 import { existsSync } from "fs";
 import { readFile } from "fs/promises";
-import { slugify } from "./slugify.js";
 import { View } from "@ulibs/ui";
-import { initData } from "./models.js";
+import { getDb  } from "./models.js";
 
 export async function fileBasedRouting({
   path,
@@ -47,15 +45,7 @@ export async function fileBasedRouting({
 
     if (load) {
       result.load = async function (req, ...args) {
-        if (!req.headers.host) throw new Error("Host header is not available");
-        const filename = "db/" + slugify(req.headers.host, "-") + ".json";
-
-        const { getModel } = connect({ filename });
-
-        ctx.table = (tableName) => {
-          return getModel(tableName);
-        };
-        await initData(ctx);
+        ctx.table = await getDb(req.headers.host)
 
         return await load({ ctx, ...req }, ...args);
       };
@@ -64,15 +54,8 @@ export async function fileBasedRouting({
     result.actions = {};
     for (let action in actions) {
       result.actions[action] = async function (req, ...args) {
-        if (!req.headers.host) throw new Error("Host header is not available");
-        const filename = "db/" + slugify(req.headers.host, "-") + ".json";
+        ctx.table = await getDb(req.headers.host)
 
-        const { getModel } = connect({ filename });
-
-        ctx.table = (tableName) => {
-          return getModel(tableName);
-        };
-        await initData(ctx);
         return await actions[action]({ ctx, ...req }, ...args);
       };
     }

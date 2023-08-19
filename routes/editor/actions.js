@@ -74,32 +74,37 @@ export async function add_instance({ ctx, body }) {
     .table("instances")
     .get({ where: { id: parentId } });
 
-  if (!position) {
-    parentInstance.slot_ids.push(instance_id);
-  } else {
-    let slotIds = [];
-
-    for (let slotId of parentInstance.slot_ids) {
-      if (slotId === position) {
-        if (placement === "before") {
-          slotIds.push(instance_id);
-          slotIds.push(slotId);
-        } else if (placement === "after") {
-          slotIds.push(slotId);
-          slotIds.push(instance_id);
-        } else {
-          // inside
-        }
-      } else {
-        slotIds.push(slotId);
-      }
-    }
-    parentInstance.slot_ids = slotIds;
+  if(!instance_id) {
+    throw new Error('instance id is not defined...')
   }
 
-  await ctx.table("instances").update(parentId, {
-    slot_ids: parentInstance.slot_ids,
-  });
+  if(!position) {
+    parentInstance.slot_ids.push(instance_id)
+  } else {
+    const slotIds = []
+    for(let slotIndex in parentInstance.slot_ids) {
+      const slotId = parentInstance.slot_ids[slotIndex]
+      if(slotId === position) {
+        console.log('slotId = position', position)
+        if(placement === 'before') {
+          console.log({placement, slotIds})
+          slotIds.push(instance_id, slotId)
+        } else if(placement === 'after') {
+
+          console.log({placement, slotIds})
+          slotIds.push(slotId, instance_id)
+        }
+
+        console.log('after insert', {placement, slotIds})
+      } else {
+        slotIds.push(slotId)
+      }
+    }
+    console.log({slot_ids: parentInstance.slot_ids, slotIds})
+    parentInstance.slot_ids = slotIds
+  }
+    
+  await ctx.table('instances').update(parentInstance.id, parentInstance);
 
   return {
     body: {
