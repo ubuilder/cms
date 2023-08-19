@@ -1,31 +1,30 @@
 import {
-    Accordion,
-    Accordions,
-    Badge,
-    Button,
-    ButtonGroup,
-    Card,
-    Col,
-    Form,
-    FormField,
-    Icon,
-    Input,
-    Row,
-    Select,
-    Switch,
-    View,
-  } from "@ulibs/ui";
+  Accordion,
+  Accordions,
+  Badge,
+  Button,
+  ButtonGroup,
+  Card,
+  Col,
+  Form,
+  FormField,
+  Icon,
+  Input,
+  Row,
+  Select,
+  Switch,
+  View,
+} from "@ulibs/ui";
 import { IconPicker } from "../../../components/IconPicker.js";
-  
-  export function TableEditor({
-    submitText = "Create",
-    value = { id: "", table_name: "", type: 'text', icon: "database", fields: [] },
-    successMessage = "Table created successfully",
-    ...$props
-  }) {
-    const addField =
-      "fields.push({\
-        name: 'new',\
+
+export function TableEditor({
+  submitText = "Create",
+  successMessage = "Table created successfully",
+  ...$props
+}) {
+  const addField =
+    "fields.push({\
+        name: new_name,\
         type: 'text',\
         hint: '',\
         default_value: '',\
@@ -33,158 +32,191 @@ import { IconPicker } from "../../../components/IconPicker.js";
         removed: false,\
         required: false,\
         default_active: false\
-      })";
-  
-    const onSumbit = `\
+      }); new_name = ''";
+
+  const onSumbit = `\
     $post('?${$props.action}', {\
       id, name: table_name, icon, fields\
     })\
     .then(async res => {\
       window.location.href = '/admin/data/' +$data.slug; \
-        $alert.success('${successMessage}')\
       })\
   `;
-  
-    return Row(
-      {
-        ...$props,
-        $data: value,
-      },
-      [
-        FormField(
-          { label: "Icon:", col: 0 },
-          IconPicker({ value: value.icon ?? "database", name: "icon" })
-        ),
-        (value.id &&
-          Input({ d: "none", name: "id", type: "hidden", value: value.id })) ||
-          [],
-        Input({
-          col: true,
-          name: "table_name",
-          placeholder: "Enter Table name (Posts, Users, ...)",
-          label: "Name:",
-          value: value.name,
-        }),
-  
-        FormField({ label: "Fields" }, [
-          Accordions({ $if: "fields.length > 0", style: "border: none" }, [
-            Card({ mt: "xxs", $for: "(field, index) in fields" }, [
-              Accordion({
-                style: 'border: none',
-                header: [
-                  View({ d: "flex", align: "center", gap: "xs" }, [
-                    View({ tag: "span", $text: "field.name" }),
+
+  // $alert.success('${successMessage}')\
+
+  // return Row(
+  //   {
+  //     ...$props,
+  //     $data: value,
+  //   },
+  return [
+    FormField({ label: "Icon:", col: 0 }, IconPicker({ name: "icon" })),
+
+    Input({ d: "none", name: "id", type: "hidden" }),
+
+    Input({
+      col: true,
+      name: "table_name",
+      placeholder: "Enter Table name (Posts, Users, ...)",
+      label: "Name:",
+    }),
+
+    FormField({ label: "Fields", $data: {new_name: ''} }, [
+      Accordions({ $if: "fields.length > 0", style: "border: none" }, [
+        Card({ mt: "xxs", $for: "(field, index) in fields" }, [
+          Accordion({
+            open: true,
+            style: "border: none",
+            header: [
+              View({ d: "flex", align: "center", gap: "xs" }, [
+                View({ tag: "span", $text: "field.name" }),
+                View(
+                  {
+                    onClick: "$event.stopPropagation()",
+                    d: "flex",
+                    align: "center",
+                    gap: "xs",
+                  },
+                  [
                     Badge(
-                      { color: "primary", $show: `field.required` },
+                      {tabindex: '0', 
+                        onClick: "field.required = false",
+                        color: "error",
+                        $show: `field.required`,
+                      },
                       "Required"
                     ),
-                    Badge({ color: "warning", $if: `field.new` }, "New"),
-                    Badge({ color: "error", $if: `field.removed` }, "Remove"),
-                  ]),
-                  View({$if:'field.removed', onClick: '$event.stopPropagation(); field.removed = false'}, 'Restore')
-                ],
-                body: Row({$style: "field.removed ? 'opacity: 0.5' : ''"}, [
-                  Input({ $disabled: 'field.removed', colSm: 6, label: "Name", name: "field.name" }),
-                  Select({
-                    $disabled: 'field.removed',
-                    name: "field.type",
-                    colSm: 6,
-                    label: "Type",
-                    items: ["text", "number", "date", "image", "reference"],
-                  }),
-                  Input({ $disabled: 'field.removed', col: 12, label: "Hint" }),
-                  Switch({
-                    $disabled: 'field.removed',
-                    colSm: 6,
-                    name: "field.required",
-                    label: "Required?",
-                  }),
-                  FormField(
-                    {
-                      colSm: 6,
-                      label: View(
-                        { d: "flex", align: "center", justify: "between" },
-                        [
-                          "Default Value",
-                          Switch({
-                            $disabled: 'field.removed',
-                            name: "field.default_active",
-                            col: 0,
-                            d: "flex",
-                            mb: 0,
-                            p: 0,
-                            justify: "end",
-                          }),
-                        ]
-                      ),
-                    },
-                    Row([
-                      Input({
-                        $disabled: `!field.default_active`,
-  
-                        col: 12,
-                        name: "field.default_value",
+                    Badge(
+                      {
+                        tabindex: '0', 
+                        onClick: "field.required = true",
+                        color: "info",
+                        $show: `!field.required`,
+                      },
+                      "Optional"
+                    ),
+                  ]
+                ),
+              ]),
+              View(
+                {
+                  onClick: "$event.stopPropagation();",
+                },
+                View(
+                  { tabindex: '0', onClick: "fields.splice(index, 1)" },
+                  Icon({ name: "trash" })
+                )
+              ),
+            ],
+            body: Row([
+              Input({
+                colSm: 6,
+                label: "Name",
+                name: "field.name",
+              }),
+              Select({
+                name: "field.type",
+                colSm: 6,
+                label: "Type",
+                items: ["text", "number", "date", "image", "reference"],
+              }),
+              Input({ col: 12, label: "Hint" }),
+              Switch({
+                $if: 'false',
+                colSm: 6,
+                name: "field.required",
+                label: "Required?",
+              }),
+              FormField(
+                {
+                  colSm: 6,
+                  label: View(
+                    { d: "flex", align: "center", justify: "between" },
+                    [
+                      "Default Value",
+                      Switch({
+                        name: "field.default_active",
+                        col: 0,
+                        d: "flex",
+                        mb: 0,
+                        p: 0,
+                        justify: "end",
                       }),
-                    ])
+                    ]
                   ),
-  
-                  FormField({ label: "Summary" }, [
-                    Row([
-                      Col({ col: 6 }, [
-                        "name:",
-                        View({ tag: "span", $text: "field.name" }),
-                      ]),
-                      Col({ col: 6 }, [
-                        "type:",
-                        View({ tag: "span", $text: "field.type" }),
-                      ]),
-                      Col({ col: 6 }, [
-                        "default_active:",
-                        View({ tag: "span", $text: "field.default_active" }),
-                      ]),
-                      Col({ col: 6 }, [
-                        "default_value:",
-                        View({ tag: "span", $text: "field.default_value" }),
-                      ]),
-                      Col({ col: 6 }, [
-                        "required:",
-                        View({ tag: "span", $text: "field.required" }),
-                      ]),
-                    ]),
+                },
+                Row([
+                  Input({
+                    $disabled: `!field.default_active`,
+
+                    col: 12,
+                    name: "field.default_value",
+                  }),
+                ])
+              ),
+
+              FormField({ $if: "false", label: "Summary" }, [
+                Row([
+                  Col({ col: 6 }, [
+                    "name:",
+                    View({ tag: "span", $text: "field.name" }),
                   ]),
-  
-                  Col({ ms: "auto" }, [
-                    View({ d: "flex", gap: "xs" }, [
-                      Button(
-                        {
-                          size: "sm",
-                          color: "error",
-                          onClick: 'if(field.new) {fields = fields.filter((x, i) => i !== index)} else {field.removed = true}'
-                        },
-                        "Remove"
-                      ),
-                      Button({ size: "sm", color: "primary" }, "Save"),
-                    ]),
+                  Col({ col: 6 }, [
+                    "type:",
+                    View({ tag: "span", $text: "field.type" }),
+                  ]),
+                  Col({ col: 6 }, [
+                    "default_active:",
+                    View({ tag: "span", $text: "field.default_active" }),
+                  ]),
+                  Col({ col: 6 }, [
+                    "default_value:",
+                    View({ tag: "span", $text: "field.default_value" }),
+                  ]),
+                  Col({ col: 6 }, [
+                    "required:",
+                    View({ tag: "span", $text: "field.required" }),
                   ]),
                 ]),
-              }),
+              ]),
+
+              Col({ $if: 'false', ms: "auto" }, [
+                View({ d: "flex", gap: "xs" }, [
+                  Button(
+                    {
+                      size: "sm",
+                      color: "error",
+                      onClick: "fields = fields.splice(index, 1)",
+                    },
+                    "Remove"
+                  ),
+                ]),
+              ]),
             ]),
-          ]),
-          Button({ onClick: addField, mt: "xs" }, "Add Field"),
+          }),
         ]),
-  
-        Col({ col: 12 }, [
-          ButtonGroup({ ms: "auto", justify: "end" }, [
-            Button({ type: "button", href: `/data/${value.slug ?? ""}` }, [
-              "Cancel",
-            ]),
-            Button({ color: "primary", onClick: onSumbit }, [
-              Icon({ name: "plus" }),
-              submitText,
-            ]),
-          ]),
-        ]),
-      ]
-    );
-  }
-  
+      ]),
+      Row({justify: 'end', mt: "xs"}, [
+        Input({name: 'new_name', placeholder: 'name of new field (name, username, ...)', col: true}),
+        Col({}, [
+          Button({ onClick: addField }, "Add Field"),
+
+        ])
+      ])
+    ]),
+
+    // Col({ col: 12 }, [
+    //   ButtonGroup({ ms: "auto", justify: "end" }, [
+    //     Button({ type: "button", href: `/data/${value.slug ?? ""}` }, [
+    //       "Cancel",
+    //     ]),
+    //     Button({ color: "primary", onClick: onSumbit }, [
+    //       Icon({ name: "plus" }),
+    //       submitText,
+    //     ]),
+    //   ]),
+    // ]),
+  ];
+  // );
+}

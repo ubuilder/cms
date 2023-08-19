@@ -8,20 +8,6 @@ export function load() {
   };
 }
 
-export async function create({ ctx, body }) {
-  await createTable(ctx, body);
-
-  return {
-    status: 201,
-    body: {
-      message: {
-        type: "success",
-        content: "Table Successfully created!",
-      },
-      result: true,
-    },
-  };
-}
 
 export default (props) => {
   return Page({ title: props.title }, [TableEditor({ action: "create" })]);

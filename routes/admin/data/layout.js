@@ -60,5 +60,6 @@ export default (props, $slots) => {
     ),
   ];
 
-  return WithSidebar({ mode, sidebarItems }, $slots);
+  // return WithSidebar({ mode, sidebarItems }, $slots);
+  return $slots
 };

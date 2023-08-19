@@ -1,4 +1,13 @@
-import { Input, Textarea, CodeEditor, Button, View, Col, Select } from "@ulibs/ui";
+import {
+  Input,
+  Textarea,
+  CodeEditor,
+  Button,
+  View,
+  Col,
+  Select,
+  RadioGroup,
+} from "@ulibs/ui";
 import { createModal } from "../../../components/createModal.js";
 import { navigate, reload, runAction } from "../../../utils/ui.js";
 
@@ -12,6 +21,8 @@ export function PageModal({
     title: "",
     slug: "",
     head: "",
+    param: '',
+    type: "static",
     theme: "bootstrap",
     description: "",
     is_template: false,
@@ -31,16 +42,44 @@ export function PageModal({
         name: "title",
         placeholder: "Enter title of page",
       }),
+      (mode === "add" && [
+        RadioGroup({
+          label: "Type",
+          key: "key",
+          text: "text",
+          items: [
+            { key: "static", text: "Static (single page)" },
+            { key: "dynamic", text: "Dynamic (multiple pages)" },
+          ],
+          name: "type",
+        }),
+        Input({
+          $if: 'type==="dynamic"',
+          label: "Name of Dynamic parameter (slug, id, ...)",
+          name: "param",
+        }),
+      ]) ||
+        "",
       Input({
         if: "!is_template",
         label: "Slug",
         name: "slug",
-        placeholder: "Enter url part of page /about-us, /blogs/{slug}, ...",
+        $placeholder:
+          "type === 'dynamic' ? ( 'Enter url of page /product/{' + param + '}, /blogs/{' + param + '}, ...'): 'Enter url of page /about-us, /pricing, ...'",
       }),
       Textarea({ name: "description", label: "Description" }),
 
       (mode === "add" && [
-        Select({label: 'Theme', key: 'key', text: 'text', items: [{key: 'ulibs', text: "ULibs"}, {key: 'bootstrap', text: 'Bootstrap 5'}], name: 'theme'})
+        Select({
+          label: "Theme",
+          key: "key",
+          text: "text",
+          items: [
+            { key: "ulibs", text: "ULibs" },
+            { key: "bootstrap", text: "Bootstrap 5" },
+          ],
+          name: "theme",
+        }),
       ]) ||
         "",
       (mode === "edit" && [
@@ -87,11 +126,10 @@ export function AddPageModal({ ...props }) {
     size: "xs",
     onAdd: runAction(
       "add",
-      "{title, slug, description, theme, is_template}",
+      "{title, type, slug, description, theme, is_template}",
       navigate("'/admin/pages/' + res.id")
     ),
     ...props,
-
   });
 }
 
@@ -105,6 +143,6 @@ export function EditPageModal({ value, ...props }) {
       "update_page",
       `{id ,title, slug, description, head, is_template: false}`
     ),
-    value
+    value,
   });
 }

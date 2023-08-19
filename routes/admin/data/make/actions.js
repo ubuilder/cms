@@ -17,9 +17,9 @@ export async function updateTable(ctx, body) {
     icon: body.icon,
     fields: body.fields
   };
-  const table = await ctx.Tables.get({where: {id}})
+  // const table = await ctx.table('tables').get({where: {id}})
 
-  await ctx.Tables.update(id, payload);
+  await ctx.table('tables').update(id, payload);
 
   // await syncTableFields(ctx, { fields: body.fields, table_id: id, table_name: table.slug });
 }
@@ -27,7 +27,7 @@ export async function updateTable(ctx, body) {
 export async function removeTable(ctx, body) {
   const id = body.id;
 
-  const table = await ctx.Tables.remove(id)
+  const table = await ctx.table('tables').remove(id)
 
   return success({message: 'table deleted'});
 }
@@ -40,7 +40,7 @@ export async function createTable(ctx, body) {
     fields: body.fields
   };
 
-  const result = await ctx.Tables.insert(newTable);
+  const result = await ctx.table('tables').insert(newTable);
   const table_id = result[0];
 
   // await createTable(newTable.slug, {});
