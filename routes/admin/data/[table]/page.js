@@ -1,10 +1,48 @@
-import { Button, Card, CardBody, CardFooter, Icon, Input, Modal, Row, Select, TableActions, Tooltip, View } from "@ulibs/ui";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  Icon,
+  Input,
+  Modal,
+  Row,
+  Select,
+  TableActions,
+  Tooltip,
+  View,
+} from "@ulibs/ui";
 import { PageHeader } from "../../../../components/PageHeader.js";
-import { insertData, removeData, updateData } from "../make/actions.js";
+// import { insertData, removeData, updateData } from "../make/actions.js";
 import { DataTable } from "../../../../components/DataTable.js";
 
+
+export async function insertData(ctx, body) {
+//   const {table, data} = body
+
+//   const [id] = await ctx.table(table).insert(data);
+
+//   return success({data: id})
+}
+
+export async function updateData(ctx, body) {
+//   const {id, table, data} = body
+
+//   const result = await ctx.table(table).update(id, data)
+
+//   return success({data: result}) 
+}
+
+export async function removeData(ctx, body) {
+//   const {table, id} = body
+
+//   await ctx.table(table).remove(id);
+
+//   return success()
+}
+
 export async function load({ ctx, locals, params }, { redirect }) {
-    console.log({locals})
+  console.log({ locals });
   const table = locals.tables?.find((x) => x.slug === params.table);
   if (!table) redirect({ path: "/admin/data" });
 
@@ -52,7 +90,7 @@ function GetFormInputs({ fields, value }) {
 
     if (field.type === "select") {
       component = Select;
-    //   TODO: Read items from fields object
+      //   TODO: Read items from fields object
       options.items = ["a", "b", "c"];
     } else if (field.type === "date") {
       // component = Datepicker
