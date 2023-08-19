@@ -8,9 +8,11 @@ export async function getDb(domain) {
 
   for(let site of sites.data) {
     if(site.domains.includes(domain)) {
-      const filename = "db/" + slugify(site.id, "-") + ".json";
+      const filename = "db/" + site.id  + ".json";
 
       const {getModel: table} = connect({filename})
+
+      await initData({table});
 
       return table;
     }
@@ -23,7 +25,7 @@ export async function getDb(domain) {
 
   const [site_id] = await Sites.insert(newSite)
 
-  const filename = "db/" + slugify(site_id, "-") + ".json";
+  const filename = "db/" + site_id + ".json";
 
   const {getModel: table} = connect({filename})
   await initData({table});

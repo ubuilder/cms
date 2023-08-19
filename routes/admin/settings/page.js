@@ -39,8 +39,10 @@ export async function save({ headers, body }) {
   };
 }
 
-export async function reset_db({ ctx }) {
-  await ctx.resetDatabase();
+export async function reset_db({ headers, ctx }) {
+  const site = await getSite(headers.host)
+
+  await ctx.resetDatabase(site.id);
   return {
     body: {
       message: "Database successfully resetted!",
@@ -76,7 +78,7 @@ export default ({ site }) => {
             Col(
               { col: 0 },
               Button(
-                { $disabled: 'window.location.host === domain', onClick: "domains.splice(index, 1);$post('?save', site).then(res => location.reload())", color: "error" },
+                { $disabled: 'window.location.host === domain', onClick: "site.domains.splice(index, 1);$post('?save', site).then(res => location.reload())", color: "error" },
                 Icon({ name: "x" })
               )
             ),
