@@ -1,12 +1,11 @@
-import { Button, ButtonGroup, Card, CardBody, CardFooter, Modal } from "@ulibs/ui";
+import { Button, ButtonGroup, Card, CardBody, CardFooter, Modal, Alert, AlertContainer } from "@ulibs/ui";
 import { TableEditor } from "../../TableEditor.js";
 import { Page } from "../../../../../components/Page.js";
 import { updateTable, removeTable } from "../../make/actions.js";
 
 export async function load({ ctx, params }) {
-  // const table = ctx.Tables.get({where: {id: params.name}});
-  console.log(params)
-  // console.log({ locals, table });
+  const table = await ctx.Tables.get({where: {slug: params.table}});
+
   return {
     title: "Edit Table",
     table,
@@ -15,7 +14,7 @@ export async function load({ ctx, params }) {
 
 export async function update({ ctx, body }) {
   await updateTable(ctx, body);
-
+  
   return {
     status: 204,
     body: {
@@ -62,6 +61,7 @@ export default (props) => {
       { color: "error", onClick: `$modal.open('remove-table')` },
       "Remove Table"
     ),
+
     Modal({ name: "remove-table" }, [
       Card({ title: "Remove Table?" }, [
         CardBody(
@@ -72,8 +72,7 @@ export default (props) => {
             Button({ onClick: `$modal.close()` }, "Cancel"),
             Button(
               {
-                // onClick: `$post('?remove', {id: '${props.table.id}'}).then(res => {$modal.close()}).then(a => location.href = 'http://localhost:3043/admin/data')`,
-                onClick: `console.log('')`,
+                onClick: `$post('?remove', {id: '${props.table.id}'}).then(res => {$modal.close()}).then(a => location.href = '/admin/data')`,
                 color: "error",
               },
               "Remove"
