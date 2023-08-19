@@ -1,7 +1,7 @@
 import { connect } from "@ulibs/db";
 import { slugify } from "./slugify.js";
 
-export const Sites = (connect({filename: "./db.json"})).getModel('sites')
+export const Sites = (connect({filename: "./db/main.json"})).getModel('sites')
 
 export async function getDb(domain) {
   const sites = await Sites.query()
