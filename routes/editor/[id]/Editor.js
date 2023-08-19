@@ -38,9 +38,9 @@ export function Editor({ page_id, html, head, instance, components, rootId }) {
       $data: `page("${rootId}")`,
       onClick: "clearSelection",
       htmlHead: [
+        head,
         View({tag: 'link', rel: 'stylesheet', href: '/res/editor/style.css'}),
         View({tag: 'script', src: '/res/editor/script.js'}),
-        head
       ]
     },
     [
