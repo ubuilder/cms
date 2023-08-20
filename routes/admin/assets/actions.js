@@ -1,7 +1,7 @@
 import { View, Icon } from "@ulibs/ui";
 import { copyFileSync, rmSync } from "fs";
 import { basename } from "path";
-import { Media, updateModal, } from "./views.js";
+import { Media, assetView ,assetModal } from "./views.js";
 
 export async function getAssets({ ctx, body }) {
   console.log("getting assets");
@@ -85,7 +85,7 @@ export async function getAsset({ ctx, body }) {
     .table("assets")
     .query({ where: { id: body.id } })
     .then((res) => res.data[0]);
-  const result = updateModal(
+  const result = assetView(
     asset,
     {
       image: View({
@@ -106,9 +106,8 @@ export async function getAsset({ ctx, body }) {
   );
 
   return {
+    status: 200,
     body: {
-      success: true,
-      asset,
       view: result.toString(),
     },
   };
@@ -132,7 +131,7 @@ export  async function upload({ctx, body, files}){
     name: file.name,
     type: file.mimetype.split("/")[0],
     url: `/assets/${type}s/${basename(file.path)}`,
-    alt: "image",
+    alt: 'this is a '+type,
     description: "this is image",
     caption: "",
     width: "",
