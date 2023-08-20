@@ -15,35 +15,18 @@ import {
 import { PageHeader } from "../../../../components/PageHeader.js";
 // import { insertData, removeData, updateData } from "../make/actions.js";
 import { DataTable } from "../../../../components/DataTable.js";
+import { slugify } from "../../../../utils/slugify.js";
+import { Page } from "../../../../components/Page.js";
 
+export * from "./actions.js";
 
-export async function insertData(ctx, body) {
-//   const {table, data} = body
+export async function load({ ctx, params }) {
+  const table = await ctx.table("tables").get({
+    where: {
+      slug: params.table,
+    },
+  });
 
-//   const [id] = await ctx.table(table).insert(data);
-
-//   return success({data: id})
-}
-
-export async function updateData(ctx, body) {
-//   const {id, table, data} = body
-
-//   const result = await ctx.table(table).update(id, data)
-
-//   return success({data: result}) 
-}
-
-export async function removeData(ctx, body) {
-//   const {table, id} = body
-
-//   await ctx.table(table).remove(id);
-
-//   return success()
-}
-
-export async function load({ ctx, locals, params }, { redirect }) {
-  console.log({ locals });
-  const table = locals.tables?.find((x) => x.slug === params.table);
   if (!table) redirect({ path: "/admin/data" });
 
   const rows = await ctx
@@ -56,30 +39,11 @@ export async function load({ ctx, locals, params }, { redirect }) {
   return {
     title: table.name,
     fields: table.fields,
-    table: table ?? {},
+    table,
     rows,
   };
 }
 
-export async function insert({ ctx, params, body }) {
-  return await insertData(ctx, {
-    table: params.table,
-    data: body.data,
-  });
-}
-export async function remove({ ctx, params, body }) {
-  return await removeData(ctx, {
-    table: params.table,
-    id: body.id,
-  });
-}
-export async function update({ ctx, params, body }) {
-  return await updateData(ctx, {
-    id: body.id,
-    table: params.table,
-    data: body.data,
-  });
-}
 function GetFormInputs({ fields, value }) {
   console.log({ value });
   return fields.map((field) => {
@@ -107,47 +71,45 @@ function GetFormInputs({ fields, value }) {
 }
 
 export default ({ table, rows, params, title }) => {
-  if (!table) return "";
-
-  console.log({ rows });
-
   const data = { data: {}, table: table.slug };
 
   table.fields.map((field) => {
+    field.slug = slugify(field.name);
     data.data[field.slug] = field.default ?? "";
   });
 
-  const onInsert = `$post('?insert', {data}).then(res => {$modal.close(); $alert.success(res.message);navigation.reload()})`;
+  const onInsert = `$post('?insert_data', {data}).then(res => {$modal.close(); $alert.success(res.message);navigation.reload()})`;
 
   function onUpdate(id) {
-    return `$post('?update', {id: '${id}', data}).then(res => {$modal.close(); $alert.success(res.message);navigation.reload()})`;
+    return `$post('?update_data', {id: '${id}', data}).then(res => {$modal.close(); $alert.success(res.message);navigation.reload()})`;
   }
   function onRemove(id) {
-    return `$post('?remove', {id: '${id}'}).then(res => {$modal.close(); $alert.success(res.message);navigation.reload()})`;
+    return `$post('?remove_data', {id: '${id}'}).then(res => {$modal.close(); $alert.success(res.message);navigation.reload()})`;
   }
 
-  return [
-    PageHeader(
-      {
-        title: View({ d: "flex", gap: "xs", align: "center" }, [
-          Icon({ name: table.icon, size: "xl" }),
-          View({ tag: "h2" }, title),
-        ]),
-      },
-      [
-        Button({ href: `/data/${table.slug}/edit`, link: true }, [
-          Icon({ name: "settings" }),
-          Tooltip({ placement: "left" }, "Table Settings"),
+  function Title() {
+    return View({ d: "flex", gap: "xs", align: "center" }, [
+      Icon({ name: table.icon, size: "xl" }),
+      View({ tag: "h2" }, title),
+    ]);
+  }
+
+  return Page(
+    {
+      title: Title(),
+      actions: [
+        Button({ href: `/admin/data` }, [
+          Icon({name: 'chevron-left'}),
+          "Back"
         ]),
         Button({ color: "primary", onClick: "$modal.open('insert-data')" }, [
           Icon({ name: "plus" }),
           "Insert",
         ]),
-      ]
-    ),
-    Card(
-      { border: true, style: "--view-border-color: var(--color-base-400)" },
-      [
+      ],
+    },
+    [
+      Card({ border: true, borderColor: "base-400" }, [
         DataTable({
           columns: [
             ...table.fields.map((field) => ({
@@ -161,12 +123,16 @@ export default ({ table, rows, params, title }) => {
               render: (item) =>
                 TableActions([
                   Button(
-                    { href: `/data/${table.slug}/${item.id}` },
+                    {
+                      onClick: `$modal.open('preview-data-${item.id}')`,
+                      size: 'sm',
+                    },
                     Icon({ name: "eye" })
                   ),
                   Button(
                     {
                       onClick: `$modal.open('update-data-${item.id}')`,
+                      size: 'sm',
                       color: "info",
                     },
                     Icon({ name: "pencil" })
@@ -174,6 +140,7 @@ export default ({ table, rows, params, title }) => {
                   Button(
                     {
                       onClick: `$modal.open('remove-data-${item.id}')`,
+                      size: 'sm',
                       color: "error",
                     },
                     Icon({ name: "trash" })
@@ -183,44 +150,9 @@ export default ({ table, rows, params, title }) => {
           ],
           rows: rows,
         }),
-      ]
-    ),
-    Modal({ size: "xs", name: "insert-data" }, [
-      Card({ title: "Insert Item", $data: data }, [
-        CardBody([
-          Row([
-            GetFormInputs({ fields: table.fields }), // filter based on insert/update visibility
-          ]),
-        ]),
-
-        CardFooter({ justify: "end" }, [
-          View({ d: "flex", gap: "xs" }, [
-            Button({ onClick: "$modal.close()" }, "Cancel"),
-            Button({ onClick: onInsert, color: "primary" }, [
-              Icon({ name: "plus" }),
-              "Insert",
-            ]),
-          ]),
-        ]),
       ]),
-    ]),
-    rows.map((row) =>
-      Modal({ size: "xs", name: "remove-data-" + row.id }, [
-        Card({ title: "Remove Item", $data: data }, [
-          CardBody([Row(["Are you sure to remove this Item?"])]),
-
-          CardFooter({ justify: "end" }, [
-            View({ d: "flex", gap: "xs" }, [
-              Button({ onClick: "$modal.close()" }, "Cancel"),
-              Button({ onClick: onRemove(row.id), color: "error" }, ["Remove"]),
-            ]),
-          ]),
-        ]),
-      ])
-    ),
-    rows.map((row) =>
-      Modal({ size: "xs", name: "update-data-" + row.id }, [
-        Card({ title: "Update Item", $data: { data: row } }, [
+      Modal({ size: "xs", name: "insert-data" }, [
+        Card({ title: "Insert Item", $data: data }, [
           CardBody([
             Row([
               GetFormInputs({ fields: table.fields }), // filter based on insert/update visibility
@@ -230,13 +162,64 @@ export default ({ table, rows, params, title }) => {
           CardFooter({ justify: "end" }, [
             View({ d: "flex", gap: "xs" }, [
               Button({ onClick: "$modal.close()" }, "Cancel"),
-              Button({ onClick: onUpdate(row.id), color: "primary" }, [
-                "Update",
+              Button({ onClick: onInsert, color: "primary" }, [
+                Icon({ name: "plus" }),
+                "Insert",
               ]),
             ]),
           ]),
         ]),
-      ])
-    ),
-  ];
+      ]),
+      rows.map((row) =>
+        Modal({ size: "xs", name: "remove-data-" + row.id }, [
+          Card({ title: "Remove Item", $data: data }, [
+            CardBody([Row(["Are you sure to remove this Item?"])]),
+
+            CardFooter({ justify: "end" }, [
+              View({ d: "flex", gap: "xs" }, [
+                Button({ onClick: "$modal.close()" }, "Cancel"),
+                Button({ onClick: onRemove(row.id), color: "error" }, [
+                  "Remove",
+                ]),
+              ]),
+            ]),
+          ]),
+        ])
+      ),
+      rows.map((row) =>
+        Modal({ size: "xs", name: "preview-data-" + row.id }, [
+          Card({ title: "Preview Item", $data: data }, [
+
+            CardBody([JSON.stringify(row)]),
+            
+            CardFooter({ justify: "end" }, [
+              View({ d: "flex", gap: "xs" }, [
+                Button({ onClick: "$modal.close()" }, "Close"),
+              ]),
+            ]),
+          ]),
+        ])
+      ),
+      rows.map((row) =>
+        Modal({ size: "xs", name: "update-data-" + row.id }, [
+          Card({ title: "Update Item", $data: { data: row } }, [
+            CardBody([
+              Row([
+                GetFormInputs({ fields: table.fields }), // filter based on insert/update visibility
+              ]),
+            ]),
+
+            CardFooter({ justify: "end" }, [
+              View({ d: "flex", gap: "xs" }, [
+                Button({ onClick: "$modal.close()" }, "Cancel"),
+                Button({ onClick: onUpdate(row.id), color: "primary" }, [
+                  "Update",
+                ]),
+              ]),
+            ]),
+          ]),
+        ])
+      ),
+    ]
+  );
 };
