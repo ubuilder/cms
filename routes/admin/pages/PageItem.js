@@ -8,13 +8,15 @@ export function PageItem({
     slug = "",
     description = "",
     theme = "",
+    param = '',
     head = "",
+    type = "",
     slot_id,
     is_template = false,
   } = {}) {
     return View(
       {
-        $data: { slot_id, is_template },
+        $data: { slot_id, is_template, type },
         border: true,
         borderColor: "base-400",
         bgColor: "base-200",
@@ -24,6 +26,7 @@ export function PageItem({
         View({ d: "flex", justify: "between", align: "center" }, [
           View({ d: "flex", gap: "md", align: "center" }, [
             View({ tag: "h3" }, title),
+            Badge({ $if: "type==='dynamic'", color: 'info'}, "Dynamic"),
             Badge({ $if: "is_template", color: "primary" }, "Template"),
             theme === 'bootstrap' ? Badge({ color: "warning" }, "Bootstrap") : '',
             theme === 'ulibs' ? Badge({ color: "success" }, "ULibs") : '',
@@ -68,10 +71,10 @@ export function PageItem({
             `{title, slug, head, is_template: false, slot_id}`,
             navigate("'/admin/pages/' + res.id")
           ),
-          value: { title, slug, description, head: 'head', theme },
+          value: { title, type, param, slug, description, head: 'head', theme },
         }),
   
-        EditPageModal({ id, value: {id, title, slug, description, head: 'head'} }),
+        EditPageModal({ id, value: {id, title, type, param, slug, description, head: 'head'} }),
       ]
     );
   }
