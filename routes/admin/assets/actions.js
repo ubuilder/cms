@@ -1,7 +1,7 @@
 import { View, Icon } from "@ulibs/ui";
 import { copyFileSync, rmSync } from "fs";
 import { basename } from "path";
-import { Media, assetView ,assetModal } from "./views.js";
+import { Media, assetView, assetModal } from "./views.js";
 
 export async function getAssets({ ctx, body }) {
   console.log("getting assets");
@@ -18,7 +18,7 @@ export async function getAssets({ ctx, body }) {
     { d: "flex", style: "flex-wrap: wrap" },
     assets.map((asset) => {
       return Media(
-        { id: `${asset.id}` },
+        { id: asset.id },
         {
           image: View({
             tag: "img",
@@ -113,14 +113,16 @@ export async function getAsset({ ctx, body }) {
   };
 }
 
-export  async function upload({ctx, body, files}){
-    console.log('something uploaded', files)
-  const supportedTypes = ['image', 'video', 'audio']
-  const file = files.file
-  const path = file.path.split('\\').join("/")
-  const type = file.mimetype.split('/')[0]
-  if(!supportedTypes.includes(type)){
-    throw new Error('Unsupported file format, unable to save this file type: type == '+ type)
+export async function upload({ ctx, body, files }) {
+  console.log("something uploaded", files);
+  const supportedTypes = ["image", "video", "audio"];
+  const file = files.file;
+  const path = file.path.split("\\").join("/");
+  const type = file.mimetype.split("/")[0];
+  if (!supportedTypes.includes(type)) {
+    throw new Error(
+      "Unsupported file format, unable to save this file type: type == " + type
+    );
   }
 
   //from temp folder to project folder
@@ -131,7 +133,7 @@ export  async function upload({ctx, body, files}){
     name: file.name,
     type: file.mimetype.split("/")[0],
     url: `/assets/${type}s/${basename(file.path)}`,
-    alt: 'this is a '+type,
+    alt: "this is a " + type,
     description: "this is image",
     caption: "",
     width: "",
