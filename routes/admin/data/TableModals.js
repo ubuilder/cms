@@ -7,7 +7,7 @@ import {
   Modal,
 } from "@ulibs/ui";
 import { TableEditor } from "./TableEditor.js";
-import {createModal} from '../../../components/createModal.js';
+import { createModal } from "../../../components/createModal.js";
 
 export function TableAddModal() {
   return createModal({
@@ -47,7 +47,7 @@ export function TableEditModal(table) {
     },
     body: TableEditor({}),
     actions: [
-      Button("Cancel"),
+      Button({ onClick: "$modal.close()" }, "Cancel"),
       Button(
         {
           color: "error",
