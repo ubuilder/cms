@@ -15,69 +15,86 @@ import {
 } from "@ulibs/ui";
 import { runAction } from "../../../utils/ui.js";
 
-export function updateModal(props, slots) {
-  return Modal({ name: "update-modal" }, [
-    ModalBody([
-      Row([
-        // preview
-        Col({}, slots),
-        //properties
-        Col({ $data: props }, [
-          Object.entries(props).map((prop) => {
-            if (prop[0] == "id") return "";
-            return View([
-              View(prop[0].slice(0, 1).toUpperCase() + prop[0].slice(1)),
-              View({
-                tag: "input",
-                "u-model": `${prop[0]}`,
-              }),
-            ]);
-          }),
-          Row(
-            { d: "flex", p: "xxs", style: "justify-content: space-between" },
-            [
-              //control buttons
-              Button({ color: "primary", onClick: "$modal.close()" }, "Close"),
-              Button(
-                {
-                  color: "error",
-                  onClick: `$post(window.location.origin + '/admin/assets?update', {${Object.entries(
-                    props
-                  ).map(
-                    (p) => p[0]
-                  )}}).then(res => {$modal.close();loader = !loader})`,
-                },
-                "Update"
-              ),
-            ]
+export function assetView(props, slots) {
+  return Card([
+    // CardBody([
+    Row([
+      // preview
+      Col({}, slots),
+      //properties
+      Col({ $data: props }, [
+        Object.entries(props).map((prop) => {
+          if (prop[0] == "id") return "";
+          return View([
+            View(prop[0].slice(0, 1).toUpperCase() + prop[0].slice(1)),
+            View({
+              tag: "input",
+              "u-model": `${prop[0]}`,
+            }),
+          ]);
+        }),
+        Row({ d: "flex", p: "xxs", style: "justify-content: space-between" }, [
+          //control buttons
+          Button({ color: "primary", onClick: "$modal.close()" }, "Close"),
+          Button(
+            {
+              color: "error",
+              onClick: `$post('?remove', {id: '${props.id}'}).then(res=>loader = !loader);$modal.close()`,
+            },
+            "Delete"
+          ),
+          Button(
+            {
+              color: "primary",
+              onClick: `$post('?update', {${Object.entries(props).map(
+                (p) => p[0]
+              )}}).then(res => {$modal.close();loader = !loader})`,
+            },
+            "Update"
           ),
         ]),
       ]),
     ]),
   ]);
+  // ])
 }
 
 export function Media(props, slots) {
-  if (props.mode == "select") {
-    return View(
+  const wrapper = (slots) =>
+    View(
       {
-        ...props,
-        onClick: "console.log('selected')",
-        style:
-          "position: relative;border: 1px solid var(--color-base-400);display: flex; justify-content: center; align-items: centter;cursor: pointer; overflow: hidden;width: 100px; height: 100px",
+        bgColor: "base-200",
+        borderColor: "base-400",
+        m: "xxs",
+        p: "sm",
+        borderRadius: "xxs",
       },
-      [slots]
+      slots
+    );
+  if (props.mode == "select") {
+    return wrapper(
+      View(
+        {
+          ...props,
+          onClick: "console.log('selected')",
+          style:
+            "position: relative;border: 1px solid var(--color-base-400);display: flex; justify-content: center; align-items: centter;cursor: pointer; overflow: hidden;width: 100px; height: 100px",
+        },
+        [slots]
+      )
     );
   } else {
-    return View(
-      {
-        ...props,
-        m: "sm",
-        onClick: `$modal.open('options-${props.id}')`,
-        style:
-          ";position: relative;border: 1px solid var(--color-base-400);display: flex; justify-content: center; align-items: centter;cursor: pointer; overflow: hidden;width: 100px; height: 100px",
-      },
-      [slots, assetModal(`options-${props.id}`)]
+    return wrapper(
+      View(
+        {
+          $data: { openModal: false },
+          ...props,
+          onClick: `openModal= true; $modal.open('asset-${props.id}')`,
+          style:
+            ";position: relative;border: 1px solid var(--color-base-400);display: flex; justify-content: center; align-items: centter;cursor: pointer; overflow: hidden;width: 100px; height: 100px",
+        },
+        [slots, assetModal(props.id)]
+      )
     );
   }
 }
@@ -151,34 +168,18 @@ export function assetsSection() {
   return View({ $html: "view" });
 }
 
-export function assetModal(name) {
-  return Modal({ name }, [
-    ModalBody([
-      Card({ title: "asset options", style: "color: var(--color-base-800)" }, [
-        CardBody([
-          Button({ color: "primary", onClick: "$modal.close()" }, "Close"),
-          Button(
-            {
-              color: "error",
-              onClick: `$post(window.location.origin+ '/admin/assets?remove', {id: '${
-                name.split("options-")[1]
-              }'}).then(res => loader = !loader)`,
-            },
-            "Delete"
-          ),
-          Button(
-            {
-              color: "primary",
-              onClick: `$post(window.location.origin+ '/admin/assets?getAsset', {id: '${
-                name.split("options-")[1]
-              }'}).then(res => {$modal.close(); view += res.view ; setTimeout(()=>$modal.open('update-modal'), 10)})`,
-            },
-            "Update"
-          ),
-        ]),
-      ]),
-    ]),
-  ]);
+export function assetModal(id) {
+  return Modal(
+    {
+      name: `asset-${id}`,
+      $data: {
+        view: "",
+      },
+      $effect: `openModal && $post(window.location.origin+ '/admin/assets?getAsset', {id: '${id}' }).then(res => view =res.view )`,
+      style: "z-index: 10",
+    },
+    [ModalBody({ $html: "view" })]
+  );
 }
 
 export function selectAssetModal() {
