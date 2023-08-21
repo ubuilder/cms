@@ -17,6 +17,12 @@ export default (props, slots) => {
       href: "/admin/settings/translations",
       mode,
     }),
+    SidebarItem({
+      icon: "file",
+      title: "Pages",
+      href: "/admin/settings/pages",
+      mode,
+    }),
   ];
 
   return WithSidebar({ mode, sidebarItems }, slots);
