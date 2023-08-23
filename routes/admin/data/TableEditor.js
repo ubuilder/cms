@@ -62,7 +62,7 @@ export function TableEditor({
       label: "Name:",
     }),
 
-    FormField({ label: "Fields", $data: {new_name: ''} }, [
+    FormField({ label: "Fields", $data: { new_name: "" } }, [
       Accordions({ $if: "fields.length > 0", style: "border: none" }, [
         Card({ mt: "xxs", $for: "(field, index) in fields" }, [
           Accordion({
@@ -80,7 +80,8 @@ export function TableEditor({
                   },
                   [
                     Badge(
-                      {tabindex: '0', 
+                      {
+                        tabindex: "0",
                         onClick: "field.required = false",
                         color: "error",
                         $show: `field.required`,
@@ -89,7 +90,7 @@ export function TableEditor({
                     ),
                     Badge(
                       {
-                        tabindex: '0', 
+                        tabindex: "0",
                         onClick: "field.required = true",
                         color: "info",
                         $show: `!field.required`,
@@ -104,7 +105,7 @@ export function TableEditor({
                   onClick: "$event.stopPropagation();",
                 },
                 View(
-                  { tabindex: '0', onClick: "fields.splice(index, 1)" },
+                  { tabindex: "0", onClick: "fields.splice(index, 1)" },
                   Icon({ name: "trash" })
                 )
               ),
@@ -132,9 +133,16 @@ export function TableEditor({
                   { key: "select", text: "Select" },
                 ],
               }),
+              Input({
+                name: "field.select",
+                $show: `field.type == 'select'`,
+                col: 12,
+                label: "Select Values",
+                placeholder: "seperate with comma i.e: active,inactive"
+              }),
               Input({ col: 12, label: "Hint" }),
               Switch({
-                $if: 'false',
+                $if: "false",
                 colSm: 6,
                 name: "field.required",
                 label: "Required?",
@@ -191,7 +199,7 @@ export function TableEditor({
                 ]),
               ]),
 
-              Col({ $if: 'false', ms: "auto" }, [
+              Col({ $if: "false", ms: "auto" }, [
                 View({ d: "flex", gap: "xs" }, [
                   Button(
                     {
@@ -207,12 +215,14 @@ export function TableEditor({
           }),
         ]),
       ]),
-      Row({justify: 'end', mt: "xs"}, [
-        Input({name: 'new_name', placeholder: 'name of new field (name, username, ...)', col: true}),
-        Col({}, [
-          Button({ onClick: addField }, "Add Field"),
-        ])
-      ])
+      Row({ justify: "end", mt: "xs" }, [
+        Input({
+          name: "new_name",
+          placeholder: "name of new field (name, username, ...)",
+          col: true,
+        }),
+        Col({}, [Button({ onClick: addField }, "Add Field")]),
+      ]),
     ]),
 
     // Col({ col: 12 }, [

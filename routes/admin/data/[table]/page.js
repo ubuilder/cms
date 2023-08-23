@@ -3,11 +3,14 @@ import {
   Card,
   CardBody,
   CardFooter,
+  DatePicker,
   Icon,
   Input,
   Modal,
   Row,
   Select,
+  Switch,
+  TextEditor,
   TableActions,
   Tooltip,
   View,
@@ -54,11 +57,14 @@ function GetFormInputs({ fields, value }) {
 
     if (field.type === "select") {
       component = Select;
-      //   TODO: Read items from fields object
-      options.items = ["a", "b", "c"];
-    } else if (field.type === "date") {
-      // component = Datepicker
-      options.type = "date";
+      options.items = field.select.split(",");
+
+    } else if (field.type === "date_time") {
+      component = DatePicker
+    } else if (field.type === 'switch'){
+      component = Switch
+    } else if(field.type === 'rich_text'){
+      component = TextEditor
     }
 
     return component({
@@ -72,6 +78,15 @@ function GetFormInputs({ fields, value }) {
 
 export default ({ table, rows, params, title }) => {
   const data = { data: {}, table: table.slug };
+
+  //change booleans to string and short long fields
+  let modifiedRows = rows.map(obj => {
+    let newObj = {};
+    for (let prop in obj) {
+      newObj[prop] = typeof obj[prop] === 'boolean' ? obj[prop].toString() : obj[prop];
+    }
+    return newObj;
+  });
 
   table.fields.map((field) => {
     field.slug = slugify(field.name);
@@ -148,7 +163,7 @@ export default ({ table, rows, params, title }) => {
                 ]),
             },
           ],
-          rows: rows,
+          rows: modifiedRows,
         }),
       ]),
       Modal({ size: "xs", name: "insert-data" }, [
