@@ -12,6 +12,8 @@ import {
   Modal,
   Card,
   ModalBody,
+  Popover,
+  Select,
 } from "@ulibs/ui";
 import { runAction } from "../../../utils/ui.js";
 
@@ -60,17 +62,6 @@ export function assetView(props, slots) {
 }
 
 export function Media(props, slots) {
-  const wrapper = (slots) =>
-    View(
-      {
-        bgColor: "base-200",
-        borderColor: "base-400",
-        m: "xxs",
-        p: "sm",
-        borderRadius: "xxs",
-      },
-      slots
-    );
   if (props.mode == "select") {
     return wrapper(
       View(
@@ -112,8 +103,8 @@ export default function () {
 export function fileUpload(callback) {
   return Button(
     {
-      style:
-        "position: relative;background: var(--color-base-200); color: var(--color-base-800)",
+      color: "primary",
+      style: "position: relative;",
     },
     [
       Icon({ name: "upload" }),
@@ -125,62 +116,12 @@ export function fileUpload(callback) {
         name: "file",
         "u-input": true,
         type: "file",
-        onChange: `$upload(()=> ${callback()})`,
+        onChange: `$upload(()=> reload())`,
       }),
-      Tooltip({ placement: "right" }, "Upload A File"),
     ]
   );
 }
 
-export function typeSelect({
-  onChange = (type) => {
-    console.log("no call back for this type: " + type);
-  },
-  types = ["all", "image", "video", "audio"],
-}) {
-  return Dropdown({ style: " display: flex" }, [
-    Button({
-      style: "width: 100%",
-      $text: "type.charAt(0).toUpperCase()+ type.slice(1)",
-    }),
-    Tooltip({ placement: "right" }, "Choose A Type"),
-    DropdownPanel(
-      types.map((type) =>
-        DropdownItem(
-          { onClick: onChange(type) },
-          type.charAt(0).toUpperCase() + type.slice(1)
-        )
-      )
-    ),
-  ]);
-}
-
-export function headSection() {
-  return Row({}, [
-    Col({ col: 8, px: "sm", pe: 0 }, [
-      typeSelect({ onChange: (selectedType) => `type = '${selectedType}'` }),
-    ]),
-    Col({ col: 4, px: "sm" }, [fileUpload(() => "(loader = !loader)")]),
-  ]);
-}
-
-export function assetsSection() {
-  return View({ $html: "view" });
-}
-
-export function assetModal(id) {
-  return Modal(
-    {
-      name: `asset-${id}`,
-      $data: {
-        view: "",
-      },
-      $effect: `openModal && $post(window.location.origin+ '/admin/assets?getAsset', {id: '${id}' }).then(res => view =res.view )`,
-      style: "z-index: 10",
-    },
-    [ModalBody({ $html: "view" })]
-  );
-}
 
 export function selectAssetModal() {
   return Modal(

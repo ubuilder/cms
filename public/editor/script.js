@@ -50,7 +50,7 @@ window.addEventListener("alpine:init", (e) => {
         };
       },
       onCreateComponent({instance_id, parent_id, name}) {
-        this.$post("/editor?create_component", {instance_id, parent_id, name}).then(res => location.reload())
+        this.$post("/editor?create_component", {instance_id, parent_id, name}).then(res => this.$page.reload())
       },
       openCreateComponentModal(instance_id, parent_id) {
         this.parent_id = parent_id ?? "";
@@ -81,7 +81,7 @@ window.addEventListener("alpine:init", (e) => {
           placement: placement || this.placement,
           position: position || this.position,
           parent_id: parent_id || this.parent_id || current_id,
-        }).then(res => location.reload());
+        }).then(res => this.$page.reload());
       },
       onRemoveInstance({ instance_id }) {
         return this.$post("/editor?remove_instance", { instance_id });
@@ -108,7 +108,7 @@ window.addEventListener("alpine:init", (e) => {
       },
       closeComponentModal() {
         this.$modal.close()
-        location.reload()
+        this.$page.reload()
       },
       onClickPlaceholder($event, instance_id) {
         $event.stopPropagation();

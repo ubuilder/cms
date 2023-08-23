@@ -26,7 +26,7 @@ export function TableAddModal() {
       Button(
         {
           onClick:
-            '$post("?create_table", {id, name: table_name, icon, fields}).then(res => location.reload())',
+            '$post("?create_table", {id, name: table_name, icon, fields}).then(res => $page.reload())',
           color: "primary",
         },
         "Create"
@@ -58,7 +58,7 @@ export function TableEditModal(table) {
       Button(
         {
           color: "primary",
-          onClick: `$post("?update_table", {id, icon, name: table_name, fields }).then(res => location.reload())`,
+          onClick: `$post("?update_table", {id, icon, name: table_name, fields }).then(res => $page.reload())`,
         },
         "Save"
       ),
@@ -77,7 +77,7 @@ export function TableRemoveModal(table) {
           Button({ onClick: `$modal.close()` }, "Cancel"),
           Button(
             {
-              onClick: `$post('?remove_table', {id: '${table.id}'}).then(res => location.reload())`,
+              onClick: `$post('?remove_table', {id: '${table.id}'}).then(res => $page.reload())`,
               color: "error",
             },
             "Remove"

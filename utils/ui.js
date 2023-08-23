@@ -1,6 +1,6 @@
 export function reload() {
   // return '$routing.reload()'
-  return "navigation.reload()";
+  return "$page.reload()";
 }
 
 export function navigate(href) {

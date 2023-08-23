@@ -3,7 +3,7 @@ import { sep } from "path";
 import { existsSync } from "fs";
 import { readFile } from "fs/promises";
 import { View } from "@ulibs/ui";
-import { getDb  } from "./models.js";
+import { getDb } from "./models.js";
 
 export async function fileBasedRouting({
   path,
@@ -45,16 +45,29 @@ export async function fileBasedRouting({
 
     if (load) {
       result.load = async function (req, ...args) {
-        ctx.table = await getDb(req.headers.host)
+        ctx.table = await getDb(req.headers.host);
 
-        return await load({ ctx, ...req }, ...args);
+    
+        const query = {}
+
+        for(let queryItem in req.query) {
+          if(req.query[queryItem] !== '') {
+            if(queryItem === 'filters' && typeof req.query.filters === 'string') {
+              query[queryItem] = JSON.parse(req.query.filters)
+            } else {
+              query[queryItem] = req.query[queryItem]
+            }
+          }
+        }
+        
+        return await load({ ctx, ...req, query }, ...args);
       };
     }
 
     result.actions = {};
     for (let action in actions) {
       result.actions[action] = async function (req, ...args) {
-        ctx.table = await getDb(req.headers.host)
+        ctx.table = await getDb(req.headers.host);
 
         return await actions[action]({ ctx, ...req }, ...args);
       };
@@ -81,7 +94,7 @@ export async function fileBasedRouting({
           if (typeof page !== "function") return page;
 
           const content = page(props);
-        
+
           if (typeof content === "string") {
             return content;
           }
@@ -91,16 +104,27 @@ export async function fileBasedRouting({
           return View(
             {
               d: "contents",
-              htmlHead: [result.style ? `<style>${result.style}</style>` : ""],
+              htmlHead: [
+                result.style ? `<style>${result.style}</style>` : "",
+                result.script ? `<script>${result.script}</script>` : "",
+              ],
             },
-            [
-              content,
-              result.script ? `<script>${result.script}</script>` : "",
-              result.style
-                ? View({ htmlHead: [`<style>${result.style}</style>`] })
-                : "",
-            ]
+            content
           );
+        };
+
+        result.actions.partial = async (req) => {
+          console.log("partial action running...");
+          const props = await result.load({...req, query: req.body}) ?? {};
+          console.log(props)
+          const html = typeof page === 'string' ? page : page(props).toString();
+
+          return {
+            body: {
+              // props,
+              html
+            },
+          };
         };
       }
     } else {
@@ -118,6 +142,7 @@ export async function fileBasedRouting({
       const slug = getSlug(file);
 
       if (type === "page") {
+        console.log(slug, { actions });
         addPage(slug, { actions, load, page });
       } else {
         addLayout(slug, { actions, load, component: page });

@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@alpinejs/morph": "^3.12.3",
     "@tabler/icons": "^2.30.0",
     "@ulibs/db": "^1.0.1-next.35",
     "@ulibs/router": "0.0.30",

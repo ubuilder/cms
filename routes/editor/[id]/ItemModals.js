@@ -179,7 +179,7 @@ export function ComponentRemoveModal({ id }) {
       Button({ onClick: closeModal() }, "Cancel"),
       Button(
         {
-          onClick: `onRemoveInstance({instance_id: '${id}'}).then(res => location.reload())`,
+          onClick: `onRemoveInstance({instance_id: '${id}'}).then(res => $page.reload())`,
           color: "error",
         },
         "Remove"
@@ -217,7 +217,7 @@ export function ItemModal({ item = { props: {}, component: {} } }) {
       id: item.id,
       props,
       component: item.component,
-      onSubmit: `onUpdateInstance({instance_id: '${item.id}', props}).then(res => location.reload())`,
+      onSubmit: `onUpdateInstance({instance_id: '${item.id}', props}).then(res => $page.reload())`,
     }),
     ConvertToComponentModal({ name: item.component.name, instance_id: item.id }),
   ];

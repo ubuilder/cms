@@ -74,7 +74,7 @@ export default ({ pages, default_page_id }) => {
           text: "title",
           name: "default_page_id",
         }),
-        Col({col: 0}, [Button({ onClick: '$post("?save", {default_page_id}).then(res => location.reload())', color: "primary" }, "Save")]),
+        Col({col: 0}, [Button({ onClick: '$post("?save", {default_page_id}).then(res => $page.reload())', color: "primary" }, "Save")]),
       ]),
     ]
   );

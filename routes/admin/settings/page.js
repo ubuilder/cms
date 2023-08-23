@@ -78,7 +78,7 @@ export default ({ site }) => {
             Col(
               { col: 0 },
               Button(
-                { $disabled: 'window.location.host === domain', onClick: "site.domains.splice(index, 1);$post('?save', site).then(res => location.reload())", color: "error" },
+                { $disabled: 'window.location.host === domain', onClick: "site.domains.splice(index, 1);$post('?save', site).then(res => $page.reload())", color: "error" },
                 Icon({ name: "x" })
               )
             ),
@@ -95,7 +95,7 @@ export default ({ site }) => {
               Button(
                 {
                   onClick:
-                    "site.domains = [...site.domains, new_name]; $post('?save', site).then(res => location.reload())",
+                    "site.domains = [...site.domains, new_name]; $post('?save', site).then(res => $page.reload())",
                 },
                 [Icon({ name: "plus" }), "Add Domain"]
               )

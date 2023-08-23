@@ -78,13 +78,13 @@ export default ({ table, rows, params, title }) => {
     data.data[field.slug] = field.default ?? "";
   });
 
-  const onInsert = `$post('?insert_data', {data}).then(res => {$modal.close(); $alert.success(res.message);navigation.reload()})`;
+  const onInsert = `$post('?insert_data', {data}).then(res => {$modal.close(); $alert.success(res.message);$page.reload()})`;
 
   function onUpdate(id) {
-    return `$post('?update_data', {id: '${id}', data}).then(res => {$modal.close(); $alert.success(res.message);navigation.reload()})`;
+    return `$post('?update_data', {id: '${id}', data}).then(res => {$modal.close(); $alert.success(res.message);$page.reload()})`;
   }
   function onRemove(id) {
-    return `$post('?remove_data', {id: '${id}'}).then(res => {$modal.close(); $alert.success(res.message);navigation.reload()})`;
+    return `$post('?remove_data', {id: '${id}'}).then(res => {$modal.close(); $alert.success(res.message);$page.reload()})`;
   }
 
   function Title() {

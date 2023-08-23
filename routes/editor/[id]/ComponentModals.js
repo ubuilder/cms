@@ -53,7 +53,7 @@ export function ComponentAddModal({ components }) {
             $if: "clipboard && clipboard.mode === 'cut'",
             color: "primary",
             $disabled: "loading",
-            onClick: `onAddInstance({instance_id: clipboard.instance_id}).then(res => onRemoveInstance({instance_id: clipboard.instance_id})).then(res => location.reload())`,
+            onClick: `onAddInstance({instance_id: clipboard.instance_id}).then(res => onRemoveInstance({instance_id: clipboard.instance_id})).then(res => $page.reload())`,
           },
           "Paste"
         ),
@@ -63,7 +63,7 @@ export function ComponentAddModal({ components }) {
             $if: "clipboard && clipboard.mode === 'copy'",
             color: 'primary',
             $disabled: 'loading',
-            onClick: `onAddInstance({instance_id: clipboard.instance_id}).then(res => location.reload())`,
+            onClick: `onAddInstance({instance_id: clipboard.instance_id}).then(res => $page.reload())`,
           },
           "Paste"
         ),
@@ -114,7 +114,7 @@ export function AddComponentSettings({ component }) {
     name: `add-component-${component.id}-settings`,
     mode: "add",
     title: "Component Settings",
-    onAdd: `onAddInstance({ component_id: "${component.id}", props}).then(res => location.reload())`,
+    onAdd: `onAddInstance({ component_id: "${component.id}", props}).then(res => $page.reload())`,
     body: ComponentEditForm({ onSubmit: "" }),
   })];
 }
