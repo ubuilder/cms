@@ -25,7 +25,7 @@ export function TableEditor({
   const addField =
     "fields.push({\
         name: new_name,\
-        type: 'text',\
+        type: 'plain_text',\
         hint: '',\
         default_value: '',\
         new: true,\
@@ -117,9 +117,20 @@ export function TableEditor({
               }),
               Select({
                 name: "field.type",
+                key: "key",
+                text: "text",
                 colSm: 6,
                 label: "Type",
-                items: ["text", "number", "date", "image", "reference"],
+                items: [
+                  { key: "plain_text", text: "Plain Text" },
+                  { key: "rich_text", text: "Rich Text" },
+                  { key: "number", text: "Number" },
+                  { key: "file", text: "File" },
+                  { key: "date_time", text: "Date & Time" },
+                  { key: "relation", text: "Relation" },
+                  { key: "switch", text: "Switch" },
+                  { key: "select", text: "Select" },
+                ],
               }),
               Input({ col: 12, label: "Hint" }),
               Switch({
@@ -128,33 +139,32 @@ export function TableEditor({
                 name: "field.required",
                 label: "Required?",
               }),
-              FormField(
-                {
-                  colSm: 6,
-                  label: View(
-                    { d: "flex", align: "center", justify: "between" },
-                    [
-                      "Default Value",
-                      Switch({
-                        name: "field.default_active",
-                        col: 0,
-                        d: "flex",
-                        mb: 0,
-                        p: 0,
-                        justify: "end",
-                      }),
-                    ]
-                  ),
-                },
-                Row([
-                  Input({
-                    $disabled: `!field.default_active`,
-
-                    col: 12,
-                    name: "field.default_value",
-                  }),
-                ])
-              ),
+              // FormField(
+              //   {
+              //     colSm: 6,
+              //     label: View(
+              //       { d: "flex", align: "center", justify: "between" },
+              //       [
+              //         "Default Value",
+              //         Switch({
+              //           name: "field.default_active",
+              //           col: 0,
+              //           d: "flex",
+              //           mb: 0,
+              //           p: 0,
+              //           justify: "end",
+              //         }),
+              //       ]
+              //     ),
+              //   },
+              //   Row([
+              //     Input({
+              //       $disabled: `!field.default_active`,
+              //       col: 12,
+              //       name: "field.default_value",
+              //     }),
+              //   ])
+              // ),
 
               FormField({ $if: "false", label: "Summary" }, [
                 Row([
@@ -201,7 +211,6 @@ export function TableEditor({
         Input({name: 'new_name', placeholder: 'name of new field (name, username, ...)', col: true}),
         Col({}, [
           Button({ onClick: addField }, "Add Field"),
-
         ])
       ])
     ]),
