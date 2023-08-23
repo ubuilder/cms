@@ -36,7 +36,7 @@ export function DataTable($props = {}) {
     ]),
     TableBody([
       rows.map((row) =>
-        TableRow([
+        TableRow({},[
           columns.map(({render, key}) =>
             TableCell([render ? render(row) : row[key]])
           ),
