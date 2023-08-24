@@ -24,11 +24,9 @@ export function DataTable($props = {}) {
                 style: "cursor: pointer; color: var(--color-base-700)",
                 name: "arrows-sort"
               },
-              
             ),
             // Icon({ style: 'cursor: pointer;', name: 'sort-ascending'}),
             // Icon({ style: 'cursor: pointer;', name: 'sort-descending'}),
-
             //   "SORT",
           ])
         )
@@ -36,7 +34,7 @@ export function DataTable($props = {}) {
     ]),
     TableBody([
       rows.map((row) =>
-        TableRow({},[
+        TableRow([
           columns.map(({render, key}) =>
             TableCell([render ? render(row) : row[key]])
           ),
