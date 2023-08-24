@@ -6,6 +6,7 @@ import {
   ButtonGroup,
   Card,
   Col,
+  Divider,
   Form,
   FormField,
   Icon,
@@ -70,6 +71,7 @@ export function TableEditor({
             style: "border: none",
             header: [
               View({ d: "flex", align: "center", gap: "xs" }, [
+                Icon({ size: "md", name: "grip-vertical" }),
                 View({ tag: "span", $text: "field.name" }),
                 View(
                   {
@@ -133,14 +135,31 @@ export function TableEditor({
                   { key: "select", text: "Select" },
                 ],
               }),
+
+              Input({ col: 12, label: "Hint" }),
+              View({$show:`field.type == 'relation'`,w:100,borderColor: "base-300",borderRadius: "xs" ,d: "flex", align: "center", justify: "between" }, [
+                Select({
+                  label: "Select Table",
+                  colSm: 6,
+                  items: ["sss", "kkk"],
+                  // name: "field.default_value",
+                }),
+                Select({
+                  label: "Relation Type",
+                  colSm: 6,
+                  items: ["single", "multiple"],
+                  // name: "field.default_value",
+                }),
+              ]),
+
               Input({
                 name: "field.select",
                 $show: `field.type == 'select'`,
                 col: 12,
                 label: "Select Values",
-                placeholder: "seperate with comma i.e: active,inactive"
+                placeholder: "seperate with comma i.e: active,inactive",
               }),
-              Input({ col: 12, label: "Hint" }),
+
               Switch({
                 $if: "false",
                 colSm: 6,
