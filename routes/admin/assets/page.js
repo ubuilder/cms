@@ -1,7 +1,7 @@
 //all the frontend conponent for this page
 import { Page } from "../../../components/Page.js";
 import { Filter } from "../../../components/filters/Filter.js";
-import { Asset } from "./Asset.js";
+import { Asset, SelectableAsset } from "./Asset.js";
 import { fileUpload } from "./views.js";
 import { Icon, Row, View } from "@ulibs/ui";
 
@@ -10,8 +10,9 @@ export * from './actions.js'
 
 
 
-export async function load({ ctx, query }) {
-  console.log("getting assets");
+export async function load({ ctx, query , body}) {
+  
+  console.log("getting assets body", body);
   const option = {
     perPage: 50,
   };
@@ -82,14 +83,15 @@ export async function load({ ctx, query }) {
 
   return {
       assets,
+      query
       // view: result.toString(),
   };
 }
 
 
-export default function ({assets}) {
+export default function ({assets, query}) {
+  console.log('query: ',query)
 
-  console.log({assets})
   return Page(
     {
       $data: { assets, type: "all" },
@@ -109,13 +111,15 @@ export default function ({assets}) {
         })
       ]
     },
-    Row({}, assets.map((asset) => {
-      return Asset({asset})
+    Row({}, [assets.map((asset) => {
+      return query.selectable? 
+      SelectableAsset({asset}) : 
+      Asset({asset})
       // return Media(
       //   { id: asset.id },
       //   AssetTypes[asset.type]
       // );
-    }))
+    })])
     // assetsSection()
   );
 }

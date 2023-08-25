@@ -48,7 +48,7 @@ const ctx = CMS({ dev, filename: process.env.DB_FILENAME ?? "./db/app.json" });
 
 ctx.addStatic({ path: "./node_modules/@ulibs/ui/dist", prefix: "/dist" });
 ctx.addStatic({ path: "./", prefix: "/assets" });
-ctx.addStatic({ path: "./public", prefix: "/res" });
+ctx.addStatic({ path: "./public", prefix: "/res", opts:{'max-age': 1} });
 
 await fileBasedRouting({
   path: "./routes",

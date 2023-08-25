@@ -12,6 +12,7 @@ import {
 import { Sidebar, SidebarItem } from "../../components/sidebar.js";
 import { Logo } from "../../components/Logo.js";
 import { Popover } from "@ulibs/ui";
+import { assetPickerModal } from "./assets/picker.js";
 
 export function Header($props, $slots) {
   return View(
@@ -241,8 +242,9 @@ export function AdminLayout($props, $slots) {
               autoClose = true,
               ...props
             }) => Alert({ type, autoClose, dismissible, ...props }, content)
-          )
+          ),
         ),
+        assetPickerModal(),
       ]),
     ]
   );

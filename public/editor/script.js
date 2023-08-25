@@ -87,6 +87,7 @@ window.addEventListener("alpine:init", (e) => {
         return this.$post("/editor?remove_instance", { instance_id });
       },
       onUpdateInstance({instance_id, props}) {
+        console.log('propsssss=>', Array.from(props))
         return this.$post("/editor?update_instance", { instance_id, props });
       },
       onComponentItemSelected({ component }) {

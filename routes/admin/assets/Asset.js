@@ -230,3 +230,52 @@ export function Asset({ asset }) {
     ),
   ]);
 }
+export function SelectableAsset({ asset }) {
+  return Col({ col: 12, colXs: 6, colSm: 4, colLg: 3 }, [
+    View(
+      {
+        style: "overflow: hidden",
+        bgColor: "base-200",
+        $data: { asset , },
+        border: true,
+        borderColor: "base-400",
+        borderRadius: "xs",
+        borderSize: 'sm',
+        onDblClick: `(e)=>{$post(window.location.origin + '/editor?update_instance', {instance_id: Window._imageInstance, props: [ { name: 'template', value: {type: 'static', value: "<img src= 'assets/NdYlOufl' />"}, type: 'code', fields: [] } ]})}`,
+      },
+      [
+        View(
+          {
+            // d: "flex",
+            flexDirection: "column",
+
+            style: "cursor: pointer; overflow: hidden; position: relative; pointer-events: none",
+          },
+          [
+            View(
+              { style: "height: 200px; " },
+              AssetTypes[asset.type]({ asset, mode: "list" })
+            ),
+            View(
+              {
+                textColor: "light-200",
+                style:
+                  "background: linear-gradient(0, #202020, transparent); position: absolute; bottom: 0; left: 0; right: 0",
+                align: "end",
+                p: "sm",
+                h: "6xl",
+                ps: "sm",
+                d: "flex",
+                justify: "between",
+              },
+              [
+                View(asset.name),
+              ]
+            ),
+          ]
+        ),
+      ]
+    ),
+  ]);
+}
+

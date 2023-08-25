@@ -2,7 +2,7 @@ import { ButtonGroup, Container, View } from "@ulibs/ui";
 import { PageHeader } from "./PageHeader.js";
 
 export function Page(
-  { title, actions = [], filters = [], container = true, $data, ...restProps },
+  { title, actions = [], filters = [], container = true, $data, htmlHead = [], ...restProps },
   slots
 ) {
   const header = title ? PageHeader({ title }, actions) : "";
@@ -16,8 +16,11 @@ export function Page(
     );
   }
 
-  const htmlHead = [View({ tag: "script", src: "/res/page/script.js" })];
-
+  htmlHead = [View({ tag: "script", src: "/res/page/script.js" }),
+    View({tag: 'script', src: '/res/asset.js'}),
+    htmlHead
+  ];
+console.log('htmlhead', htmlHead)
   let content;
   if (container) {
     content = Container({ htmlHead, $data, size: "xl", mx: "auto" }, [

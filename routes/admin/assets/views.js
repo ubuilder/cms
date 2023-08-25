@@ -122,15 +122,3 @@ export function fileUpload(callback) {
   );
 }
 
-
-export function selectAssetModal() {
-  return Modal(
-    {
-      name: "select-asset",
-      $data: { view: "", type: "all" },
-      $effect:
-        "loader;$post(window.location.origin + '/admin/assets?getSelectableAssets' , {type}).then(res=> view = res.view) ",
-    },
-    [ModalBody([headSection(), assetsSection()])]
-  );
-}

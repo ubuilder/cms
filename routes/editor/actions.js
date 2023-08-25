@@ -116,6 +116,7 @@ export async function add_instance({ ctx, body }) {
 export async function update_instance({ ctx, body, params }) {
   const props = body.props;
   const instanceId = body.instance_id;
+  console.log('body: ==>: ', body)
 
   await ctx.table("instances").update(instanceId, {
     props: props.reduce((prev, curr) => {
